@@ -2,10 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "../libraries/PlayerSlotLib.sol";
-import "./ERC721Facet.sol";
+import {ERC721Facet} from "./ERC721Facet.sol";
+import {ERC721FacetInternal} from "./ERC721FacetInternal.sol";
 import "../utils/Strings.sol";
 import "../utils/Base64.sol";
 import "../ERC721Storage.sol";
+// import {Message} from "../libraries/Message.sol";
+// import {GasRouter} from "@hyperlane-xyz/core/contracts/GasRouter.sol";
 
 /// @title Player Storage Library
 /// @dev Library for managing storage of player data
@@ -120,15 +123,48 @@ library PlayerStorageLib {
 
 /// @title Player Facet
 /// @dev Contract managing interaction with player data
-contract PlayerFacet is ERC721Facet {
+contract PlayerFacet is ERC721FacetInternal {
+    // contract PlayerFacet {
     using Strings for uint256;
 
     event Mint(uint256 indexed id, address indexed owner, string name, string uri);
     event NameChange(address indexed owner, uint256 indexed id, string indexed newName);
+    /**
+     * @dev Emitted on `transferRemote` when a transfer message is dispatched.
+     * @param destination The identifier of the destination chain.
+     * @param recipient The address of the recipient on the destination chain.
+     * @param amount The amount of tokens burnt on the origin chain.
+     */
+    event SentTransferRemote(uint32 indexed destination, bytes32 indexed recipient, uint256 amount);
 
     function playerCount() public view returns (uint256) {
         return PlayerStorageLib._playerCount();
     }
+
+    // /**
+    //  * @notice Transfers `_amountOrId` token to `_recipient` on `_destination` domain.
+    //  * @dev Delegates transfer logic to `_transferFromSender` implementation.
+    //  * @dev Emits `SentTransferRemote` event on the origin chain.
+    //  * @param _destination The identifier of the destination chain.
+    //  * @param _recipient The address of the recipient on the destination chain.
+    //  * @param _amountOrId The amount or identifier of tokens to be sent to the remote recipient.
+    //  * @return messageId The identifier of the dispatched message.
+    //  */
+    // function transferRemote(uint32 _destination, bytes32 _recipient, uint256 _amountOrId)
+    //     public
+    //     payable
+    //     virtual
+    //     returns (bytes32 messageId)
+    // {
+    //     // _transferFrom(msg.sender, address(this), _tokenId);
+    //     messageId = _dispatchWithGas(
+    //         _destination,
+    //         Message.format(_recipient, _amountOrId, ""),
+    //         msg.value, // interchain gas payment
+    //         msg.sender // refund address
+    //     );
+    //     emit SentTransferRemote(_destination, _recipient, _amountOrId);
+    // }
 
     /// @notice Mints a new player
     /// @dev Emits a Mint event
@@ -141,7 +177,7 @@ contract PlayerFacet is ERC721Facet {
         uint256 count = playerCount();
         emit Mint(count, msg.sender, _name, _uri);
 
-        _safeMint(msg.sender, count);
+        // _safeMint(msg.sender, count);
     }
 
     /// @notice Changes the name of a player
@@ -207,8 +243,9 @@ contract PlayerFacet is ERC721Facet {
      * @dev See {IERC721Metadata-tokenURI}.
      */
     // Bypass for a `--via-ir` bug (https://github.com/chiru-labs/ERC721A/pull/364).
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        _requireMinted(tokenId);
+    function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
+        // function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
+        // _requireMinted(tokenId);
 
         PlayerSlotLib.Player memory player = PlayerStorageLib._getPlayer(tokenId);
         string memory attributes = constructAttributes(player);
@@ -236,14 +273,13 @@ contract PlayerFacet is ERC721Facet {
 
     /// @notice Mints corresponding ERC1155 tokens for a player
     /// @dev this function is for backwards compatibility so that the playerIDs match the number of ERC721 tokens held by this account
-    function historicalERC721Mint() public {
-        uint256[] memory playerIDs = PlayerStorageLib._getPlayers(msg.sender);
+    // function historicalERC721Mint() public {
+    //     uint256[] memory playerIDs = PlayerStorageLib._getPlayers(msg.sender);
 
-        for (uint256 i = 0; i < playerIDs.length; i++) {
-            if (!_exists(playerIDs[i])) {
-                _safeMint(msg.sender, playerIDs[i]);
-            }
-        }
-    }
-
+    //     for (uint256 i = 0; i < playerIDs.length; i++) {
+    //         if (!_exists(playerIDs[i])) {
+    //             _safeMint(msg.sender, playerIDs[i]);
+    //         }
+    //     }
+    // }
 }
