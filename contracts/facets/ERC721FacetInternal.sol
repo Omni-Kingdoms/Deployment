@@ -13,7 +13,7 @@ import "../utils/Address.sol";
 import "../utils/Strings.sol";
 import "../ERC721Storage.sol";
 
-contract ERC721FacetInternal is Context, ERC165 {
+contract ERC721FacetInternal is Context {
     using ERC721Storage for ERC721Storage.Layout;
     using Address for address;
     using Strings for uint256;

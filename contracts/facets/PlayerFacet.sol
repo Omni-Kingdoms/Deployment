@@ -177,7 +177,7 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 count = playerCount();
         emit Mint(count, msg.sender, _name, _uri);
 
-        _safeMint(msg.sender, count);
+        // _safeMint(msg.sender, count);
     }
 
     /// @notice Changes the name of a player
@@ -245,7 +245,7 @@ contract PlayerFacet is ERC721FacetInternal {
     // Bypass for a `--via-ir` bug (https://github.com/chiru-labs/ERC721A/pull/364).
     function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
         // function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
-        _requireMinted(tokenId);
+        // _requireMinted(tokenId);
 
         PlayerSlotLib.Player memory player = PlayerStorageLib._getPlayer(tokenId);
         string memory attributes = constructAttributes(player);

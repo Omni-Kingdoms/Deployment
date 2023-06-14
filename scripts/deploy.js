@@ -2,7 +2,7 @@
 /* eslint prefer-const: "off" */
 const hre = require("hardhat");
 const { getSelectors, FacetCutAction } = require("./libraries/diamond.js");
-console.log("this is env", process.env.WALLET);
+// console.log("this is env", process.env.WALLET);
 
 async function deployDiamond() {
   const accounts = await ethers.getSigners();
@@ -23,7 +23,7 @@ async function deployDiamond() {
     "DiamondCutFacet",
     "DiamondLoupeFacet",
     "OwnershipFacet",
-    "ERC721Facet",
+    // "ERC721Facet",
     "PlayerFacet",
     "QuestFacet",
     // 'CraftFacet',
@@ -50,6 +50,24 @@ async function deployDiamond() {
     //await verifyContract(facet, FacetName);
   }
   console.log("Facet Cuts = ", facetCuts);
+
+  let allFunctionSelectors = [];
+  let duplicates = {};
+
+  facetCuts.forEach(function (facet) {
+    facet.functionSelectors.forEach(function (selector) {
+      if (typeof selector === "string") {
+        // only consider string selectors
+        if (allFunctionSelectors.includes(selector)) {
+          duplicates[selector] = (duplicates[selector] || 0) + 1; // count duplicates
+        } else {
+          allFunctionSelectors.push(selector);
+        }
+      }
+    });
+  });
+
+  console.log("Duplicates are = ", duplicates);
 
   // Creating a function call
   // This call gets executed during deployment and can also be executed in upgrades
