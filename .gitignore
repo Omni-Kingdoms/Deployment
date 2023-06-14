@@ -1,2 +1,5 @@
 .env
 node_modules
+contracts/upgradeInitializers/artifacts
+contracts/facets/artifacts
+artifacts
