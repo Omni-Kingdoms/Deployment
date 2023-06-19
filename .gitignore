@@ -3,3 +3,6 @@ node_modules
 contracts/upgradeInitializers/artifacts
 contracts/facets/artifacts
 artifacts
+.deps/
+bin/
+compiler_config.json
