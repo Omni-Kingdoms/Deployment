@@ -25,7 +25,7 @@ async function deployDiamond() {
     "OwnershipFacet",
     "ERC721Facet",
     "PlayerFacet",
-    "QuestFacet",
+    // "QuestFacet",
     // 'CraftFacet',
     // 'TrainFacet',
     // 'EquipFacet',
@@ -47,27 +47,9 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    //await verifyContract(facet, FacetName);
+    await verifyContract(facet, FacetName);
   }
   console.log("Facet Cuts = ", facetCuts);
-
-  let allFunctionSelectors = [];
-  let duplicates = {};
-
-  facetCuts.forEach(function (facet) {
-    facet.functionSelectors.forEach(function (selector) {
-      if (typeof selector === "string") {
-        // only consider string selectors
-        if (allFunctionSelectors.includes(selector)) {
-          duplicates[selector] = (duplicates[selector] || 0) + 1; // count duplicates
-        } else {
-          allFunctionSelectors.push(selector);
-        }
-      }
-    });
-  });
-
-  console.log("Duplicates are = ", duplicates);
 
   // Creating a function call
   // This call gets executed during deployment and can also be executed in upgrades
@@ -90,7 +72,7 @@ async function deployDiamond() {
   console.log();
   console.log("Diamond deployed:", diamond.address);
 
-  //await verifyDiamond(diamond, facetCuts, diamondArgs);
+  await verifyDiamond(diamond, facetCuts, diamondArgs);
 
   // returning the address of the diamond
   return diamond.address;
@@ -144,8 +126,8 @@ async function verifyDiamond(diamond, facetCuts, diamondArgs) {
   try {
     console.log("Waiting for 10 blocks to be mined...");
     console.log("---------------");
-    console.log(facetCuts);
-    console.log(diamondArgs);
+    console.log("Facet cuts = ", facetCuts);
+    console.log("Diamond Args = ", diamondArgs);
     console.log("---------------");
     await diamond.deployTransaction.wait(10);
     console.log("Running verification");
