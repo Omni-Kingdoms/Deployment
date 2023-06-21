@@ -177,7 +177,7 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 count = playerCount();
         emit Mint(count, msg.sender, _name, _uri);
 
-        // _safeMint(msg.sender, count);
+        _safeMint(msg.sender, count);
     }
 
     /// @notice Changes the name of a player
@@ -239,35 +239,35 @@ contract PlayerFacet is ERC721FacetInternal {
         );
     }
 
-    /**
-     * @dev See {IERC721Metadata-tokenURI}.
-     */
-    // Bypass for a `--via-ir` bug (https://github.com/chiru-labs/ERC721A/pull/364).
-    function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
-        // function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
-        // _requireMinted(tokenId);
+    // /**
+    //  * @dev See {IERC721Metadata-tokenURI}.
+    //  */
+    // // Bypass for a `--via-ir` bug (https://github.com/chiru-labs/ERC721A/pull/364).
+    // function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
+    //     // function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
+    //     // _requireMinted(tokenId);
 
-        PlayerSlotLib.Player memory player = PlayerStorageLib._getPlayer(tokenId);
-        string memory attributes = constructAttributes(player);
+    //     PlayerSlotLib.Player memory player = PlayerStorageLib._getPlayer(tokenId);
+    //     string memory attributes = constructAttributes(player);
 
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name":"',
-                        player.name,
-                        '","description":"Player NFT from OmniKingdoms","image":"',
-                        player.male ? ERC721Storage.layout()._maleImage : ERC721Storage.layout()._femaleImage,
-                        '","attributes":',
-                        attributes,
-                        "}"
-                    )
-                )
-            )
-        );
+    //     string memory json = Base64.encode(
+    //         bytes(
+    //             string(
+    //                 abi.encodePacked(
+    //                     '{"name":"',
+    //                     player.name,
+    //                     '","description":"Player NFT from OmniKingdoms","image":"',
+    //                     player.male ? ERC721Storage.layout()._maleImage : ERC721Storage.layout()._femaleImage,
+    //                     '","attributes":',
+    //                     attributes,
+    //                     "}"
+    //                 )
+    //             )
+    //         )
+    //     );
 
-        return string(abi.encodePacked("data:application/json;base64,", json));
-    }
+    //     return string(abi.encodePacked("data:application/json;base64,", json));
+    // }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 
