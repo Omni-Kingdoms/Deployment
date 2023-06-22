@@ -13,11 +13,46 @@ import "../utils/ERC165.sol";
 import "../utils/Address.sol";
 import "../utils/Strings.sol";
 import "../ERC721Storage.sol";
+import "../utils/Base64.sol";
+
+library PlayerStorageLib {
+    bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("player.test.storage.a");
+
+    using PlayerSlotLib for PlayerSlotLib.Player;
+
+    /// @dev Struct defining player storage
+    struct PlayerStorage {
+        uint256 totalSupply;
+        uint256 playerCount;
+        mapping(uint256 => address) owners;
+        mapping(uint256 => PlayerSlotLib.Player) players;
+        mapping(address => uint256) balances;
+        mapping(address => mapping(address => uint256)) allowances;
+        mapping(string => bool) usedNames;
+        mapping(address => uint256[]) addressToPlayers;
+        mapping(uint256 => PlayerSlotLib.Slot) slots;
+    }
+
+    /// @dev Function to retrieve diamond storage slot for player data. Returns a reference.
+    function diamondStorage() internal pure returns (PlayerStorage storage ds) {
+        bytes32 position = DIAMOND_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
+
+    function _getPlayer(uint256 _id) internal view returns (PlayerSlotLib.Player memory player) {
+        PlayerStorage storage s = diamondStorage();
+        player = s.players[_id];
+    }
+}
 
 contract ERC721Facet is ERC721FacetInternal {
     using ERC721Storage for ERC721Storage.Layout;
     using Address for address;
     using Strings for uint256;
+    using PlayerSlotLib for PlayerSlotLib.Player;
+
     /**
      * @dev See {IERC721-balanceOf}.
      */
@@ -50,16 +85,67 @@ contract ERC721Facet is ERC721FacetInternal {
         return ERC721Storage.layout()._symbol;
     }
 
+    function constructAttributes(PlayerSlotLib.Player memory player) internal pure returns (string memory attributes) {
+        attributes = string(
+            abi.encodePacked(
+                '[{"trait_type":"Name","value":',
+                player.name,
+                '},{"trait_type":"Level","value":',
+                player.level.toString(),
+                '},{"trait_type":"XP","value":',
+                player.xp.toString(),
+                '},{"trait_type":"Status","value":',
+                player.status.toString(),
+                '},{"trait_type":"Gender","value":',
+                player.male ? "Male" : "Female",
+                '},{"trait_type":"Strength","value":',
+                player.strength.toString(),
+                '},{"trait_type":"Health","value":',
+                player.health.toString(),
+                "}]"
+            )
+        );
+    }
+
     /**
      * @dev See {IERC721Metadata-tokenURI}.
      */
+    // Bypass for a `--via-ir` bug (https://github.com/chiru-labs/ERC721A/pull/364).
     function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
-        // _requireMinted(tokenId);
+        _requireMinted(tokenId);
 
-        // string memory baseURI = _baseURI();
-        // return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
-        return "https://bafybeia6tvvinchy3r7ff7jr7axzx36n4rg6s54fshjguvek6ypde5gzi4.ipfs.w3s.link/testnft.json";
+        PlayerSlotLib.Player memory player = PlayerStorageLib._getPlayer(tokenId);
+        string memory attributes = constructAttributes(player);
+
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name":"',
+                        player.name,
+                        '","description":"Player NFT from OmniKingdoms","image":"',
+                        player.male ? ERC721Storage.layout()._maleImage : ERC721Storage.layout()._femaleImage,
+                        '","attributes":',
+                        attributes,
+                        "}"
+                    )
+                )
+            )
+        );
+
+        return string(abi.encodePacked("data:application/json;base64,", json));
     }
+
+    // /**
+    //  * @dev See {IERC721Metadata-tokenURI}.
+    //  */
+    // function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
+    //     // _requireMinted(tokenId);
+
+    //     // string memory baseURI = _baseURI();
+    //     // return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
+    //     return "https://bafybeia6tvvinchy3r7ff7jr7axzx36n4rg6s54fshjguvek6ypde5gzi4.ipfs.w3s.link/testnft.json";
+    // }
 
     /**
      * @dev See {IERC721-approve}.
