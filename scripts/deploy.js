@@ -49,7 +49,7 @@ async function deployDiamond() {
 
     await verifyContract(facet, FacetName);
   }
-  console.log("Facet Cuts = ", facetCuts);
+  //console.log("Facet Cuts = ", facetCuts);
 
   // Creating a function call
   // This call gets executed during deployment and can also be executed in upgrades
