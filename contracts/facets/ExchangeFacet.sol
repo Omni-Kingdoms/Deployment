@@ -10,10 +10,25 @@ struct PlayerListing {
     uint256 pointer;
 }
 
+struct Equipment {
+    uint256 id;
+    uint256 pointer;
+    uint256 slot;
+    uint256 rank;
+    uint256 value;
+    uint256 stat;
+    uint256 owner;
+    string name;
+    string uri;
+    bool isEquiped;
+}
+
 library ExchangeStorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant EX_STORAGE_POSITION = keccak256("ex.test.storage.a");
     bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
+    bytes32 constant EQUIPMENT_STORAGE_POSITION = keccak256("equipment.test.storage.a");
+    bytes32 constant TREASURE_STORAGE_POSITION = keccak256("treasure.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
     using PlayerSlotLib for PlayerSlotLib.Slot;

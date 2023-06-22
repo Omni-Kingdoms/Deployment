@@ -24,8 +24,8 @@ async function deployDiamond() {
     "DiamondLoupeFacet",
     "OwnershipFacet",
     "ERC721Facet",
-    "PlayerFacet",
-    "QuestFacet",
+    "PlayerFacet"
+    //"QuestFacet",
     // 'CraftFacet',
     // 'TrainFacet',
     // 'EquipFacet',
@@ -47,9 +47,9 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    //await verifyContract(facet, FacetName);
+    await verifyContract(facet, FacetName);
   }
-  console.log("Facet Cuts = ", facetCuts);
+  //console.log("Facet Cuts = ", facetCuts);
 
   let allFunctionSelectors = [];
   let duplicates = {};

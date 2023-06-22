@@ -12,13 +12,16 @@ import "../libraries/PlayerSlotLib.sol";
 //     5: gemQuest;
 // }
 
-struct Item {
+struct Equipment {
+    uint256 id;
+    uint256 pointer;
     uint256 slot;
     uint256 rank;
     uint256 value;
     uint256 stat;
+    uint256 owner;
     string name;
-    address owner;
+    string uri;
     bool isEquiped;
 }
 
@@ -42,7 +45,7 @@ library StorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant QUEST_STORAGE_POSITION = keccak256("quest.test.storage.a");
     bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
-    bytes32 constant ITEM_STORAGE_POSITION = keccak256("item.test.storage.a");
+    bytes32 constant EQUIPMENT_STORAGE_POSITION = keccak256("equipment.test.storage.a");
     bytes32 constant TREASURE_STORAGE_POSITION = keccak256("treasure.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
@@ -66,6 +69,8 @@ library StorageLib {
         mapping(uint256 => uint256) totemQuest;
         mapping(uint256 => uint256) diamondQuest;
         mapping(uint256 => uint256) cooldowns;
+        mapping(uint256 => uint256) dragonCooldown;
+        mapping(uint256 => uint256) gravityHammerQuestCooldown;
     }
 
     struct CoinStorage {
@@ -75,11 +80,11 @@ library StorageLib {
         mapping(address => uint256) diamondBalance;
     }
 
-    struct ItemStorage {
-        uint256 itemCount;
-        mapping(uint256 => address) owners;
-        mapping(uint256 => Item) items;
-        mapping(address => uint256[]) addressToItems;
+    struct EquipmentStorage {
+        uint256 equipmentCount;
+        mapping(uint256 => uint256) owners; //maps equipment id to player id
+        mapping(uint256 => Equipment) equipment;
+        mapping(uint256 => uint256[]) playerToEquipment;
         mapping(uint256 => uint256) cooldown;
     }
 
@@ -111,8 +116,8 @@ library StorageLib {
         }
     }
 
-    function diamondStorageItem() internal pure returns (ItemStorage storage ds) {
-        bytes32 position = ITEM_STORAGE_POSITION;
+    function diamondStorageItem() internal pure returns (EquipmentStorage storage ds) {
+        bytes32 position = EQUIPMENT_STORAGE_POSITION;
         assembly {
             ds.slot := position
         }
@@ -177,13 +182,13 @@ library StorageLib {
     function _dragonQuest(uint256 _playerId) internal returns (bool) {
         PlayerStorage storage s = diamondStoragePlayer();
         QuestStorage storage q = diamondStorageQuest();
-        ItemStorage storage i = diamondStorageItem();
+        EquipmentStorage storage e = diamondStorageItem();
         TreasureStorage storage t = diamondStorageTreasure();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
         require(block.timestamp >= q.cooldowns[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
         require(
-            keccak256(abi.encodePacked(i.items[s.players[_playerId].slot.head].name))
+            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.head].name))
                 == keccak256(abi.encodePacked("WizHat")),
             "not wearing hat"
         ); // must have wizard hat on
@@ -199,6 +204,16 @@ library StorageLib {
         } else {
             return false;
         }
+    }
+
+    function _gravityHammerQuest(uint256 _playerId) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        QuestStorage storage q = diamondStorageQuest();
+        EquipmentStorage storage e = diamondStorageItem();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        require(block.timestamp >= q.cooldowns[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+
     }
 
     function _random(uint256 nonce) internal returns (uint256) {

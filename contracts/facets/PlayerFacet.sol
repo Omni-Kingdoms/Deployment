@@ -177,7 +177,7 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 count = playerCount();
         emit Mint(count, msg.sender, _name, _uri);
 
-        // _safeMint(msg.sender, count);
+        _safeMint(msg.sender, count);
     }
 
     /// @notice Changes the name of a player
