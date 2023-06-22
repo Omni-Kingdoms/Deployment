@@ -201,6 +201,16 @@ library StorageLib {
         }
     }
 
+    function _gravityHammerQuest(uint256 _playerId) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        QuestStorage storage q = diamondStorageQuest();
+        EquipmentStorage storage e = diamondStorageItem();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        require(block.timestamp >= q.cooldowns[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+
+    }
+
     function _random(uint256 nonce) internal returns (uint256) {
         QuestStorage storage q = diamondStorageQuest();
         q.questCounter++;
