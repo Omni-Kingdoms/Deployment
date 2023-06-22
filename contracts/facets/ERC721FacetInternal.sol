@@ -17,6 +17,21 @@ contract ERC721FacetInternal is Context {
     using ERC721Storage for ERC721Storage.Layout;
     using Address for address;
     using Strings for uint256;
+
+    /**
+     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
+     */
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+
+    /**
+     * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
+     */
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+
+    /**
+     * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
+     */
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
     /**
      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
      * are aware of the ERC721 protocol to prevent tokens from being forever locked.
@@ -97,7 +112,7 @@ contract ERC721FacetInternal is Context {
 
         ERC721Storage.layout()._owners[tokenId] = to;
 
-        // emit Transfer(address(0), to, tokenId);
+        emit Transfer(address(0), to, tokenId);
 
         _afterTokenTransfer(address(0), to, tokenId, 1);
     }
@@ -131,7 +146,7 @@ contract ERC721FacetInternal is Context {
         }
         delete ERC721Storage.layout()._owners[tokenId];
 
-        // emit Transfer(owner, address(0), tokenId);
+        emit Transfer(owner, address(0), tokenId);
 
         _afterTokenTransfer(owner, address(0), tokenId, 1);
     }
@@ -162,7 +177,7 @@ contract ERC721FacetInternal is Context {
      */
     function _approve(address to, uint256 tokenId) internal virtual {
         ERC721Storage.layout()._tokenApprovals[tokenId] = to;
-        // emit Approval(_ownerOf(tokenId), to, tokenId);
+        emit Approval(_ownerOf(tokenId), to, tokenId);
     }
 
     /**
@@ -189,7 +204,7 @@ contract ERC721FacetInternal is Context {
     function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
         require(owner != operator, "ERC721: approve to caller");
         ERC721Storage.layout()._operatorApprovals[owner][operator] = approved;
-        // emit ApprovalForAll(owner, operator, approved);
+        emit ApprovalForAll(owner, operator, approved);
     }
 
     /**
@@ -226,7 +241,7 @@ contract ERC721FacetInternal is Context {
         }
         ERC721Storage.layout()._owners[tokenId] = to;
 
-        // emit Transfer(from, to, tokenId);
+        emit Transfer(from, to, tokenId);
 
         _afterTokenTransfer(from, to, tokenId, 1);
     }

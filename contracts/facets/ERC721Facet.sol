@@ -58,7 +58,7 @@ contract ERC721Facet is ERC721FacetInternal {
 
         // string memory baseURI = _baseURI();
         // return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
-        return "https://infura-ipfs.io/ipfs/QmVQPguk3yttbq9inEyFNrADpZpHUTxAmgBv44i1zyLor7";
+        return "https://bafybeia6tvvinchy3r7ff7jr7axzx36n4rg6s54fshjguvek6ypde5gzi4.ipfs.w3s.link/testnft.json";
     }
 
     /**
