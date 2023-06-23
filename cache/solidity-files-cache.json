@@ -25,7 +25,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -66,7 +67,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -104,7 +106,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -141,7 +144,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -176,7 +180,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -211,7 +216,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -246,7 +252,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -258,8 +265,8 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/upgradeInitializers/DiamondInit.sol": {
-      "lastModificationDate": 1686519629607,
-      "contentHash": "3f67c65530ff2ea82c11713886fe636d",
+      "lastModificationDate": 1687463914342,
+      "contentHash": "7e12beb3d5ad9d8b312af9486845442e",
       "sourceName": "contracts/upgradeInitializers/DiamondInit.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -281,7 +288,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -323,7 +331,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -335,8 +344,8 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/PlayerFacet.sol": {
-      "lastModificationDate": 1686519629598,
-      "contentHash": "a094d50269d171869b659ed18d5908e9",
+      "lastModificationDate": 1687463914341,
+      "contentHash": "437da4ac5b8c20195929264f91d64b58",
       "sourceName": "contracts/facets/PlayerFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -358,12 +367,14 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
         "../libraries/PlayerSlotLib.sol",
         "./ERC721Facet.sol",
+        "./ERC721FacetInternal.sol",
         "../utils/Strings.sol",
         "../utils/Base64.sol",
         "../ERC721Storage.sol"
@@ -400,7 +411,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -435,7 +447,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -472,7 +485,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -484,8 +498,8 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ERC721Facet.sol": {
-      "lastModificationDate": 1686519629606,
-      "contentHash": "fe12dffaa9c84cca5313528b58692f42",
+      "lastModificationDate": 1687463914339,
+      "contentHash": "f25029603f70b3f61a055dc315756e10",
       "sourceName": "contracts/facets/ERC721Facet.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -507,12 +521,14 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
         "../libraries/PlayerSlotLib.sol",
         "../ERC721Storage.sol",
+        "./ERC721FacetInternal.sol",
         "../interfaces/IERC721.sol",
         "../interfaces/IERC165.sol",
         "../interfaces/IERC721Metadata.sol",
@@ -521,13 +537,15 @@
         "../utils/ERC165.sol",
         "../utils/Address.sol",
         "../utils/Strings.sol",
-        "../ERC721Storage.sol"
+        "../ERC721Storage.sol",
+        "../utils/Base64.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "ERC721Facet"
+        "ERC721Facet",
+        "PlayerStorageLib"
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/utils/Math.sol": {
@@ -554,7 +572,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -589,7 +608,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -626,7 +646,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -663,7 +684,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -698,7 +720,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -733,7 +756,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -770,7 +794,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -805,7 +830,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -842,7 +868,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -879,7 +906,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -916,7 +944,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -955,7 +984,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -992,7 +1022,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1030,7 +1061,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1068,7 +1100,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1106,7 +1139,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1121,8 +1155,8 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/QuestFacet.sol": {
-      "lastModificationDate": 1686519629606,
-      "contentHash": "ddf668cd82b1436205a6bbcbdd38847f",
+      "lastModificationDate": 1687464033632,
+      "contentHash": "8652fa8ac063d5fafa62d724791a14da",
       "sourceName": "contracts/facets/QuestFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -1144,7 +1178,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1159,7 +1194,7 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ExchangeFacet.sol": {
-      "lastModificationDate": 1686519629606,
+      "lastModificationDate": 1687463914340,
       "contentHash": "eb21ae84ae8ce0ebd5f358e748c5d3c0",
       "sourceName": "contracts/facets/ExchangeFacet.sol",
       "solcConfig": {
@@ -1182,7 +1217,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1220,7 +1256,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1235,7 +1272,7 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/CraftFacet.sol": {
-      "lastModificationDate": 1686590786284,
+      "lastModificationDate": 1687463914339,
       "contentHash": "7f4bb6bc9a090ec51bf02eed4a0a2404",
       "sourceName": "contracts/facets/CraftFacet.sol",
       "solcConfig": {
@@ -1258,7 +1295,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1296,7 +1334,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1331,7 +1370,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1369,7 +1409,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [
@@ -1407,7 +1448,8 @@
                 "ast"
               ]
             }
-          }
+          },
+          "libraries": {}
         }
       },
       "imports": [],
@@ -1419,7 +1461,7 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/node_modules/hardhat-diamond-abi/dist/contract.sol": {
-      "lastModificationDate": 1686592174861,
+      "lastModificationDate": 1687465432073,
       "contentHash": "f0899ccf3452b0b76299b9fb99d6bbf2",
       "sourceName": "hardhat-diamond-abi/HardhatDiamondABI.sol",
       "solcConfig": {
@@ -1430,6 +1472,54 @@
       "versionPragmas": [],
       "artifacts": [
         "DIAMOND-1-HARDHAT"
+      ]
+    },
+    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ERC721FacetInternal.sol": {
+      "lastModificationDate": 1687463914340,
+      "contentHash": "e6ce8cb12d77a83936b24a2be3a230d8",
+      "sourceName": "contracts/facets/ERC721FacetInternal.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "../libraries/PlayerSlotLib.sol",
+        "../ERC721Storage.sol",
+        "../interfaces/IERC721.sol",
+        "../interfaces/IERC165.sol",
+        "../interfaces/IERC721Metadata.sol",
+        "../interfaces/IERC721Receiver.sol",
+        "../utils/Context.sol",
+        "../utils/ERC165.sol",
+        "../utils/Address.sol",
+        "../utils/Strings.sol",
+        "../ERC721Storage.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC721FacetInternal"
       ]
     }
   }

@@ -24,6 +24,7 @@ async function deployDiamond() {
     "DiamondLoupeFacet",
     "OwnershipFacet",
     "ERC721Facet",
+    "ERC721FacetInternal",
     "PlayerFacet",
     // "QuestFacet",
     // 'CraftFacet',
