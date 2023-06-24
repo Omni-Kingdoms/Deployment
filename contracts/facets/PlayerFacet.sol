@@ -141,31 +141,6 @@ contract PlayerFacet is ERC721FacetInternal {
         return PlayerStorageLib._playerCount();
     }
 
-    // /**
-    //  * @notice Transfers `_amountOrId` token to `_recipient` on `_destination` domain.
-    //  * @dev Delegates transfer logic to `_transferFromSender` implementation.
-    //  * @dev Emits `SentTransferRemote` event on the origin chain.
-    //  * @param _destination The identifier of the destination chain.
-    //  * @param _recipient The address of the recipient on the destination chain.
-    //  * @param _amountOrId The amount or identifier of tokens to be sent to the remote recipient.
-    //  * @return messageId The identifier of the dispatched message.
-    //  */
-    // function transferRemote(uint32 _destination, bytes32 _recipient, uint256 _amountOrId)
-    //     public
-    //     payable
-    //     virtual
-    //     returns (bytes32 messageId)
-    // {
-    //     // _transferFrom(msg.sender, address(this), _tokenId);
-    //     messageId = _dispatchWithGas(
-    //         _destination,
-    //         Message.format(_recipient, _amountOrId, ""),
-    //         msg.value, // interchain gas payment
-    //         msg.sender // refund address
-    //     );
-    //     emit SentTransferRemote(_destination, _recipient, _amountOrId);
-    // }
-
     /// @notice Mints a new player
     /// @dev Emits a Mint event
     /// @dev Calls the _mint function from the PlayerStorageLib
@@ -219,15 +194,5 @@ contract PlayerFacet is ERC721FacetInternal {
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 
-    /// @notice Mints corresponding ERC1155 tokens for a player
-    /// @dev this function is for backwards compatibility so that the playerIDs match the number of ERC721 tokens held by this account
-    // function historicalERC721Mint() public {
-    //     uint256[] memory playerIDs = PlayerStorageLib._getPlayers(msg.sender);
-
-    //     for (uint256 i = 0; i < playerIDs.length; i++) {
-    //         if (!_exists(playerIDs[i])) {
-    //             _safeMint(msg.sender, playerIDs[i]);
-    //         }
-    //     }
-    // }
+    
 }
