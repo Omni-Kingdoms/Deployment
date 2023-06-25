@@ -258,10 +258,12 @@ contract PlayerFacet is ERC721FacetInternal {
         return PlayerStorageLib._playerCount();
     }
 
+    // Through this function, set the address of the corresponding contract on the destination chain
     function setContractOnChain(string calldata _chainId, address _contractAddress) external {
         PlayerStorageLib._setContractOnChain(_chainId, _contractAddress);
     }
 
+    // Set the gateway contract address from https://docs.routerprotocol.com/develop/message-transfer-via-crosstalk/evm-guides/your-first-crosschain-nft-contract/deploying-your-nft-contract
     function setGateway(address gateway) external {
         PlayerStorageLib._setGateway(gateway);
     }
