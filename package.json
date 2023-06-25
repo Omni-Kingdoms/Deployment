@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.3",
-    "@routerprotocol/evm-gateway-contracts": "^1.1.13",
+    "@routerprotocol/evm-gateway-contracts": "^1.1.11",
     "@typechain/hardhat": "^6.1.5",
     "hardhat-diamond-abi": "^3.0.1",
     "import": "^0.0.6"

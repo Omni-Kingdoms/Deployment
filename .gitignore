@@ -29,3 +29,4 @@ compiler_config.json
 contracts/.deps/
 contracts/artifacts/
 contracts/compiler_config.json
+cache/

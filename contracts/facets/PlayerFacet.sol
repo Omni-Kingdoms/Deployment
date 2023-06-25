@@ -7,7 +7,7 @@ import {ERC721FacetInternal} from "./ERC721FacetInternal.sol";
 import "../utils/Strings.sol";
 import "../utils/Base64.sol";
 import "../ERC721Storage.sol";
-import "@routerprotocol/evm-gateway-contracts@1.1.11/contracts/IGateway.sol";
+import "../interfaces/IGateway.sol";
 
 /// @title Player Storage Library
 /// @dev Library for managing storage of player data
@@ -86,6 +86,16 @@ library PlayerStorageLib {
         );
 
         PlayerSlotLib.Player memory player = _getPlayer(_playerId);
+
+        //Delete the player from the source chain
+        for (uint256 i = 0; i < s.balances[msg.sender]; i++) {
+            if (s.addressToPlayers[msg.sender][i] == _playerId) {
+                delete s.addressToPlayers[msg.sender][i];
+                break;
+            }
+        }
+        s.balances[msg.sender]--;
+
         TransferParams memory transferParams =
             TransferParams({nftId: _playerId, playerId: _playerId, playerData: player, recipient: _recipient});
 
