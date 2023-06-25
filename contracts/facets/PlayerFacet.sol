@@ -7,13 +7,13 @@ import {ERC721FacetInternal} from "./ERC721FacetInternal.sol";
 import "../utils/Strings.sol";
 import "../utils/Base64.sol";
 import "../ERC721Storage.sol";
-// import {Message} from "../libraries/Message.sol";
-// import {GasRouter} from "@hyperlane-xyz/core/contracts/GasRouter.sol";
+import "@routerprotocol/evm-gateway-contracts@1.1.11/contracts/IGateway.sol";
 
 /// @title Player Storage Library
 /// @dev Library for managing storage of player data
 library PlayerStorageLib {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("player.test.storage.a");
+    bytes32 constant TRANSFER_STORAGE_POSITION = keccak256("transfer.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
     using PlayerSlotLib for PlayerSlotLib.Slot;
@@ -32,12 +32,118 @@ library PlayerStorageLib {
         mapping(uint256 => PlayerSlotLib.Slot) slots;
     }
 
+    // transfer params struct where we specify which NFTs should be transferred to
+    // the destination chain and to which address
+    struct TransferParams {
+        uint256 nftId;
+        uint256 playerId;
+        PlayerSlotLib.Player playerData;
+        address recipient;
+    }
+
+    struct TransferStorage {
+        mapping(string => address) ourContractOnChains;
+        IGateway gatewayContract;
+    }
+
     /// @dev Function to retrieve diamond storage slot for player data. Returns a reference.
     function diamondStorage() internal pure returns (PlayerStorage storage ds) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
         assembly {
             ds.slot := position
         }
+    }
+
+    function diamondStorageTransfer() internal pure returns (TransferStorage storage ds) {
+        bytes32 position = TRANSFER_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
+
+    function _setContractOnChain(string calldata _chainId, address _contractAddress) internal {
+        TransferStorage storage s = diamondStorageTransfer();
+        s.ourContractOnChains[_chainId] = _contractAddress;
+    }
+
+    function _setGateway(address gateway) internal {
+        TransferStorage storage s = diamondStorageTransfer();
+        s.gatewayContract = IGateway(gateway);
+    }
+
+    function _transferRemote(
+        string memory _destination,
+        address _recipient,
+        uint256 _playerId,
+        bytes memory _requestMetadata
+    ) internal {
+        PlayerStorage storage s = diamondStorage();
+        TransferStorage storage t = diamondStorageTransfer();
+        require(s.owners[_playerId] == msg.sender);
+        require(
+            keccak256(abi.encodePacked(t.ourContractOnChains[_destination])) != keccak256(abi.encodePacked("")),
+            "contract on dest not set"
+        );
+
+        PlayerSlotLib.Player memory player = _getPlayer(_playerId);
+        TransferParams memory transferParams =
+            TransferParams({nftId: _playerId, playerId: _playerId, playerData: player, recipient: _recipient});
+
+        // sending the transfer params struct to the destination chain as payload.
+        bytes memory packet = abi.encode(transferParams);
+        bytes memory requestPacket = abi.encode(t.ourContractOnChains[_destination], packet);
+
+        t.gatewayContract.iSend{value: msg.value}(1, 0, string(""), _destination, _requestMetadata, requestPacket);
+    }
+
+    /// @notice function to handle the cross-chain request received from some other chain.
+    /// @param packet the payload sent by the source chain contract when the request was created.
+    /// @param srcChainId chain ID of the source chain in string.
+    function _iReceive(bytes memory packet, string memory srcChainId)
+        internal
+        returns (address recipient, uint256 nftId, bytes memory chainId)
+    {
+        TransferStorage storage t = diamondStorageTransfer();
+        require(msg.sender == address(t.gatewayContract), "only gateway");
+        // decoding our payload
+        TransferParams memory transferParams = abi.decode(packet, (TransferParams));
+        recipient = transferParams.recipient;
+        nftId = transferParams.nftId;
+        _mintCrossChainPlayer(transferParams.playerData, recipient);
+
+        chainId = abi.encode(srcChainId);
+    }
+
+    function _mintCrossChainPlayer(PlayerSlotLib.Player memory _player, address _recipient) internal {
+        PlayerStorage storage s = diamondStorage();
+        require(!s.usedNames[_player.name], "name is taken");
+        require(bytes(_player.name).length <= 10);
+        require(bytes(_player.name).length >= 3);
+        s.playerCount++;
+        s.players[s.playerCount] = PlayerSlotLib.Player(
+            _player.level,
+            _player.xp,
+            _player.status,
+            _player.strength,
+            _player.health,
+            _player.magic,
+            _player.mana,
+            _player.agility,
+            _player.luck,
+            _player.wisdom,
+            _player.haki,
+            _player.perception,
+            _player.defense,
+            _player.name,
+            _player.uri,
+            _player.male,
+            PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0)
+        );
+        s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0);
+        s.usedNames[_player.name] = true;
+        s.owners[s.playerCount] = _recipient;
+        s.addressToPlayers[_recipient].push(s.playerCount);
+        s.balances[_recipient]++;
     }
 
     /// @notice Mints a new player
@@ -129,16 +235,76 @@ contract PlayerFacet is ERC721FacetInternal {
 
     event Mint(uint256 indexed id, address indexed owner, string name, string uri);
     event NameChange(address indexed owner, uint256 indexed id, string indexed newName);
+
     /**
      * @dev Emitted on `transferRemote` when a transfer message is dispatched.
      * @param destination The identifier of the destination chain.
      * @param recipient The address of the recipient on the destination chain.
-     * @param amount The amount of tokens burnt on the origin chain.
+     * @param playerId The amount of tokens burnt on the origin chain.
      */
-    event SentTransferRemote(uint32 indexed destination, bytes32 indexed recipient, uint256 amount);
+    event SentTransferRemote(string destination, address indexed recipient, uint256 playerId);
 
     function playerCount() public view returns (uint256) {
         return PlayerStorageLib._playerCount();
+    }
+
+    function setContractOnChain(string calldata _chainId, address _contractAddress) external {
+        PlayerStorageLib._setContractOnChain(_chainId, _contractAddress);
+    }
+
+    function setGateway(address gateway) external {
+        PlayerStorageLib._setGateway(gateway);
+    }
+
+    /// @notice function to get the request metadata to be used while initiating cross-chain request
+    /// @return requestMetadata abi-encoded metadata according to source and destination chains
+    function getRequestMetadata(
+        uint64 _destGasLimit,
+        uint64 _destGasPrice,
+        uint64 _ackGasLimit,
+        uint64 _ackGasPrice,
+        uint128 _relayerFees,
+        uint8 _ackType,
+        bool _isReadCall,
+        bytes memory _asmAddress
+    ) public pure returns (bytes memory) {
+        bytes memory requestMetadata = abi.encodePacked(
+            _destGasLimit, _destGasPrice, _ackGasLimit, _ackGasPrice, _relayerFees, _ackType, _isReadCall, _asmAddress
+        );
+        return requestMetadata;
+    }
+
+    /**
+     * @notice Transfers `_amountOrId` token to `_recipient` on `_destination` domain.
+     * @dev Delegates transfer logic to `_transferFromSender` implementation.
+     * @dev Emits `SentTransferRemote` event on the origin chain.
+     * @param _destination The identifier of the destination chain.
+     * @param _recipient The address of the recipient on the destination chain.
+     */
+    function transferRemote(
+        string calldata _destination,
+        address _recipient,
+        uint256 _playerId,
+        bytes memory _requestMetadata
+    ) public payable {
+        _burn(_playerId);
+        PlayerStorageLib._transferRemote(_destination, _recipient, _playerId, _requestMetadata);
+        emit SentTransferRemote(_destination, _recipient, _playerId);
+    }
+
+    /// @notice function to handle the cross-chain request received from some other chain.
+    /// @param packet the payload sent by the source chain contract when the request was created.
+    /// @param srcChainId chain ID of the source chain in string.
+    function iReceive(
+        string memory, // requestSender,
+        bytes memory packet,
+        string memory srcChainId
+    ) internal returns (bytes memory) {
+        // decoding our payload
+        (address recipient, uint256 nftId, bytes memory toChainId) = PlayerStorageLib._iReceive(packet, srcChainId);
+        _safeMint(recipient, nftId);
+
+        return abi.encode(toChainId);
     }
 
     /// @notice Mints a new player
@@ -152,6 +318,7 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 count = playerCount();
         emit Mint(count, msg.sender, _name, _uri);
 
+        //TODO - somehow
         _safeMint(msg.sender, count);
     }
 
@@ -193,6 +360,4 @@ contract PlayerFacet is ERC721FacetInternal {
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
-
-    
 }
