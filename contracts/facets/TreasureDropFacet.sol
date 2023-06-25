@@ -155,6 +155,21 @@ library StorageLib {
         t.owners[t.treasureCount] = msg.sender; //set the user as the owner of the item;
     }
 
+    function _claimTreasureGravityOrb(uint256 _treasureDropId, bytes32[] calldata _proof, uint256 _playerId) internal {
+        TreasureDropStorage storage td = diamondStorageTreasureDrop();
+        TreasureStorage storage t = diamondStorageTreasure();
+        PlayerStorage storage s = diamondStoragePlayer();
+
+        require(!td.claimed[_treasureDropId][msg.sender], "Address has already claimed the drop"); //check to see if they have already claimed;
+        require(MerkleProof.verify(_proof, td.treasureDrops[_treasureDropId].merkleRoot, keccak256(abi.encodePacked(msg.sender))), "Invalid Merkle proof"); //check to see if sender is whitelisted
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        td.claimed[_treasureDropId][msg.sender] = true; //set claim status to true
+        t.treasureCount++; //increment treasure count
+        t.treasures[t.treasureCount] = Treasure(t.treasureCount, 2, t.playerToTreasure[_playerId].length, "GOrb"); //create treasure and add it main map
+        t.playerToTreasure[_playerId].push(t.treasureCount); //push treasure id into array
+        t.owners[t.treasureCount] = msg.sender; //set the user as the owner of the item;
+    }
+
     function _verifyTreasureDropWhitelist(bytes32[] calldata _proof, uint256 _treasureDropId, address _address) internal view returns (bool) {
         TreasureDropStorage storage td = diamondStorageTreasureDrop();
         bytes32 leaf = keccak256(abi.encodePacked(_address));
@@ -186,6 +201,11 @@ contract TreasureDropFacet {
 
     function claimTreasureDropKyberShard(uint256 _treasureDropId, bytes32[] calldata _proof, uint256 _playerId) external {
         StorageLib._claimTreasureDropKyberShard(_treasureDropId, _proof, _playerId);
+        emit ClaimTreasure(_playerId, _treasureDropId);
+    }
+
+    function claimTreasureDropGravityOrb(uint256 _treasureDropId, bytes32[] calldata _proof, uint256 _playerId) external {
+        StorageLib._claimTreasureGravityOrb(_treasureDropId, _proof, _playerId);(_treasureDropId, _proof, _playerId);
         emit ClaimTreasure(_playerId, _treasureDropId);
     }
 

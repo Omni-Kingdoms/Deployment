@@ -212,8 +212,15 @@ library StorageLib {
         EquipmentStorage storage e = diamondStorageItem();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
-        require(block.timestamp >= q.cooldowns[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
-
+        require(block.timestamp >= q.gravityHammerQuestCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+        require(
+            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("GHammer")) || 
+            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("GHammer"))
+        );
+        q.gravityHammerQuestCooldown[_playerId] = block.timestamp; //reset cooldown
+        if (keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.head].name)) == keccak256(abi.encodePacked("GHammer"))) {
+            e.equipment[s.players[_playerId].slot.rightHand] 
+        };
     }
 
     function _random(uint256 nonce) internal returns (uint256) {

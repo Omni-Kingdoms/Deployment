@@ -25,8 +25,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -67,8 +66,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -106,8 +104,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -144,8 +141,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -180,8 +176,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -216,8 +211,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -252,8 +246,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -288,8 +281,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -331,8 +323,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -367,8 +358,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -411,8 +401,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -447,8 +436,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -485,8 +473,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -521,8 +508,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -572,8 +558,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -608,8 +593,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -646,8 +630,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -684,8 +667,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -720,8 +702,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -756,8 +737,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -794,8 +774,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -830,8 +809,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -868,8 +846,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -906,8 +883,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -944,8 +920,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -984,8 +959,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1022,8 +996,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1061,8 +1034,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1100,8 +1072,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1139,8 +1110,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1155,8 +1125,8 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/QuestFacet.sol": {
-      "lastModificationDate": 1687464033632,
-      "contentHash": "8652fa8ac063d5fafa62d724791a14da",
+      "lastModificationDate": 1687482533414,
+      "contentHash": "af6901be34e536c2b096b4b4d5a75039",
       "sourceName": "contracts/facets/QuestFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -1178,8 +1148,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1194,8 +1163,8 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ExchangeFacet.sol": {
-      "lastModificationDate": 1687463914340,
-      "contentHash": "eb21ae84ae8ce0ebd5f358e748c5d3c0",
+      "lastModificationDate": 1687542233631,
+      "contentHash": "d8cf527d0c6c4510b243d47e027fcad5",
       "sourceName": "contracts/facets/ExchangeFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -1217,20 +1186,14 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
-      "imports": [
-        "../libraries/PlayerSlotLib.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
         "^0.8.0"
       ],
-      "artifacts": [
-        "ExchangeFacet",
-        "ExchangeStorageLib"
-      ]
+      "artifacts": []
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/EquipFacet.sol": {
       "lastModificationDate": 1686519629606,
@@ -1256,8 +1219,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1272,8 +1234,8 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/CraftFacet.sol": {
-      "lastModificationDate": 1687463914339,
-      "contentHash": "7f4bb6bc9a090ec51bf02eed4a0a2404",
+      "lastModificationDate": 1687479328824,
+      "contentHash": "b7d586e9b5b527074804ecdcd70b1eba",
       "sourceName": "contracts/facets/CraftFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -1295,8 +1257,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1334,8 +1295,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1370,8 +1330,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1409,8 +1368,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [
@@ -1448,8 +1406,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [],
@@ -1461,7 +1418,7 @@
       ]
     },
     "/Users/kylekoshiyama/Desktop/daap-practice/deployment/node_modules/hardhat-diamond-abi/dist/contract.sol": {
-      "lastModificationDate": 1687465432073,
+      "lastModificationDate": 1687548323956,
       "contentHash": "f0899ccf3452b0b76299b9fb99d6bbf2",
       "sourceName": "hardhat-diamond-abi/HardhatDiamondABI.sol",
       "solcConfig": {
@@ -1498,8 +1455,7 @@
                 "ast"
               ]
             }
-          },
-          "libraries": {}
+          }
         }
       },
       "imports": [

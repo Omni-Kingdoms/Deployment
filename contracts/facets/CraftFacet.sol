@@ -196,19 +196,21 @@ library StorageLib {
         e.playerToEquipment[_playerId].push(e.equipmentCount);
     }
 
-    // function _craftHelmet(uint256 _tokenId) internal {
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     ItemStorage storage i = diamondStorageItem();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     require(s.players[_tokenId].status == 0); //make sure player is idle
-    //     require(s.owners[_tokenId] == msg.sender); //ownerOf
-    //     require(c.goldBalance[msg.sender] >= 4); //check user has enough gold
-    //     c.goldBalance[msg.sender] -= 4; //deduct 8 gold from the address' balance
-    //     i.itemCount++;
-    //     i.owners[i.itemCount] = msg.sender;
-    //     i.items[i.itemCount] = Item(0, 1, 4, 1, "Helmet", msg.sender, false); // slot, rank, value, stat
-    //     i.addressToItems[msg.sender].push(i.itemCount);
-    // }
+    function _craftHelmet(uint256 _playerId, string memory _uri) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        EquipmentStorage storage e = diamondStorageItem();
+        CoinStorage storage c = diamondStorageCoin();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        require(c.goldBalance[msg.sender] >= 10); //check user has enough gold
+        require(s.players[_playerId].mana >= 2); //make sure player has at least 2 mana
+        c.goldBalance[msg.sender] -= 10; //deduct 10 gold from the address' balance
+        s.players[_playerId].mana -= 2; //deduct 2 mana from the player
+        e.equipmentCount++; //increment equipmentCount
+        e.owners[e.equipmentCount] = _playerId; //set owner to playerId
+        e.equipment[e.equipmentCount] = Equipment(e.equipmentCount, e.playerToEquipment[_playerId].length, 1, 1, 10, 1, _playerId, "Armor", _uri, false);
+        e.playerToEquipment[_playerId].push(e.equipmentCount);
+    }
 
     // function _craftWizardHat(uint256 _tokenId) internal {
     //     PlayerStorage storage s = diamondStoragePlayer();
