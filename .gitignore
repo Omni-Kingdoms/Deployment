@@ -1,5 +1,31 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+/.nyc_output
+
+# production
+/build
+
+# misc
+.DS_Store
 .env
-node_modules
+.env.test
+.cache
+.artifacts
+
+# Hardhat
+hardhat-*.json
+
 contracts/upgradeInitializers/artifacts
-contracts/facets/artifacts
-artifacts
+
+.deps/
+artifacts/
+bin/
+compiler_config.json
+contracts/.deps/
+contracts/artifacts/
+contracts/compiler_config.json
