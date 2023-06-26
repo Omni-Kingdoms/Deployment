@@ -51,9 +51,9 @@ library PlayerStorageLib {
         require(bytes(_name).length >= 3);
         s.playerCount++;
         s.players[s.playerCount] = PlayerSlotLib.Player(
-            1, 0, 0, 1, 10, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0)
+            1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
         );
-        s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0);
+        s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
         s.usedNames[_name] = true;
         s.owners[s.playerCount] = msg.sender;
         s.addressToPlayers[msg.sender].push(s.playerCount);

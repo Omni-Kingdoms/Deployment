@@ -146,7 +146,7 @@ library StorageLib {
         QuestStorage storage q = diamondStorageQuest();
         require(s.owners[_tokenId] == msg.sender);
         require(s.players[_tokenId].status == 2);
-        require(block.timestamp >= q.goldQuest[_tokenId] + 1, "it's too early to pull out");
+        require(block.timestamp >= q.goldQuest[_tokenId] + 120, "it's too early to pull out");
         s.players[_tokenId].status = 0; //set back to idle
         delete q.goldQuest[_tokenId]; //remove the start time
         c.goldBalance[msg.sender]++; //mint one gold
@@ -157,7 +157,7 @@ library StorageLib {
         QuestStorage storage q = diamondStorageQuest();
         require(s.players[_tokenId].status == 0); //make sure player is idle
         require(s.owners[_tokenId] == msg.sender); //ownerOf
-        require(block.timestamp >= q.cooldowns[_tokenId] + 60); //make sure that they have waited 5 mins for gem
+        require(block.timestamp >= q.cooldowns[_tokenId] + 600); //make sure that they have waited 5 mins for gem
 
         s.players[_tokenId].status = 5; //set gemQuest status
         q.gemQuest[_tokenId] = block.timestamp; //set start time
@@ -170,7 +170,7 @@ library StorageLib {
         require(s.owners[_tokenId] == msg.sender);
         require(s.players[_tokenId].status == 5);
         require(
-            block.timestamp >= q.gemQuest[_tokenId] + 60, //must wait 5 mins
+            block.timestamp >= q.gemQuest[_tokenId] + 600, //must wait 5 mins
             "it's too early to pull out"
         );
         s.players[_tokenId].status = 0; //set back to idle
@@ -186,13 +186,13 @@ library StorageLib {
         TreasureStorage storage t = diamondStorageTreasure();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
-        require(block.timestamp >= q.cooldowns[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+        require(block.timestamp >= q.dragonCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
         require(
             keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.head].name))
                 == keccak256(abi.encodePacked("WizHat")),
             "not wearing hat"
         ); // must have wizard hat on
-        q.cooldowns[_playerId] = block.timestamp; //reset cooldown
+        q.dragonCooldown[_playerId] = block.timestamp; //reset cooldown
         if (_random(_playerId) % 20 >= 19) {
             //5%
             t.treasureCount++;
@@ -206,28 +206,68 @@ library StorageLib {
         }
     }
 
-    function _gravityHammerQuest(uint256 _playerId) internal {
+    function _dragonGateQuest(uint256 _playerId) internal returns (bool) {
         PlayerStorage storage s = diamondStoragePlayer();
         QuestStorage storage q = diamondStorageQuest();
         EquipmentStorage storage e = diamondStorageItem();
+        TreasureStorage storage t = diamondStorageTreasure();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
-        require(block.timestamp >= q.gravityHammerQuestCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+        require(block.timestamp >= q.dragonCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
         require(
-            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("GHammer")) || 
-            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("GHammer"))
+            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("Guitar")) || 
+            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("Guitar"))
         );
-        q.gravityHammerQuestCooldown[_playerId] = block.timestamp; //reset cooldown
-        if (keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.head].name)) == keccak256(abi.encodePacked("GHammer"))) {
-            e.equipment[s.players[_playerId].slot.rightHand] 
-        };
+        q.dragonCooldown[_playerId] = block.timestamp; //reset cooldown
+        uint256 mod = _random(_playerId) % 20;
+        if (s.players[_playerId].strength > 100 && s.players[_playerId].strength < 200) {
+            mod += 2;
+        } else if (s.players[_playerId].strength > 200 && s.players[_playerId].strength < 300) {
+            mod += 4;
+        }
+        if (mod >= 19) {
+            //5%
+            t.treasureCount++;
+            t.treasures[t.treasureCount] = Treasure(t.treasureCount, 1, t.playerToTreasure[_playerId].length, "Degg"); //create treasure and add it main map
+            t.playerToTreasure[_playerId].push(t.treasureCount); //push
+            t.owners[t.treasureCount] = msg.sender; //set the user as the owner of the item;
+            s.players[_playerId].xp++; //increment xp
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    function _random(uint256 nonce) internal returns (uint256) {
+    // function _gravityHammerQuest(uint256 _playerId) internal {
+    //     PlayerStorage storage s = diamondStoragePlayer();
+    //     QuestStorage storage q = diamondStorageQuest();
+    //     EquipmentStorage storage e = diamondStorageItem();
+    //     require(s.players[_playerId].status == 0); //make sure player is idle
+    //     require(s.owners[_playerId] == msg.sender); //ownerOf
+    //     require(block.timestamp >= q.gravityHammerQuestCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+    //     require(
+    //         keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("GHammer")) || 
+    //         keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("GHammer"))
+    //     );
+    //     q.gravityHammerQuestCooldown[_playerId] = block.timestamp; //reset cooldown
+    //     if (keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.head].name)) == keccak256(abi.encodePacked("GHammer"))) {
+    //         e.equipment[s.players[_playerId].slot.rightHand] 
+    //     };
+    // }
+
+    function _random(uint256 _nonce) internal returns (uint256) {
         QuestStorage storage q = diamondStorageQuest();
         q.questCounter++;
-        return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, nonce, q.questCounter)));
+        return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, _nonce, q.questCounter)));
     }
+
+    // function _attackBasedRandom(uint256 _strength, uint256 _nonce) internal returns (uint256) {
+    //     QuestStorage storage q = diamondStorageQuest();
+    //     uint256 val = _random(_nonce);
+    //     if (_strength >= 1000) {
+    //         r
+    //     }
+    // }
 
     function _getGoldBalance(address _address) internal view returns (uint256) {
         CoinStorage storage c = diamondStorageCoin();

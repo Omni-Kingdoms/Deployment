@@ -8,6 +8,7 @@ library PlayerSlotLib {
         uint256 status;
         uint256 strength;
         uint256 health;
+        uint256 currentHealth;
         uint256 magic;
         uint256 mana;
         uint256 agility;
@@ -47,6 +48,7 @@ library PlayerSlotLib {
         uint256 rightHand;
         uint256 pants;
         uint256 feet;
+        uint256 neck;
     }
 
     enum TokenTypes {

@@ -573,7 +573,25 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_tokenId",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_uri",
+          "type": "string"
+        }
+      ],
+      "name": "craftGuitar",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
           "type": "uint256"
         },
         {
@@ -1764,6 +1782,11 @@
             },
             {
               "internalType": "uint256",
+              "name": "currentHealth",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
               "name": "magic",
               "type": "uint256"
             },
@@ -1847,6 +1870,11 @@
                 {
                   "internalType": "uint256",
                   "name": "feet",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "neck",
                   "type": "uint256"
                 }
               ],
@@ -2437,6 +2465,29 @@
       ],
       "name": "ClaimTreasure",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_treasureDropId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "_proof",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimTreasureDropGravityOrb",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [

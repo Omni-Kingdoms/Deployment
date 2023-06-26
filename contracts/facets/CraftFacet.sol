@@ -150,6 +150,8 @@ library StorageLib {
                 == keccak256(abi.encodePacked("WHammer")),
             "this is not a war hammer"
         );
+        require(c.gemBalance[msg.sender] >= 15); //check user has enough gem
+        c.gemBalance[msg.sender] -= 15; //deduct 15 gem from the address' balance
 
         uint256 keyToDelete = e.equipment[_itemId].pointer; //sets the index to delete as the desired key
         uint256 keyToMove = e.playerToEquipment[_playerId].length - 1; //gets the index of the last equipment that is owned by the player
@@ -212,39 +214,37 @@ library StorageLib {
         e.playerToEquipment[_playerId].push(e.equipmentCount);
     }
 
-    // function _craftWizardHat(uint256 _tokenId) internal {
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     ItemStorage storage i = diamondStorageItem();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     require(s.players[_tokenId].status == 0); //make sure player is idle
-    //     require(s.owners[_tokenId] == msg.sender); //ownerOf
-    //     require(c.gemBalance[msg.sender] >= 10); //check user has enough gem
-    //     require(s.players[_tokenId].mana >= 10); //make sure player has at least 10 mana
-    //     c.gemBalance[msg.sender] -= 10; //deduct 8 gem from the address' balance
-    //     s.players[_tokenId].mana -= 10; //deduct 51 mana from the player
-    //     i.itemCount++;
-    //     i.owners[i.itemCount] = msg.sender;
-    //     i.items[i.itemCount] = Item(0, 1, 5, 3, "WizHat", msg.sender, false); // slot, rank, value, stat(catagory)
-    //     i.addressToItems[msg.sender].push(i.itemCount);
-    // }
+    function _craftWizardHat(uint256 _playerId, string memory _uri) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        EquipmentStorage storage e = diamondStorageItem();
+        CoinStorage storage c = diamondStorageCoin();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        require(c.gemBalance[msg.sender] >= 10); //check user has enough gem
+        require(s.players[_playerId].mana >= 10); //make sure player has at least 10 mana
+        c.gemBalance[msg.sender] -= 10; //deduct 8 gem from the address' balance
+        s.players[_playerId].mana -= 10; //deduct 51 mana from the player
+        e.equipmentCount++; //increment equipmentCount
+        e.owners[e.equipmentCount] = _playerId; //set owner to playerId
+        e.equipment[e.equipmentCount] = Equipment(e.equipmentCount, e.playerToEquipment[_playerId].length, 0, 1, 5, 3, _playerId, "WizHat", _uri, false);
+        e.playerToEquipment[_playerId].push(e.equipmentCount);
+    }
 
-    // function _craftSorcerShoes(uint256 _tokenId) internal {
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     ItemStorage storage i = diamondStorageItem();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     require(s.players[_tokenId].status == 0); //make sure player is idle
-    //     require(s.owners[_tokenId] == msg.sender); //ownerOf
-    //     require(s.players[_tokenId].mana >= 1); //make sure player has at least 1 mana
-    //     require(c.goldBalance[msg.sender] >= 3); //check user has enough gold
-    //     require(c.gemBalance[msg.sender] >= 1); //check user has enough gem
-    //     c.goldBalance[msg.sender] -= 3; //deduct 3 gold from the address' balance
-    //     c.gemBalance[msg.sender] -= 1; //deduct 1 gem from the address' balance
-    //     s.players[_tokenId].mana -= 1; //deduct 51 mana from the player
-    //     i.itemCount++; //increment item count
-    //     i.owners[i.itemCount] = msg.sender;
-    //     i.items[i.itemCount] = Item(5, 1, 2, 3, "SorcShoes", msg.sender, false); // slot, rank, value, stat
-    //     i.addressToItems[msg.sender].push(i.itemCount);
-    // }
+    function _craftSorcerShoes(uint256 _playerId, string memory _uri) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        EquipmentStorage storage e = diamondStorageItem();
+        CoinStorage storage c = diamondStorageCoin();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        require(c.gemBalance[msg.sender] >= 10); //check user has enough gem
+        require(s.players[_playerId].mana >= 10); //make sure player has at least 10 mana
+        c.gemBalance[msg.sender] -= 10; //deduct 8 gem from the address' balance
+        s.players[_playerId].mana -= 10; //deduct 51 mana from the player
+        e.equipmentCount++; //increment equipmentCount
+        e.owners[e.equipmentCount] = _playerId; //set owner to playerId
+        e.equipment[e.equipmentCount] = Equipment(e.equipmentCount, e.playerToEquipment[_playerId].length, 5, 1, 3, 3, _playerId, "SorcShoes", _uri, false);
+        e.playerToEquipment[_playerId].push(e.equipmentCount);
+    }
 
 
 
@@ -287,15 +287,15 @@ library StorageLib {
 contract CraftFacet {
     event ItemCrafted(address indexed _owner, uint256 _player);
 
-    function craftSword(uint256 _tokenId, string memory _uri) external {
-        StorageLib._craftSword(_tokenId, _uri);
-        emit ItemCrafted(msg.sender, _tokenId);
+    function craftSword(uint256 _playerId, string memory _uri) external {
+        StorageLib._craftSword(_playerId, _uri);
+        emit ItemCrafted(msg.sender, _playerId);
     }
 
-    // function craftGuitar(uint256 _tokenId) external {
-    //     StorageLib._craftGuitar(_tokenId);
-    //     emit ItemCrafted(msg.sender, _tokenId);
-    // }
+    function craftGuitar(uint256 _playerId, string memory _uri) external {
+        StorageLib._craftGuitar(_playerId, _uri);
+        emit ItemCrafted(msg.sender, _playerId);
+    }
 
     // function craftArmor(uint256 _tokenId) external {
     //     StorageLib._craftArmor(_tokenId);
