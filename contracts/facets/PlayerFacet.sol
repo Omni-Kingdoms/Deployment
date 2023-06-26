@@ -136,6 +136,7 @@ library PlayerStorageLib {
             _player.status,
             _player.strength,
             _player.health,
+            _player.currentHealth,
             _player.magic,
             _player.mana,
             _player.agility,
@@ -147,9 +148,9 @@ library PlayerStorageLib {
             _player.name,
             _player.uri,
             _player.male,
-            PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0)
+            PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
         );
-        s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0);
+        s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
         s.usedNames[_player.name] = true;
         s.owners[s.playerCount] = _recipient;
         s.addressToPlayers[_recipient].push(s.playerCount);
