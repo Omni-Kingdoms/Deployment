@@ -88,21 +88,21 @@ contract ERC721Facet is ERC721FacetInternal {
     function constructAttributes(PlayerSlotLib.Player memory player) internal pure returns (string memory attributes) {
         attributes = string(
             abi.encodePacked(
-                '[{"trait_type":"Name","value":',
-                player.name,
-                '},{"trait_type":"Level","value":',
+                '[{"trait_type":"Level","value":"',
                 player.level.toString(),
-                '},{"trait_type":"XP","value":',
+                '"},',
+                '{"trait_type":"XP","value":"',
                 player.xp.toString(),
-                '},{"trait_type":"Status","value":',
+                '"},',
+                '{"trait_type":"Status","value":"',
                 player.status.toString(),
-                '},{"trait_type":"Gender","value":',
+                '"},',
+                '{"trait_type":"Gender","value":"',
                 player.male ? "Male" : "Female",
-                '},{"trait_type":"Strength","value":',
+                '"},',
+                '{"trait_type":"Strength","value":"',
                 player.strength.toString(),
-                '},{"trait_type":"Health","value":',
-                player.health.toString(),
-                "}]"
+                '"}]'
             )
         );
     }
@@ -116,6 +116,7 @@ contract ERC721Facet is ERC721FacetInternal {
 
         PlayerSlotLib.Player memory player = PlayerStorageLib._getPlayer(tokenId);
         string memory attributes = constructAttributes(player);
+        string memory base = "data:application/json;base64,";
 
         string memory json = Base64.encode(
             bytes(
@@ -123,29 +124,18 @@ contract ERC721Facet is ERC721FacetInternal {
                     abi.encodePacked(
                         '{"name":"',
                         player.name,
-                        '","description":"Player NFT from OmniKingdoms","image":"',
-                        player.male ? ERC721Storage.layout()._maleImage : ERC721Storage.layout()._femaleImage,
-                        '","attributes":',
+                        '", "attributes":',
                         attributes,
-                        "}"
+                        ', "image":"',
+                        player.male ? ERC721Storage.layout()._maleImage : ERC721Storage.layout()._femaleImage,
+                        '"}'
                     )
                 )
             )
         );
 
-        return string(abi.encodePacked("data:application/json;base64,", json));
+        return string(abi.encodePacked(base, json));
     }
-
-    // /**
-    //  * @dev See {IERC721Metadata-tokenURI}.
-    //  */
-    // function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
-    //     // _requireMinted(tokenId);
-
-    //     // string memory baseURI = _baseURI();
-    //     // return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
-    //     return "https://bafybeia6tvvinchy3r7ff7jr7axzx36n4rg6s54fshjguvek6ypde5gzi4.ipfs.w3s.link/testnft.json";
-    // }
 
     /**
      * @dev See {IERC721-approve}.

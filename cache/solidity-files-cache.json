@@ -1,8 +1,82 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/Diamond.sol": {
-      "lastModificationDate": 1686519629609,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/.deps/npm/@routerprotocol/evm-gateway-contracts@1.1.11/contracts/IGateway.sol": {
+      "lastModificationDate": 1687342637922,
+      "contentHash": "b831231ff4e4f8668f8a66d9b0d49d74",
+      "sourceName": "contracts/.deps/npm/@routerprotocol/evm-gateway-contracts@1.1.11/contracts/IGateway.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "./Utils.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0 <0.9.0"
+      ],
+      "artifacts": [
+        "IGateway"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/.deps/npm/@routerprotocol/evm-gateway-contracts@1.1.11/contracts/Utils.sol": {
+      "lastModificationDate": 1687342638131,
+      "contentHash": "c9dfa5a6aaefb690cbbbad4a135ae056",
+      "sourceName": "contracts/.deps/npm/@routerprotocol/evm-gateway-contracts@1.1.11/contracts/Utils.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.8.0 <0.9.0"
+      ],
+      "artifacts": [
+        "Utils"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/Diamond.sol": {
+      "lastModificationDate": 1686648388098,
       "contentHash": "6fca50553522d8ab78e9b106a98fbd5d",
       "sourceName": "contracts/Diamond.sol",
       "solcConfig": {
@@ -43,8 +117,8 @@
         "Diamond"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/libraries/LibDiamond.sol": {
-      "lastModificationDate": 1686519629607,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/libraries/LibDiamond.sol": {
+      "lastModificationDate": 1686648388100,
       "contentHash": "41eb73d72e4f800875fe793cb93178fb",
       "sourceName": "contracts/libraries/LibDiamond.sol",
       "solcConfig": {
@@ -82,116 +156,8 @@
         "LibDiamond"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IDiamondLoupe.sol": {
-      "lastModificationDate": 1686519629612,
-      "contentHash": "a471cd6a18e337530aa0fb37a1dd2294",
-      "sourceName": "contracts/interfaces/IDiamondLoupe.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IDiamondLoupe"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC173.sol": {
-      "lastModificationDate": 1686519629612,
-      "contentHash": "65e379207bc221335d0eedfe7b077af6",
-      "sourceName": "contracts/interfaces/IERC173.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC173"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC165.sol": {
-      "lastModificationDate": 1686519629612,
-      "contentHash": "f8f9ee2c76e1678bfead7a3fad131934",
-      "sourceName": "contracts/interfaces/IERC165.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC165"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IDiamondCut.sol": {
-      "lastModificationDate": 1686519629611,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IDiamondCut.sol": {
+      "lastModificationDate": 1687439438236,
       "contentHash": "74d1e316ccff781e1e23bcfed30d7a05",
       "sourceName": "contracts/interfaces/IDiamondCut.sol",
       "solcConfig": {
@@ -228,8 +194,116 @@
         "IDiamondCut"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IDiamond.sol": {
-      "lastModificationDate": 1686519629612,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IDiamondLoupe.sol": {
+      "lastModificationDate": 1687439438236,
+      "contentHash": "a471cd6a18e337530aa0fb37a1dd2294",
+      "sourceName": "contracts/interfaces/IDiamondLoupe.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IDiamondLoupe"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC173.sol": {
+      "lastModificationDate": 1687439438235,
+      "contentHash": "65e379207bc221335d0eedfe7b077af6",
+      "sourceName": "contracts/interfaces/IERC173.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC173"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC165.sol": {
+      "lastModificationDate": 1687439438236,
+      "contentHash": "f8f9ee2c76e1678bfead7a3fad131934",
+      "sourceName": "contracts/interfaces/IERC165.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC165"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IDiamond.sol": {
+      "lastModificationDate": 1687439438236,
       "contentHash": "ce4e3d69362651cbfbb53d88dc5dfc98",
       "sourceName": "contracts/interfaces/IDiamond.sol",
       "solcConfig": {
@@ -264,10 +338,10 @@
         "IDiamond"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/upgradeInitializers/DiamondInit.sol": {
-      "lastModificationDate": 1687463914342,
-      "contentHash": "7e12beb3d5ad9d8b312af9486845442e",
-      "sourceName": "contracts/upgradeInitializers/DiamondInit.sol",
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/utils/ERC165.sol": {
+      "lastModificationDate": 1687439458890,
+      "contentHash": "51d6a4d64a59fd5adc24021268695665",
+      "sourceName": "contracts/utils/ERC165.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -293,22 +367,101 @@
         }
       },
       "imports": [
-        "../libraries/LibDiamond.sol",
-        "../interfaces/IDiamondLoupe.sol",
-        "../interfaces/IDiamondCut.sol",
-        "../interfaces/IERC173.sol",
+        "../interfaces/IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC165"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/ERC721FacetInternal.sol": {
+      "lastModificationDate": 1687439412158,
+      "contentHash": "e6ce8cb12d77a83936b24a2be3a230d8",
+      "sourceName": "contracts/facets/ERC721FacetInternal.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "../libraries/PlayerSlotLib.sol",
+        "../ERC721Storage.sol",
+        "../interfaces/IERC721.sol",
         "../interfaces/IERC165.sol",
+        "../interfaces/IERC721Metadata.sol",
+        "../interfaces/IERC721Receiver.sol",
+        "../utils/Context.sol",
+        "../utils/ERC165.sol",
+        "../utils/Address.sol",
+        "../utils/Strings.sol",
         "../ERC721Storage.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "DiamondInit"
+        "ERC721FacetInternal"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/ERC721Storage.sol": {
-      "lastModificationDate": 1686519629609,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/libraries/PlayerSlotLib.sol": {
+      "lastModificationDate": 1687795928373,
+      "contentHash": "e626360d09c8a493d8c39a51ddc3d853",
+      "sourceName": "contracts/libraries/PlayerSlotLib.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "PlayerSlotLib"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/ERC721Storage.sol": {
+      "lastModificationDate": 1687594214466,
       "contentHash": "75c9eef25159626debb7e5fb2ef15f54",
       "sourceName": "contracts/ERC721Storage.sol",
       "solcConfig": {
@@ -343,8 +496,266 @@
         "ERC721Storage"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/PlayerFacet.sol": {
-      "lastModificationDate": 1687793435260,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC721.sol": {
+      "lastModificationDate": 1687439438235,
+      "contentHash": "1b3ca03a276f64aa807bf46dd609eb57",
+      "sourceName": "contracts/interfaces/IERC721.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "./IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC721"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC721Metadata.sol": {
+      "lastModificationDate": 1687439438235,
+      "contentHash": "a97cd8fc9722977f6e20a33e6142165c",
+      "sourceName": "contracts/interfaces/IERC721Metadata.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "./IERC721.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC721Metadata"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC721Receiver.sol": {
+      "lastModificationDate": 1687439438235,
+      "contentHash": "38c0ae8c9f1536bba435d639f3245e59",
+      "sourceName": "contracts/interfaces/IERC721Receiver.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC721Receiver"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/utils/Context.sol": {
+      "lastModificationDate": 1687439458889,
+      "contentHash": "851485d5b925529b1a2f34a0be077891",
+      "sourceName": "contracts/utils/Context.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Context"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/utils/Address.sol": {
+      "lastModificationDate": 1687439458889,
+      "contentHash": "90a27b63e1866665663707895941e20b",
+      "sourceName": "contracts/utils/Address.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.1"
+      ],
+      "artifacts": [
+        "Address"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/utils/Strings.sol": {
+      "lastModificationDate": 1687439386976,
+      "contentHash": "a0135294f768f9a3e8fd76a8d9a6c897",
+      "sourceName": "contracts/utils/Strings.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "./Math.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Strings"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/utils/Math.sol": {
+      "lastModificationDate": 1687439458889,
+      "contentHash": "2154019c97ca7bbaecedbab5688089ef",
+      "sourceName": "contracts/utils/Math.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Math"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/PlayerFacet.sol": {
+      "lastModificationDate": 1687795928373,
       "contentHash": "b20a3570e723b93f234f186bd669ed70",
       "sourceName": "contracts/facets/PlayerFacet.sol",
       "solcConfig": {
@@ -387,118 +798,8 @@
         "PlayerStorageLib"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/libraries/PlayerSlotLib.sol": {
-      "lastModificationDate": 1687755131515,
-      "contentHash": "e626360d09c8a493d8c39a51ddc3d853",
-      "sourceName": "contracts/libraries/PlayerSlotLib.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "PlayerSlotLib"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/utils/Strings.sol": {
-      "lastModificationDate": 1686519629609,
-      "contentHash": "a0135294f768f9a3e8fd76a8d9a6c897",
-      "sourceName": "contracts/utils/Strings.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "./Math.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "Strings"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/utils/Base64.sol": {
-      "lastModificationDate": 1686519629609,
-      "contentHash": "5fc116bf56f8eb85a2cd1284b584d5f0",
-      "sourceName": "contracts/utils/Base64.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "Base64"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ERC721Facet.sol": {
-      "lastModificationDate": 1687463914339,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/ERC721Facet.sol": {
+      "lastModificationDate": 1687793209938,
       "contentHash": "f25029603f70b3f61a055dc315756e10",
       "sourceName": "contracts/facets/ERC721Facet.sol",
       "solcConfig": {
@@ -548,10 +849,46 @@
         "PlayerStorageLib"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ERC721FacetInternal.sol": {
-      "lastModificationDate": 1687463914340,
-      "contentHash": "e6ce8cb12d77a83936b24a2be3a230d8",
-      "sourceName": "contracts/facets/ERC721FacetInternal.sol",
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/utils/Base64.sol": {
+      "lastModificationDate": 1687439386976,
+      "contentHash": "5fc116bf56f8eb85a2cd1284b584d5f0",
+      "sourceName": "contracts/utils/Base64.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Base64"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/upgradeInitializers/DiamondInit.sol": {
+      "lastModificationDate": 1687372212085,
+      "contentHash": "7e12beb3d5ad9d8b312af9486845442e",
+      "sourceName": "contracts/upgradeInitializers/DiamondInit.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -577,65 +914,24 @@
         }
       },
       "imports": [
-        "../libraries/PlayerSlotLib.sol",
-        "../ERC721Storage.sol",
-        "../interfaces/IERC721.sol",
+        "../libraries/LibDiamond.sol",
+        "../interfaces/IDiamondLoupe.sol",
+        "../interfaces/IDiamondCut.sol",
+        "../interfaces/IERC173.sol",
         "../interfaces/IERC165.sol",
-        "../interfaces/IERC721Metadata.sol",
-        "../interfaces/IERC721Receiver.sol",
-        "../utils/Context.sol",
-        "../utils/ERC165.sol",
-        "../utils/Address.sol",
-        "../utils/Strings.sol",
         "../ERC721Storage.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "ERC721FacetInternal"
+        "DiamondInit"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/utils/Math.sol": {
-      "lastModificationDate": 1686519629608,
-      "contentHash": "2154019c97ca7bbaecedbab5688089ef",
-      "sourceName": "contracts/utils/Math.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "Math"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC721.sol": {
-      "lastModificationDate": 1686519629611,
-      "contentHash": "1b3ca03a276f64aa807bf46dd609eb57",
-      "sourceName": "contracts/interfaces/IERC721.sol",
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/OwnershipFacet.sol": {
+      "lastModificationDate": 1686648388099,
+      "contentHash": "3ecfa87738e59d567e6c44c1708b9a7d",
+      "sourceName": "contracts/facets/OwnershipFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -661,19 +957,20 @@
         }
       },
       "imports": [
-        "./IERC165.sol"
+        "../libraries/LibDiamond.sol",
+        "../interfaces/IERC173.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "IERC721"
+        "OwnershipFacet"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC721Metadata.sol": {
-      "lastModificationDate": 1686519629610,
-      "contentHash": "a97cd8fc9722977f6e20a33e6142165c",
-      "sourceName": "contracts/interfaces/IERC721Metadata.sol",
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/upgradeInitializers/DiamondMultiInit.sol": {
+      "lastModificationDate": 1686648388101,
+      "contentHash": "201ae7dd97a5423925b266ebd457c6e7",
+      "sourceName": "contracts/upgradeInitializers/DiamondMultiInit.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -699,91 +996,19 @@
         }
       },
       "imports": [
-        "./IERC721.sol"
+        "../libraries/LibDiamond.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "IERC721Metadata"
+        "DiamondMultiInit"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC721Receiver.sol": {
-      "lastModificationDate": 1686519629610,
-      "contentHash": "38c0ae8c9f1536bba435d639f3245e59",
-      "sourceName": "contracts/interfaces/IERC721Receiver.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC721Receiver"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/utils/Context.sol": {
-      "lastModificationDate": 1686519629608,
-      "contentHash": "851485d5b925529b1a2f34a0be077891",
-      "sourceName": "contracts/utils/Context.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "Context"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/utils/ERC165.sol": {
-      "lastModificationDate": 1686519629609,
-      "contentHash": "51d6a4d64a59fd5adc24021268695665",
-      "sourceName": "contracts/utils/ERC165.sol",
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/DiamondCutFacet.sol": {
+      "lastModificationDate": 1687690977013,
+      "contentHash": "818d5d600c1239d350fb0f5072ec186f",
+      "sourceName": "contracts/facets/DiamondCutFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -809,167 +1034,18 @@
         }
       },
       "imports": [
-        "../interfaces/IERC165.sol"
+        "../interfaces/IDiamondCut.sol",
+        "../libraries/LibDiamond.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "ERC165"
+        "DiamondCutFacet"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/utils/Address.sol": {
-      "lastModificationDate": 1686519629608,
-      "contentHash": "90a27b63e1866665663707895941e20b",
-      "sourceName": "contracts/utils/Address.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.1"
-      ],
-      "artifacts": [
-        "Address"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC1155Receiver.sol": {
-      "lastModificationDate": 1686519629610,
-      "contentHash": "8f49a3a3b7e1112899495fb18bf0e1ba",
-      "sourceName": "contracts/interfaces/IERC1155Receiver.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "./IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC1155Receiver"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC1155.sol": {
-      "lastModificationDate": 1686519629611,
-      "contentHash": "5ba76593801721415cf0dbaa81d99ed4",
-      "sourceName": "contracts/interfaces/IERC1155.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "./IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC1155"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/interfaces/IERC1155MetadataURI.sol": {
-      "lastModificationDate": 1686519629611,
-      "contentHash": "42ebf434917ba17c9152ec05241eb5ed",
-      "sourceName": "contracts/interfaces/IERC1155MetadataURI.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "./IERC1155.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "IERC1155MetadataURI"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/DiamondLoupeFacet.sol": {
-      "lastModificationDate": 1686519629605,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/DiamondLoupeFacet.sol": {
+      "lastModificationDate": 1687690965497,
       "contentHash": "62eeb4e3b43c94cc8e30c718dee3ce49",
       "sourceName": "contracts/facets/DiamondLoupeFacet.sol",
       "solcConfig": {
@@ -1008,124 +1084,8 @@
         "DiamondLoupeFacet"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/upgradeInitializers/DiamondMultiInit.sol": {
-      "lastModificationDate": 1686519629607,
-      "contentHash": "201ae7dd97a5423925b266ebd457c6e7",
-      "sourceName": "contracts/upgradeInitializers/DiamondMultiInit.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "../libraries/LibDiamond.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "DiamondMultiInit"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/OwnershipFacet.sol": {
-      "lastModificationDate": 1686519629598,
-      "contentHash": "3ecfa87738e59d567e6c44c1708b9a7d",
-      "sourceName": "contracts/facets/OwnershipFacet.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "../libraries/LibDiamond.sol",
-        "../interfaces/IERC173.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "OwnershipFacet"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/DiamondCutFacet.sol": {
-      "lastModificationDate": 1686519629597,
-      "contentHash": "818d5d600c1239d350fb0f5072ec186f",
-      "sourceName": "contracts/facets/DiamondCutFacet.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "../interfaces/IDiamondCut.sol",
-        "../libraries/LibDiamond.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "DiamondCutFacet"
-      ]
-    },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/TrainFacet.sol": {
-      "lastModificationDate": 1686519629599,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/TrainFacet.sol": {
+      "lastModificationDate": 1686648388100,
       "contentHash": "e7f755063179349f39760d27fa80b194",
       "sourceName": "contracts/facets/TrainFacet.sol",
       "solcConfig": {
@@ -1163,8 +1123,8 @@
         "TrainFacet"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ScriptFacet.sol": {
-      "lastModificationDate": 1686519629598,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/ScriptFacet.sol": {
+      "lastModificationDate": 1686648388099,
       "contentHash": "f6bbb436a977e893efba3426229a7954",
       "sourceName": "contracts/facets/ScriptFacet.sol",
       "solcConfig": {
@@ -1202,8 +1162,8 @@
         "StorageLib"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/QuestFacet.sol": {
-      "lastModificationDate": 1687754054407,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/QuestFacet.sol": {
+      "lastModificationDate": 1687795928373,
       "contentHash": "d9ff59856f3a6c903ab30436f56a2d5d",
       "sourceName": "contracts/facets/QuestFacet.sol",
       "solcConfig": {
@@ -1241,8 +1201,8 @@
         "StorageLib"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/EquipFacet.sol": {
-      "lastModificationDate": 1686519629606,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/EquipFacet.sol": {
+      "lastModificationDate": 1686670756537,
       "contentHash": "d4485febe74552d1b976cb61084367d4",
       "sourceName": "contracts/facets/EquipFacet.sol",
       "solcConfig": {
@@ -1280,8 +1240,8 @@
         "StorageLib"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/CraftFacet.sol": {
-      "lastModificationDate": 1687753215370,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/CraftFacet.sol": {
+      "lastModificationDate": 1687795928372,
       "contentHash": "57b549839dbbcf83126738cee59f4c5e",
       "sourceName": "contracts/facets/CraftFacet.sol",
       "solcConfig": {
@@ -1319,8 +1279,8 @@
         "StorageLib"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/BridgeFacet.sol": {
-      "lastModificationDate": 1686519629604,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/BridgeFacet.sol": {
+      "lastModificationDate": 1686648388099,
       "contentHash": "387c106446fafc45dc8df277b589c1ff",
       "sourceName": "contracts/facets/BridgeFacet.sol",
       "solcConfig": {
@@ -1355,8 +1315,8 @@
       ],
       "artifacts": []
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ArenaFacet.sol": {
-      "lastModificationDate": 1686519629599,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/ArenaFacet.sol": {
+      "lastModificationDate": 1686648388099,
       "contentHash": "7c45a7abbed5bee5e99c7b2c9ae3b8d1",
       "sourceName": "contracts/facets/ArenaFacet.sol",
       "solcConfig": {
@@ -1394,8 +1354,122 @@
         "StorageLib"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/ExchangeFacet.sol": {
-      "lastModificationDate": 1687750993070,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC1155Receiver.sol": {
+      "lastModificationDate": 1687439438236,
+      "contentHash": "8f49a3a3b7e1112899495fb18bf0e1ba",
+      "sourceName": "contracts/interfaces/IERC1155Receiver.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "./IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC1155Receiver"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC1155.sol": {
+      "lastModificationDate": 1687439438236,
+      "contentHash": "5ba76593801721415cf0dbaa81d99ed4",
+      "sourceName": "contracts/interfaces/IERC1155.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "./IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC1155"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/interfaces/IERC1155MetadataURI.sol": {
+      "lastModificationDate": 1687439438236,
+      "contentHash": "42ebf434917ba17c9152ec05241eb5ed",
+      "sourceName": "contracts/interfaces/IERC1155MetadataURI.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "./IERC1155.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC1155MetadataURI"
+      ]
+    },
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/ExchangeFacet.sol": {
+      "lastModificationDate": 1687795928372,
       "contentHash": "9320f766337b598ed1c6e014b22ea46e",
       "sourceName": "contracts/facets/ExchangeFacet.sol",
       "solcConfig": {
@@ -1426,8 +1500,8 @@
       "versionPragmas": [],
       "artifacts": []
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/contracts/facets/TreasureDropFacet.sol": {
-      "lastModificationDate": 1687731435843,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/contracts/facets/TreasureDropFacet.sol": {
+      "lastModificationDate": 1687793215568,
       "contentHash": "260008ad7dbcfc29f483c54fcde87834",
       "sourceName": "contracts/facets/TreasureDropFacet.sol",
       "solcConfig": {
@@ -1465,8 +1539,8 @@
         "TreasureDropFacet"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/node_modules/@openzeppelin/contracts/utils/cryptography/MerkleProof.sol": {
-      "lastModificationDate": 1686590174755,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/node_modules/@openzeppelin/contracts/utils/cryptography/MerkleProof.sol": {
+      "lastModificationDate": 1686652385520,
       "contentHash": "a75542fc722f3c5c883583228040bbfe",
       "sourceName": "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol",
       "solcConfig": {
@@ -1501,8 +1575,8 @@
         "MerkleProof"
       ]
     },
-    "/Users/kylekoshiyama/Desktop/daap-practice/deployment/node_modules/hardhat-diamond-abi/dist/contract.sol": {
-      "lastModificationDate": 1687793606394,
+    "/Users/gaurangtorvekar/Documents/coding/personal/OmniKingdoms_stuff/Deployment/node_modules/hardhat-diamond-abi/dist/contract.sol": {
+      "lastModificationDate": 1687796400016,
       "contentHash": "f0899ccf3452b0b76299b9fb99d6bbf2",
       "sourceName": "hardhat-diamond-abi/HardhatDiamondABI.sol",
       "solcConfig": {

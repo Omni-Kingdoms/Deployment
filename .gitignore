@@ -21,3 +21,12 @@
 hardhat-*.json
 
 contracts/upgradeInitializers/artifacts
+
+.deps/
+artifacts/
+bin/
+compiler_config.json
+contracts/.deps/
+contracts/artifacts/
+contracts/compiler_config.json
+cache/
