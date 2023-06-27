@@ -41,6 +41,13 @@ library PlayerStorageLib {
         address recipient;
     }
 
+    struct TransferRemote {
+        string _destination;
+        address _recipientAsAddress;
+        string _recipientAsString;
+        uint256 _playerId;
+    }
+
     struct TransferStorage {
         mapping(string => address) ourContractOnChains;
         IGateway gatewayContract;
@@ -66,44 +73,54 @@ library PlayerStorageLib {
         s.ourContractOnChains[_chainId] = _contractAddress;
     }
 
-    function _setGateway(address gateway) internal {
+    function _setGateway(address _gateway, string calldata _feePayer) internal {
         TransferStorage storage s = diamondStorageTransfer();
-        s.gatewayContract = IGateway(gateway);
+        s.gatewayContract = IGateway(_gateway);
+
+        s.gatewayContract.setDappMetadata(_feePayer);
     }
 
-    function _transferRemote(
-        string memory _destination,
-        address _recipient,
-        uint256 _playerId,
-        bytes memory _requestMetadata
-    ) internal {
+    function _deletePlayers(address _sender, uint256 _playerId) internal returns (PlayerSlotLib.Player memory) {
         PlayerStorage storage s = diamondStorage();
-        TransferStorage storage t = diamondStorageTransfer();
-        require(s.owners[_playerId] == msg.sender);
-        require(
-            keccak256(abi.encodePacked(t.ourContractOnChains[_destination])) != keccak256(abi.encodePacked("")),
-            "contract on dest not set"
-        );
+        require(s.owners[_playerId] == _sender);
 
         PlayerSlotLib.Player memory player = _getPlayer(_playerId);
 
         //Delete the player from the source chain
-        for (uint256 i = 0; i < s.balances[msg.sender]; i++) {
-            if (s.addressToPlayers[msg.sender][i] == _playerId) {
-                delete s.addressToPlayers[msg.sender][i];
+        for (uint256 i = 0; i < s.balances[_sender]; i++) {
+            if (s.addressToPlayers[_sender][i] == _playerId) {
+                delete s.addressToPlayers[_sender][i];
                 break;
             }
         }
-        s.balances[msg.sender]--;
+        s.balances[_sender]--;
 
-        TransferParams memory transferParams =
-            TransferParams({nftId: _playerId, playerId: _playerId, playerData: player, recipient: _recipient});
+        return player;
+    }
+
+    function _transferRemote(TransferRemote memory params, bytes memory _requestMetadata) internal {
+        TransferStorage storage t = diamondStorageTransfer();
+        require(
+            keccak256(abi.encodePacked(t.ourContractOnChains[params._destination])) != keccak256(abi.encodePacked("")),
+            "contract on dest not set"
+        );
+
+        PlayerSlotLib.Player memory playerData = _deletePlayers(msg.sender, params._playerId);
+
+        TransferParams memory transferParams = TransferParams({
+            nftId: params._playerId,
+            playerId: params._playerId,
+            playerData: playerData,
+            recipient: params._recipientAsAddress
+        });
 
         // sending the transfer params struct to the destination chain as payload.
         bytes memory packet = abi.encode(transferParams);
-        bytes memory requestPacket = abi.encode(t.ourContractOnChains[_destination], packet);
+        bytes memory requestPacket = abi.encode(t.ourContractOnChains[params._destination], packet);
 
-        t.gatewayContract.iSend{value: msg.value}(1, 0, string(""), _destination, _requestMetadata, requestPacket);
+        t.gatewayContract.iSend{value: msg.value}(
+            1, 0, params._recipientAsString, params._destination, _requestMetadata, requestPacket
+        );
     }
 
     /// @notice function to handle the cross-chain request received from some other chain.
@@ -265,8 +282,8 @@ contract PlayerFacet is ERC721FacetInternal {
     }
 
     // Set the gateway contract address from https://docs.routerprotocol.com/develop/message-transfer-via-crosstalk/evm-guides/your-first-crosschain-nft-contract/deploying-your-nft-contract
-    function setGateway(address gateway) external {
-        PlayerStorageLib._setGateway(gateway);
+    function setGateway(address gateway, string calldata feePayer) external {
+        PlayerStorageLib._setGateway(gateway, feePayer);
     }
 
     /// @notice function to get the request metadata to be used while initiating cross-chain request
@@ -292,17 +309,30 @@ contract PlayerFacet is ERC721FacetInternal {
      * @dev Delegates transfer logic to `_transferFromSender` implementation.
      * @dev Emits `SentTransferRemote` event on the origin chain.
      * @param _destination The identifier of the destination chain.
-     * @param _recipient The address of the recipient on the destination chain.
+     * @param _recipientAsAddress The address of the recipient on the destination chain.
+     * @param _recipientAsString The address of the recipient on the destination chain.
      */
     function transferRemote(
         string calldata _destination,
-        address _recipient,
+        address _recipientAsAddress,
+        string calldata _recipientAsString,
         uint256 _playerId,
         bytes memory _requestMetadata
     ) public payable {
         _burn(_playerId);
-        PlayerStorageLib._transferRemote(_destination, _recipient, _playerId, _requestMetadata);
-        emit SentTransferRemote(_destination, _recipient, _playerId);
+        // PlayerStorageLib._transferRemote(
+        //     _destination, _recipientAsAddress, _recipientAsString, _playerId, _requestMetadata
+        // );
+        PlayerStorageLib._transferRemote(
+            PlayerStorageLib.TransferRemote({
+                _destination: _destination,
+                _recipientAsAddress: _recipientAsAddress,
+                _recipientAsString: _recipientAsString,
+                _playerId: _playerId
+            }),
+            _requestMetadata
+        );
+        emit SentTransferRemote(_destination, _recipientAsAddress, _playerId);
     }
 
     /// @notice function to handle the cross-chain request received from some other chain.
