@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 /* global ethers task */
-require("@nomiclabs/hardhat-waffle");
+// require("@nomiclabs/hardhat-waffle");
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-diamond-abi");
 
@@ -69,9 +69,11 @@ module.exports = {
       accounts: [keys],
     },
     taiko_testnet: {
-      url: "https://rpc.test.taiko.xyz",
+      url: "https://rpc.test.taiko.xyz/",
       chainId: 167005,
-      accounts: [keys]
+      accounts: [keys],
+      maxPriorityFeePerGas: 2000000000, 
+      maxFeePerGas: 2500000001,
     },
     mumbai: {
       allowUnlimitedContractSize: true,
