@@ -19,10 +19,32 @@
 //     uint256 addressPointer;
 // }
 
+// struct Equipment {
+//     uint256 id;
+//     uint256 pointer;
+//     uint256 slot;
+//     uint256 rank;
+//     uint256 value;
+//     uint256 stat;
+//     uint256 owner;
+//     string name;
+//     string uri;
+//     bool isEquiped;
+// }
+
+// struct Treasure {
+//     uint256 id;
+//     uint256 rank;
+//     uint256 pointer;
+//     string name;
+// }
+
 // library ExchangeStorageLib {
 //     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
 //     bytes32 constant EXCHANGE_STORAGE_POSITION = keccak256("exchange.test.storage.a");
 //     bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
+//     bytes32 constant EQUIPMENT_STORAGE_POSITION = keccak256("equipment.test.storage.a");
+//     bytes32 constant TREASURE_STORAGE_POSITION = keccak256("treasure.test.storage.a");
 
 //     using PlayerSlotLib for PlayerSlotLib.Player;
 //     using PlayerSlotLib for PlayerSlotLib.Slot;
@@ -47,10 +69,25 @@
 //         uint256[] treasureListingsArray;
 //     }
 
+//     struct EquipmentStorage {
+//         uint256 equipmentCount;
+//         mapping(uint256 => uint256) owners; //maps equipment id to player id
+//         mapping(uint256 => Equipment) equipment;
+//         mapping(uint256 => uint256[]) playerToEquipment;
+//         mapping(uint256 => uint256) cooldown;
+//     }
+
 //     struct CoinStorage {
 //         mapping(address => uint256) goldBalance;
 //         mapping(address => uint256) totemBalance;
 //         mapping(address => uint256) diamondBalance;
+//     }
+
+//     struct TreasureStorage {
+//         uint256 treasureCount;
+//         mapping(uint256 => address) owners;
+//         mapping(uint256 => Treasure) treasures;
+//         mapping(uint256 => uint256[]) playerToTreasure;
 //     }
 
 //     function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
@@ -66,9 +103,21 @@
 //             ds.slot := position
 //         }
 //     }
-
 //     function diamondStorageCoin() internal pure returns (CoinStorage storage ds) {
 //         bytes32 position = COIN_STORAGE_POSITION;
+//         assembly {
+//             ds.slot := position
+//         }
+//     }
+//     function diamondStorageEquipment() internal pure returns (EquipmentStorage storage ds) {
+//         bytes32 position = EQUIPMENT_STORAGE_POSITION;
+//         assembly {
+//             ds.slot := position
+//         }
+//     }
+
+//     function diamondStorageTreasure() internal pure returns (TreasureStorage storage ds) {
+//         bytes32 position = TREASURE_STORAGE_POSITION;
 //         assembly {
 //             ds.slot := position
 //         }
@@ -77,10 +126,12 @@
 //     function _createEquipmentListing(uint256 _id, uint256 _price) internal {
 //         PlayerStorage storage s = diamondStoragePlayer();
 //         ExchangeStorage storage ex = diamondStorageEx();
+//         EquipmentStorage storage e = diamondStorageEquipment();
+
 //         require(s.owners[_id] == msg.sender, "Not owner of player"); //ownerOf
 //         require(s.players[_id].status == 0, "PlayerSlotLib.Player is not idle"); //make sure player is idle
-//         //ex.listingsMap[_id] = EquipmentListing(payable(msg.sender), _id, _price, ex.listingsArray.length); //create the listing and map
-
+//         ex.listingsMap[_id] = EquipmentListing(payable(msg.sender), _id, _price, ex.listingsArray.length); //create the listing and map
+        
 //     }
 
 //     function _purchaseEquipment(uint256 _listingId) internal {
@@ -122,13 +173,18 @@
 //         ExchangeStorage storage e = diamondStorageEx();
 //         return e.listingsArray;
 //     }
+
+//     function getTotalPrice(uint _equipmentId) view public returns(uint){
+//         ExchangeStorage storage ex = diamondStorageEx();
+//         return((ex.EquipmentListings[_equipmentId].price*(101))/100);
+//     }
 // }
 
 // contract ExchangeFacet {
-//     event List(address indexed _from, uint256 indexed _playerId, uint256 _price);
-//     event Purchase(address indexed _to, uint256 _id);
+//     event CreateEquipmentListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
+//     event PurchaseEquipmentLisitng(address indexed _to, uint256 _id);
 
-//     function crateListing(uint256 _id, uint256 _price) public {
+//     function createExquipmentListing(uint256 _id, uint256 _price) public {
 //         ExchangeStorageLib._createListing(_id, _price);
 //         emit List(msg.sender, _id, _price);
 //     }

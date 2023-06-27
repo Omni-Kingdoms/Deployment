@@ -68,6 +68,11 @@ module.exports = {
       url: scrollUrl,
       accounts: [keys],
     },
+    taiko_testnet: {
+      url: "https://rpc.test.taiko.xyz",
+      chainId: 167005,
+      accounts: [keys]
+    },
     mumbai: {
       allowUnlimitedContractSize: true,
       gas: 2100000,
@@ -79,11 +84,7 @@ module.exports = {
     mantletest: {
       url: "https://rpc.testnet.mantle.xyz/",
       accounts: [keys], // Uses the private key from the .env file
-    },
-    taiko: {
-      url: "https://rpc.test.taiko.xyz",
-      accounts: [keys],
-    },
+    }
   },
   settings: {
     optimizer: {
