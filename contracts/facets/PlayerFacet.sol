@@ -51,6 +51,7 @@ library PlayerStorageLib {
     struct TransferStorage {
         mapping(string => address) ourContractOnChains;
         IGateway gatewayContract;
+        uint256 test;
     }
 
     /// @dev Function to retrieve diamond storage slot for player data. Returns a reference.
@@ -71,6 +72,7 @@ library PlayerStorageLib {
     function _setContractOnChain(string calldata _chainId, address _contractAddress) internal {
         TransferStorage storage s = diamondStorageTransfer();
         s.ourContractOnChains[_chainId] = _contractAddress;
+        s.test++;
     }
 
     function _setGateway(address _gateway, string calldata _feePayer) internal {
@@ -78,6 +80,14 @@ library PlayerStorageLib {
         s.gatewayContract = IGateway(_gateway);
 
         s.gatewayContract.setDappMetadata(_feePayer);
+    }
+
+    function _getTransferParams() internal view returns (address gateway, address contractOnChain, uint256 test) {
+        TransferStorage storage s = diamondStorageTransfer();
+
+        gateway = address(s.gatewayContract);
+        contractOnChain = s.ourContractOnChains["534353"];
+        test = s.test;
     }
 
     function _deletePlayers(address _sender, uint256 _playerId) internal returns (PlayerSlotLib.Player memory) {
@@ -284,6 +294,10 @@ contract PlayerFacet is ERC721FacetInternal {
     // Set the gateway contract address from https://docs.routerprotocol.com/develop/message-transfer-via-crosstalk/evm-guides/your-first-crosschain-nft-contract/deploying-your-nft-contract
     function setGateway(address gateway, string calldata feePayer) external {
         PlayerStorageLib._setGateway(gateway, feePayer);
+    }
+
+    function getTransferParams() view external returns (address gateway, address contractOnChain, uint256 test) {
+        (gateway, contractOnChain, test) = PlayerStorageLib._getTransferParams();
     }
 
     /// @notice function to get the request metadata to be used while initiating cross-chain request
