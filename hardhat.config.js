@@ -78,11 +78,17 @@ module.exports = {
       gas: 2100000,
       gasPrice: 8000000000,
       gasLimit: 50000000000000,
-      url: "https://rpc-mumbai.maticvigil.com",
+      //url: "https://rpc-mumbai.maticvigil.com",
+      url: "https://gateway.tenderly.co/public/polygon-mumbai	",
+      //url: "https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78/",
       accounts: [keys],
     },
     mantletest: {
       url: "https://rpc.testnet.mantle.xyz/",
+      accounts: [keys], // Uses the private key from the .env file
+    },
+    omni: {
+      url: "https://testnet-1.omni.network/",
       accounts: [keys], // Uses the private key from the .env file
     }
   },
