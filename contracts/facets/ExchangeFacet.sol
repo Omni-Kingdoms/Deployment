@@ -123,15 +123,18 @@
 //         }
 //     }
 
-//     function _createEquipmentListing(uint256 _id, uint256 _price) internal {
+//     function _createEquipmentListing(uint256 _playerId, uint256 _equipmentId, uint256 _price) internal {
 //         PlayerStorage storage s = diamondStoragePlayer();
 //         ExchangeStorage storage ex = diamondStorageEx();
 //         EquipmentStorage storage e = diamondStorageEquipment();
 
-//         require(s.owners[_id] == msg.sender, "Not owner of player"); //ownerOf
-//         require(s.players[_id].status == 0, "PlayerSlotLib.Player is not idle"); //make sure player is idle
-//         ex.listingsMap[_id] = EquipmentListing(payable(msg.sender), _id, _price, ex.listingsArray.length); //create the listing and map
+//         require(s.owners[_playerId] == msg.sender, "You do not own this player"); //require that sender owns the player
+//         require(e.owners[_equipmentId] == _playerId, "Player does not own equipment"); //ownerOf
+//         require(!e.equipment[_equipmentId].isEquiped, "This item is currently equiped"); //require equiped status to be false
         
+//         ex.EquipmentListings[_equipmentId] = EquipmentListing(payable(msg.sender), _equipmentId, _price, ex.equipmentListingsArray.length, ex.addressToEquipmentListings[msg.sender].length); //create the listing and map
+//         ex.equipmentListingsArray.push(_equipmentId); //push to the total equipment listing array
+//         ex.addressToEquipmentListings[msg.sender].push(_equipmentId); //push to the equipemnt array owned by the address
 //     }
 
 //     function _purchaseEquipment(uint256 _listingId) internal {
@@ -184,15 +187,15 @@
 //     event CreateEquipmentListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
 //     event PurchaseEquipmentLisitng(address indexed _to, uint256 _id);
 
-//     function createExquipmentListing(uint256 _id, uint256 _price) public {
-//         ExchangeStorageLib._createListing(_id, _price);
-//         emit List(msg.sender, _id, _price);
-//     }
+//     // function createExquipmentListing(uint256 _id, uint256 _price) public {
+//     //     ExchangeStorageLib._createListing(_id, _price);
+//     //     emit List(msg.sender, _id, _price);
+//     // }
 
-//     function purchasePlayer(uint256 _listingId) public {
-//         ExchangeStorageLib._purchasePlayer(_listingId);
-//         emit Purchase(msg.sender, _listingId);
-//     }
+//     // function purchasePlayer(uint256 _listingId) public {
+//     //     ExchangeStorageLib._purchasePlayer(_listingId);
+//     //     emit Purchase(msg.sender, _listingId);
+//     // }
 
 //     function getListings(address _address) public view returns (uint256[] memory) {
 //         return ExchangeStorageLib._getListings(_address);

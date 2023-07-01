@@ -265,6 +265,39 @@ library PlayerStorageLib {
         PlayerStorage storage s = diamondStorage();
         return s.addressToPlayers[_address];
     }
+
+    function _levelUp(uint256 _playerId, uint256 _stat) internal {
+        PlayerStorage storage s = diamondStorage();
+        PlayerSlotLib.Player memory player = s.players[_playerId];
+        require(player.xp >= player.level * 10); //require the player has enough xp to level up, at least 10 times their level 
+        if (_stat == 0) {
+            //if strength
+            s.players[_playerId].strength++;
+        } else if (_stat == 1) {
+            //if health
+            s.players[_playerId].health++;
+            s.players[_playerId].currentHealth = s.players[_playerId].health;
+        } else if (_stat == 2) {
+            //if agility
+            s.players[_playerId].agility++;
+        } else if (_stat == 3) {
+            //if magic
+            player.magic += player.level;
+        } else if (_stat == 4) {
+            //if defense
+            player.defense += player.level;
+        } else if (_stat == 5) {
+            // if luck
+            player.luck += player.level;
+        } else {
+            // must be haki
+            player.haki += player.level;
+        }
+        s.players[_playerId].xp = player.xp - (player.level * 10); //subtract xp form the player
+        s.players[_playerId].level++; //level up the player
+    }
+
+
 }
 
 /// @title Player Facet

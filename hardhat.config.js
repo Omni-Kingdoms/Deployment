@@ -71,7 +71,7 @@ module.exports = {
     taiko_testnet: {
       url: "https://rpc.test.taiko.xyz",
       chainId: 167005,
-      accounts: [keys]
+      accounts: [process.env.WALLETT]
     },
     mumbai: {
       allowUnlimitedContractSize: true,
