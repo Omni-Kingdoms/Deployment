@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 /* global ethers task */
-require("@nomiclabs/hardhat-waffle");
+// require("@nomiclabs/hardhat-waffle");
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-diamond-abi");
 
@@ -62,16 +62,19 @@ module.exports = {
     },
     localhost: {
       url: "http://127.0.0.1:8545/",
-      accounts: [keys],
+      accounts: ["ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"], // test private key, known to public
     },
     scroll: {
       url: scrollUrl,
       accounts: [keys],
     },
     taiko_testnet: {
-      url: "https://rpc.test.taiko.xyz",
+      url: "https://rpc.test.taiko.xyz/",
       chainId: 167005,
-      accounts: [keys]
+      accounts: [keys],
+      gasPrice: 2000000000,
+      // maxPriorityFeePerGas: 2000000000, 
+      // maxFeePerGas: 2500000001,
     },
     mumbai: {
       allowUnlimitedContractSize: true,

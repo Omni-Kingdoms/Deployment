@@ -11,14 +11,17 @@ async function deployDiamond() {
   // Deploy DiamondInit
   // DiamondInit provides a function that is called when the diamond is upgraded or deployed to initialize state variables
   // Read about how the diamondCut function works in the EIP2535 Diamonds standard
-  const DiamondInit = await ethers.getContractFactory("DiamondInit");
-  const diamondInit = await DiamondInit.deploy();
-  await diamondInit.deployed();
-  console.log("DiamondInit deployed:", diamondInit.address);
+  // const DiamondInit = await ethers.getContractFactory("DiamondInit");
+  // const diamondInit = await DiamondInit.deploy();
+
+  const diamondInit = await hre.ethers.deployContract("DiamondInit", {
+    maxPriorityFeePerGas: 2000000000, maxFeePerGas: 2500000001,
+  });
+  const tx = await diamondInit.waitForDeployment();
+
+  console.log("DiamondInit deployed:", diamondInit.target);
 
   // Deploy facets and set the `facetCuts` variable
-  console.log("");
-  console.log("Deploying facets");
   const FacetNames = [
     "DiamondCutFacet",
     "DiamondLoupeFacet",
@@ -37,12 +40,14 @@ async function deployDiamond() {
   // The `facetCuts` variable is the FacetCut[] that contains the functions to add during diamond deployment
   const facetCuts = [];
   for (const FacetName of FacetNames) {
-    const Facet = await ethers.getContractFactory(FacetName);
-    const facet = await Facet.deploy();
-    await facet.deployed();
-    console.log(`${FacetName} deployed: ${facet.address}`);
+    // const Facet = await ethers.getContractFactory(FacetName);
+    // const facet = await Facet.deploy();
+    const facet = await hre.ethers.deployContract(FacetName);
+    const tx = await facet.waitForDeployment();
+
+    console.log(`${FacetName} deployed: ${facet.target}`);
     facetCuts.push({
-      facetAddress: facet.address,
+      facetAddress: facet.target,
       action: FacetCutAction.Add,
       functionSelectors: getSelectors(facet),
     });
@@ -60,22 +65,23 @@ async function deployDiamond() {
   // Setting arguments that will be used in the diamond constructor
   const diamondArgs = {
     owner: contractOwner.address,
-    init: diamondInit.address,
+    init: diamondInit.target,
     initCalldata: functionCall,
   };
   // deploy Diamond
-  console.log("Deploying Diamond now...");
-  const Diamond = await ethers.getContractFactory("Diamond");
-  const diamond = await Diamond.deploy(facetCuts, diamondArgs);
-  await diamond.deployed();
-
-  console.log();
-  console.log("Diamond deployed:", diamond.address);
+  // const Diamond = await ethers.getContractFactory("Diamond");
+  // const diamond = await Diamond.deploy(facetCuts, diamondArgs);
+  const diamond = await hre.ethers.deployContract("Diamond", [
+    facetCuts,
+    diamondArgs,
+  ]);
+  await diamond.waitForDeployment();
+  console.log("Diamond deployed:", diamond.target);
 
   // await verifyDiamond(diamond, facetCuts, diamondArgs);
 
   // returning the address of the diamond
-  return diamond.address;
+  return diamond.target;
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -102,7 +108,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
     await diamond.deployTransaction.wait(10);
     console.log("Running verification");
     await hre.run("verify:verify", {
-      address: diamond.address,
+      address: diamond.target,
       contract: `contracts/facets/${FacetName}.sol:${FacetName}`,
       network: hardhatArguments.network,
       arguments: constructorArguments ? constructorArguments : [],
@@ -112,7 +118,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
   }
 
   // hre.run('verify:verify', {
-  //   address: diamond.address,
+  //   address: diamond.target,
   //   constructorArguments
   // })
 }
@@ -132,7 +138,7 @@ async function verifyDiamond(diamond, facetCuts, diamondArgs) {
     await diamond.deployTransaction.wait(10);
     console.log("Running verification");
     await hre.run("verify:verify", {
-      address: diamond.address,
+      address: diamond.target,
       contract: "contracts/Diamond.sol:Diamond",
       network: hardhatArguments.network,
       arguments: [facetCuts, diamondArgs],
@@ -142,7 +148,7 @@ async function verifyDiamond(diamond, facetCuts, diamondArgs) {
   }
 
   // hre.run('verify:verify', {
-  //   address: diamond.address,
+  //   address: diamond.target,
   //   constructorArguments
   // })
 }
