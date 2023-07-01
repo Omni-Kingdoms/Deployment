@@ -115,12 +115,14 @@ library PlayerStorageLib {
             "contract on dest not set"
         );
 
-        PlayerSlotLib.Player memory playerData = _deletePlayers(msg.sender, params._playerId);
+        // PlayerSlotLib.Player memory playerData = _deletePlayers(msg.sender, params._playerId);
+        PlayerStorage storage s = diamondStorage();
+        PlayerSlotLib.Player memory player = s.players[params._playerId];
 
         TransferParams memory transferParams = TransferParams({
             nftId: params._playerId,
             playerId: params._playerId,
-            playerData: playerData,
+            playerData: player,
             recipient: params._recipientAsAddress
         });
 
@@ -129,7 +131,7 @@ library PlayerStorageLib {
         bytes memory requestPacket = abi.encode(t.ourContractOnChains[params._destination], packet);
 
         t.gatewayContract.iSend{value: msg.value}(
-            1, 0, params._recipientAsString, params._destination, _requestMetadata, requestPacket
+            1, 0, string(""), params._destination, _requestMetadata, requestPacket
         );
     }
 
@@ -296,7 +298,7 @@ contract PlayerFacet is ERC721FacetInternal {
         PlayerStorageLib._setGateway(gateway, feePayer);
     }
 
-    function getTransferParams() view external returns (address gateway, address contractOnChain, uint256 test) {
+    function getTransferParams() external view returns (address gateway, address contractOnChain, uint256 test) {
         (gateway, contractOnChain, test) = PlayerStorageLib._getTransferParams();
     }
 
