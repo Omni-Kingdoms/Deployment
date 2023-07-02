@@ -87,16 +87,17 @@ library StorageLib {
         delete t.cooldown[_tokenId];
     }
 
-    function _endTrainingMana(uint256 _tokenId) internal {
+    function _endTrainingMana(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         TrainStorage storage t = diamondStorageTrain();
-        require(s.owners[_tokenId] == msg.sender);
-        require(s.players[_tokenId].status == 3); //require that they are training mana
-        require(block.timestamp >= t.mana[_tokenId] + 300, "it's too early to pull out");
-        s.players[_tokenId].status = 0;
-        delete t.mana[_tokenId];
-        s.players[_tokenId].mana++;
-        t.cooldown[_tokenId] = block.timestamp; //reset the cool down
+        require(s.owners[_playerId] == msg.sender);
+        require(s.players[_playerId].status == 3); //require that they are training mana
+        require(block.timestamp >= t.mana[_playerId] + 300, "it's too early to pull out");
+        s.players[_playerId].status = 0;
+        delete t.mana[_playerId];
+        t.cooldown[_playerId] = block.timestamp; //reset the cool down
+        require(s.players[_playerId].mana < s.players[_playerId].maxMana);
+        s.players[_playerId].mana++;
     }
 
     function _startMeditation(uint256 _tokenId) internal {

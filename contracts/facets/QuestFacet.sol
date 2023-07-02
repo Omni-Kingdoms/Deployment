@@ -265,14 +265,6 @@ library StorageLib {
         return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, _nonce, q.questCounter)));
     }
 
-    // function _attackBasedRandom(uint256 _strength, uint256 _nonce) internal returns (uint256) {
-    //     QuestStorage storage q = diamondStorageQuest();
-    //     uint256 val = _random(_nonce);
-    //     if (_strength >= 1000) {
-    //         r
-    //     }
-    // }
-
     function _getGoldBalance(address _address) internal view returns (uint256) {
         CoinStorage storage c = diamondStorageCoin();
         return c.goldBalance[_address];

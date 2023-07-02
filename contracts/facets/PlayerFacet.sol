@@ -168,6 +168,7 @@ library PlayerStorageLib {
             _player.currentHealth,
             _player.magic,
             _player.mana,
+            _player.maxMana,
             _player.agility,
             _player.luck,
             _player.wisdom,
@@ -197,7 +198,7 @@ library PlayerStorageLib {
         require(bytes(_name).length >= 3);
         s.playerCount++;
         s.players[s.playerCount] = PlayerSlotLib.Player(
-            1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+            1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
         );
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
         s.usedNames[_name] = true;
@@ -282,7 +283,7 @@ library PlayerStorageLib {
             s.players[_playerId].agility++;
         } else if (_stat == 3) {
             //if magic
-            player.magic += player.level;
+            s.players[_playerId].magic++;
         } else if (_stat == 4) {
             //if defense
             player.defense += player.level;
@@ -449,6 +450,10 @@ contract PlayerFacet is ERC721FacetInternal {
     /// @return The current block timestamp
     function getBlocktime() external view returns (uint256) {
         return (block.timestamp);
+    }
+
+    function levelUp(uint256 _playerId, uint256 _stat) external {
+        PlayerStorageLib._levelUp(_playerId, _stat);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
