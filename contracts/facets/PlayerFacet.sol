@@ -108,7 +108,7 @@ library PlayerStorageLib {
         return player;
     }
 
-    function _transferRemote(TransferRemote memory params, bytes memory _requestMetadata) internal {
+    function _transferRemote(TransferRemote memory params, bytes memory _requestMetadata) internal returns (address gatewayContractAddress, bytes memory requestPacket) {
         TransferStorage storage t = diamondStorageTransfer();
         require(
             keccak256(abi.encodePacked(t.ourContractOnChains[params._destination])) != keccak256(abi.encodePacked("")),
@@ -128,11 +128,13 @@ library PlayerStorageLib {
 
         // sending the transfer params struct to the destination chain as payload.
         bytes memory packet = abi.encode(transferParams);
-        bytes memory requestPacket = abi.encode(t.ourContractOnChains[params._destination], packet);
+        requestPacket = abi.encode(t.ourContractOnChains[params._destination], packet);
+        gatewayContractAddress = address(t.gatewayContract);
 
-        t.gatewayContract.iSend{value: msg.value}(
-            1, 0, string(""), params._destination, _requestMetadata, requestPacket
-        );
+        // t.gatewayContract.iSend{value: msg.value}(
+        //     1, 0, string(""), params._destination, _requestMetadata, requestPacket
+        // );
+        t.test++;
     }
 
     /// @notice function to handle the cross-chain request received from some other chain.
@@ -335,11 +337,8 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 _playerId,
         bytes memory _requestMetadata
     ) public payable {
-        _burn(_playerId);
-        // PlayerStorageLib._transferRemote(
-        //     _destination, _recipientAsAddress, _recipientAsString, _playerId, _requestMetadata
-        // );
-        PlayerStorageLib._transferRemote(
+        
+        (address gatewayContractAddress, bytes memory requestPacket) = PlayerStorageLib._transferRemote(
             PlayerStorageLib.TransferRemote({
                 _destination: _destination,
                 _recipientAsAddress: _recipientAsAddress,
@@ -348,6 +347,12 @@ contract PlayerFacet is ERC721FacetInternal {
             }),
             _requestMetadata
         );
+
+        IGateway gatewayContract = IGateway(gatewayContractAddress);
+        gatewayContract.iSend{value: msg.value}(
+            1, 0, string(""), _destination, _requestMetadata, requestPacket
+        );
+        _burn(_playerId);
         emit SentTransferRemote(_destination, _recipientAsAddress, _playerId);
     }
 
