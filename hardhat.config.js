@@ -71,16 +71,16 @@ module.exports = {
     taiko_testnet: {
       url: "https://rpc.test.taiko.xyz",
       chainId: 167005,
-      accounts: [keys]
+      accounts: [keys],
     },
     mumbai: {
       allowUnlimitedContractSize: true,
       gas: 2100000,
       gasPrice: 8000000000,
       gasLimit: 50000000000000,
-      //url: "https://rpc-mumbai.maticvigil.com",
-      url: "https://gateway.tenderly.co/public/polygon-mumbai	",
-      //url: "https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78/",
+      url: "https://rpc-mumbai.maticvigil.com",
+      // url: "https://gateway.tenderly.co/public/polygon-mumbai	",
+      // url: "https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78/",
       accounts: [keys],
     },
     mantletest: {
@@ -90,7 +90,7 @@ module.exports = {
     omni: {
       url: "https://testnet-1.omni.network/",
       accounts: [keys], // Uses the private key from the .env file
-    }
+    },
   },
   settings: {
     optimizer: {
