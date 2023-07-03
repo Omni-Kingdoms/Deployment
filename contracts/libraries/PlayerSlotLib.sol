@@ -11,6 +11,7 @@ library PlayerSlotLib {
         uint256 currentHealth;
         uint256 magic;
         uint256 mana;
+        uint256 maxMana;
         uint256 agility;
         uint256 luck;
         uint256 wisdom;

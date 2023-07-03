@@ -18,7 +18,8 @@ struct Item {
 //     2: agility;
 //     3: magic;
 //     4: defense;
-//     5: luck;
+//     5: maxMana;
+//     6: luck;
 // }
 
 library StorageLib {
@@ -80,6 +81,10 @@ library StorageLib {
         } else if (stat == 4) {
             //if defense
             s.players[_playerId].defense += i.items[_itemId].value;
+        } else if (stat == 5) {
+            //if maxMana
+            s.players[_playerId].maxMana += i.items[_itemId].value;
+            s.players[_playerId].mana += i.items[_itemId].value;
         } else {
             // must be luck
             s.players[_playerId].luck += i.items[_itemId].value;
@@ -105,6 +110,14 @@ library StorageLib {
         } else if (stat == 4) {
             //if defense
             s.players[_playerId].defense -= i.items[_itemId].value;
+        } else if (stat == 5) {
+            //if maxMana
+            s.players[_playerId].maxMana -= i.items[_itemId].value;
+            if (s.players[_playerId].mana <= i.items[_itemId].value) {
+                s.players[_playerId].mana = 0;
+            } else {
+                s.players[_playerId].mana -= i.items[_itemId].value;
+            }
         } else {
             // must be luck
             s.players[_playerId].luck -= i.items[_itemId].value;

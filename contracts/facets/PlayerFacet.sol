@@ -170,6 +170,7 @@ library PlayerStorageLib {
             _player.currentHealth,
             _player.magic,
             _player.mana,
+            _player.maxMana,
             _player.agility,
             _player.luck,
             _player.wisdom,
@@ -199,7 +200,7 @@ library PlayerStorageLib {
         require(bytes(_name).length >= 3);
         s.playerCount++;
         s.players[s.playerCount] = PlayerSlotLib.Player(
-            1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+            1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
         );
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
         s.usedNames[_name] = true;
@@ -267,6 +268,39 @@ library PlayerStorageLib {
         PlayerStorage storage s = diamondStorage();
         return s.addressToPlayers[_address];
     }
+
+    function _levelUp(uint256 _playerId, uint256 _stat) internal {
+        PlayerStorage storage s = diamondStorage();
+        PlayerSlotLib.Player memory player = s.players[_playerId];
+        require(player.xp >= player.level * 10); //require the player has enough xp to level up, at least 10 times their level 
+        if (_stat == 0) {
+            //if strength
+            s.players[_playerId].strength++;
+        } else if (_stat == 1) {
+            //if health
+            s.players[_playerId].health++;
+            s.players[_playerId].currentHealth = s.players[_playerId].health;
+        } else if (_stat == 2) {
+            //if agility
+            s.players[_playerId].agility++;
+        } else if (_stat == 3) {
+            //if magic
+            s.players[_playerId].magic++;
+        } else if (_stat == 4) {
+            //if defense
+            player.defense += player.level;
+        } else if (_stat == 5) {
+            // if luck
+            player.luck += player.level;
+        } else {
+            // must be haki
+            player.haki += player.level;
+        }
+        s.players[_playerId].xp = player.xp - (player.level * 10); //subtract xp form the player
+        s.players[_playerId].level++; //level up the player
+    }
+
+
 }
 
 /// @title Player Facet
@@ -421,6 +455,10 @@ contract PlayerFacet is ERC721FacetInternal {
     /// @return The current block timestamp
     function getBlocktime() external view returns (uint256) {
         return (block.timestamp);
+    }
+
+    function levelUp(uint256 _playerId, uint256 _stat) external {
+        PlayerStorageLib._levelUp(_playerId, _stat);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
