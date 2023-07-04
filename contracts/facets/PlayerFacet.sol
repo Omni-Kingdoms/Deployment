@@ -82,40 +82,59 @@ library PlayerStorageLib {
         s.gatewayContract.setDappMetadata(_feePayer);
     }
 
-    function _getTransferParams() internal view returns (address gateway, address contractOnChain, uint256 test) {
+    function _getTransferParams(string calldata _chainId) internal view returns (address gateway, address contractOnChain, uint256 test) {
         TransferStorage storage s = diamondStorageTransfer();
 
         gateway = address(s.gatewayContract);
-        contractOnChain = s.ourContractOnChains["534353"];
+        contractOnChain = s.ourContractOnChains[_chainId];
         test = s.test;
     }
 
-    function _deletePlayers(address _sender, uint256 _playerId) internal returns (PlayerSlotLib.Player memory) {
+    function _deletePlayer(address _sender, uint256 _playerId) internal {
         PlayerStorage storage s = diamondStorage();
         require(s.owners[_playerId] == _sender);
+        require(_playerId <= s.playerCount, "Player does not exist");
 
-        PlayerSlotLib.Player memory player = _getPlayer(_playerId);
+        // Reset Player data - TODO
+        // PlayerSlotLib.Player storage playerToDelete = s.players[_playerId];
+        // playerToDelete = PlayerSlotLib.Player({/*...initialize with default values...*/});
 
-        //Delete the player from the source chain
-        for (uint256 i = 0; i < s.balances[_sender]; i++) {
-            if (s.addressToPlayers[_sender][i] == _playerId) {
-                delete s.addressToPlayers[_sender][i];
+        // Reset owner data
+        s.owners[_playerId] = address(0);
+
+        // Reduce the balance of the player's owner
+        s.balances[s.owners[_playerId]] = 0;
+
+        // Clear allowances
+        s.allowances[s.owners[_playerId]][address(this)] = 0;
+
+        // Decrement playerCount
+        s.playerCount--;
+
+        // Remove player from the addressToPlayers mapping
+        uint256[] storage playerIds = s.addressToPlayers[s.owners[_playerId]];
+        for (uint256 i = 0; i < playerIds.length; i++) {
+            if (playerIds[i] == _playerId) {
+                playerIds[i] = playerIds[playerIds.length - 1];
+                playerIds.pop();
                 break;
             }
         }
-        s.balances[_sender]--;
 
-        return player;
+        // Delete player's slot
+        delete s.slots[_playerId];
     }
 
-    function _transferRemote(TransferRemote memory params, bytes memory _requestMetadata) internal returns (address gatewayContractAddress, bytes memory requestPacket) {
+    function _transferRemote(TransferRemote memory params)
+        internal
+        returns (address gatewayContractAddress, bytes memory requestPacket)
+    {
         TransferStorage storage t = diamondStorageTransfer();
         require(
             keccak256(abi.encodePacked(t.ourContractOnChains[params._destination])) != keccak256(abi.encodePacked("")),
             "contract on dest not set"
         );
 
-        // PlayerSlotLib.Player memory playerData = _deletePlayers(msg.sender, params._playerId);
         PlayerStorage storage s = diamondStorage();
         PlayerSlotLib.Player memory player = s.players[params._playerId];
 
@@ -131,9 +150,7 @@ library PlayerStorageLib {
         requestPacket = abi.encode(t.ourContractOnChains[params._destination], packet);
         gatewayContractAddress = address(t.gatewayContract);
 
-        // t.gatewayContract.iSend{value: msg.value}(
-        //     1, 0, string(""), params._destination, _requestMetadata, requestPacket
-        // );
+        _deletePlayer(msg.sender, params._playerId);
         t.test++;
     }
 
@@ -151,7 +168,7 @@ library PlayerStorageLib {
         recipient = transferParams.recipient;
         nftId = transferParams.nftId;
         _mintCrossChainPlayer(transferParams.playerData, recipient);
-
+        t.test++;
         chainId = abi.encode(srcChainId);
     }
 
@@ -272,7 +289,7 @@ library PlayerStorageLib {
     function _levelUp(uint256 _playerId, uint256 _stat) internal {
         PlayerStorage storage s = diamondStorage();
         PlayerSlotLib.Player memory player = s.players[_playerId];
-        require(player.xp >= player.level * 10); //require the player has enough xp to level up, at least 10 times their level 
+        require(player.xp >= player.level * 10); //require the player has enough xp to level up, at least 10 times their level
         if (_stat == 0) {
             //if strength
             s.players[_playerId].strength++;
@@ -299,8 +316,6 @@ library PlayerStorageLib {
         s.players[_playerId].xp = player.xp - (player.level * 10); //subtract xp form the player
         s.players[_playerId].level++; //level up the player
     }
-
-
 }
 
 /// @title Player Facet
@@ -334,8 +349,8 @@ contract PlayerFacet is ERC721FacetInternal {
         PlayerStorageLib._setGateway(gateway, feePayer);
     }
 
-    function getTransferParams() external view returns (address gateway, address contractOnChain, uint256 test) {
-        (gateway, contractOnChain, test) = PlayerStorageLib._getTransferParams();
+    function getTransferParams(string calldata _chainId) external view returns (address gateway, address contractOnChain, uint256 test) {
+        (gateway, contractOnChain, test) = PlayerStorageLib._getTransferParams(_chainId);
     }
 
     /// @notice function to get the request metadata to be used while initiating cross-chain request
@@ -371,21 +386,17 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 _playerId,
         bytes memory _requestMetadata
     ) public payable {
-        
         (address gatewayContractAddress, bytes memory requestPacket) = PlayerStorageLib._transferRemote(
             PlayerStorageLib.TransferRemote({
                 _destination: _destination,
                 _recipientAsAddress: _recipientAsAddress,
                 _recipientAsString: _recipientAsString,
                 _playerId: _playerId
-            }),
-            _requestMetadata
+            })
         );
 
         IGateway gatewayContract = IGateway(gatewayContractAddress);
-        gatewayContract.iSend{value: msg.value}(
-            1, 0, string(""), _destination, _requestMetadata, requestPacket
-        );
+        gatewayContract.iSend{value: msg.value}(1, 0, string(""), _destination, _requestMetadata, requestPacket);
         _burn(_playerId);
         emit SentTransferRemote(_destination, _recipientAsAddress, _playerId);
     }

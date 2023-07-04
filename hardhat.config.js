@@ -41,6 +41,7 @@ module.exports = {
     apiKey: {
       polygonMumbai: process.env.MUMBAI_KEY,
       scroll: process.env.ETHERSCAN,
+      arbitrumGoerli: process.env.ARBISCAN,
     },
     customChains: [
       {
@@ -49,6 +50,14 @@ module.exports = {
         urls: {
           apiURL: "https://blockscout.scroll.io/api",
           browserURL: "https://blockscout.scroll.io",
+        },
+      },
+      {
+        network: "arbitrumGoerli",
+        chainId: 421613,
+        urls: {
+          apiURL: "https://api-goerli.arbiscan.io/",
+          browserURL: "https://goerli.arbiscan.io/",
         },
       },
     ],
@@ -73,6 +82,11 @@ module.exports = {
       chainId: 167005,
       accounts: [keys],
     },
+    goerli: {
+      url: "https://ethereum-goerli.publicnode.com",
+      chainId: 5,
+      accounts: [keys],
+    },
     mumbai: {
       allowUnlimitedContractSize: true,
       gas: 2100000,
@@ -90,6 +104,10 @@ module.exports = {
     omni: {
       url: "https://testnet-1.omni.network/",
       accounts: [keys], // Uses the private key from the .env file
+    },
+    arbitrumGoerli: {
+      url: "https://arbitrum-goerli.blockpi.network/v1/rpc/public",
+      accounts: [keys],
     },
   },
   settings: {

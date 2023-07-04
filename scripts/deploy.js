@@ -47,7 +47,7 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    //await verifyContract(facet, FacetName);
+    await verifyContract(facet, FacetName);
   }
   //console.log("Facet Cuts = ", facetCuts);
 
@@ -92,7 +92,13 @@ if (require.main === module) {
 exports.deployDiamond = deployDiamond;
 
 async function verifyContract(diamond, FacetName, constructorArguments = []) {
-  const liveNetworks = ["mainnet", "goerli", "mumbai", "scroll"];
+  const liveNetworks = [
+    "mainnet",
+    "goerli",
+    "mumbai",
+    "scroll",
+    "arbitrumGoerli",
+  ];
   if (!liveNetworks.includes(hre.network.name)) {
     return; // Don't verify on test networks
   }
