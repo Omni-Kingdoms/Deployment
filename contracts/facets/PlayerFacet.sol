@@ -40,7 +40,6 @@ library PlayerStorageLib {
         PlayerSlotLib.Player playerData;
         address recipient;
     }
-
     struct TransferRemote {
         string _destination;
         address _recipientAsAddress;
@@ -49,7 +48,7 @@ library PlayerStorageLib {
     }
 
     struct TransferStorage {
-        mapping(string => address) ourContractOnChains;
+        mapping(string => string) ourContractOnChains;
         IGateway gatewayContract;
         uint256 test;
     }
@@ -69,7 +68,7 @@ library PlayerStorageLib {
         }
     }
 
-    function _setContractOnChain(string calldata _chainId, address _contractAddress) internal {
+    function _setContractOnChain(string calldata _chainId, string calldata _contractAddress) internal {
         TransferStorage storage s = diamondStorageTransfer();
         s.ourContractOnChains[_chainId] = _contractAddress;
         s.test++;
@@ -82,7 +81,7 @@ library PlayerStorageLib {
         s.gatewayContract.setDappMetadata(_feePayer);
     }
 
-    function _getTransferParams(string calldata _chainId) internal view returns (address gateway, address contractOnChain, uint256 test) {
+    function _getTransferParams(string calldata _chainId) internal view returns (address gateway, string storage contractOnChain, uint256 test) {
         TransferStorage storage s = diamondStorageTransfer();
 
         gateway = address(s.gatewayContract);
@@ -177,6 +176,7 @@ library PlayerStorageLib {
         require(!s.usedNames[_player.name], "name is taken");
         require(bytes(_player.name).length <= 10);
         require(bytes(_player.name).length >= 3);
+        // require(_playerId > s.playerCount);
         s.playerCount++;
         s.players[s.playerCount] = PlayerSlotLib.Player(
             _player.level,
@@ -271,7 +271,10 @@ library PlayerStorageLib {
         require(s.owners[_id] == msg.sender);
         require(_to != address(0), "_to cannot be zero address");
         s.owners[_id] = _to;
-        for (uint256 i = 0; i < s.balances[msg.sender]; i++) {
+
+        //Note - storing this in a memory variable to save gas
+        uint256 balances = s.balances[msg.sender];
+        for (uint256 i = 0; i < balances; i++) {
             if (s.addressToPlayers[msg.sender][i] == _id) {
                 delete s.addressToPlayers[msg.sender][i];
                 break;
@@ -340,7 +343,7 @@ contract PlayerFacet is ERC721FacetInternal {
     }
 
     // Through this function, set the address of the corresponding contract on the destination chain
-    function setContractOnChain(string calldata _chainId, address _contractAddress) external {
+    function setContractOnChain(string calldata _chainId, string calldata _contractAddress) external {
         PlayerStorageLib._setContractOnChain(_chainId, _contractAddress);
     }
 
@@ -349,7 +352,7 @@ contract PlayerFacet is ERC721FacetInternal {
         PlayerStorageLib._setGateway(gateway, feePayer);
     }
 
-    function getTransferParams(string calldata _chainId) external view returns (address gateway, address contractOnChain, uint256 test) {
+    function getTransferParams(string calldata _chainId) external view returns (address gateway, string memory contractOnChain, uint256 test) {
         (gateway, contractOnChain, test) = PlayerStorageLib._getTransferParams(_chainId);
     }
 
@@ -372,13 +375,17 @@ contract PlayerFacet is ERC721FacetInternal {
     }
 
     /**
-     * @notice Transfers `_amountOrId` token to `_recipient` on `_destination` domain.
-     * @dev Delegates transfer logic to `_transferFromSender` implementation.
-     * @dev Emits `SentTransferRemote` event on the origin chain.
-     * @param _destination The identifier of the destination chain.
-     * @param _recipientAsAddress The address of the recipient on the destination chain.
-     * @param _recipientAsString The address of the recipient on the destination chain.
-     */
+    * @dev Transfers a player to a remote chain using the Router Gateway.
+    * @param _destination The name of the destination chain.
+    * @param _recipientAsAddress The address of the recipient on the destination chain.
+    * @param _recipientAsString The string representation of the recipient on the destination chain.
+    * @param _playerId The ID of the player to transfer.
+    * @param _requestMetadata Additional metadata to include in the request packet.
+    * Requirements:
+    * - The player must exist in the local storage.
+    * - The player must be burned after the transfer.
+    * Emits a {SentTransferRemote} event.
+    */
     function transferRemote(
         string calldata _destination,
         address _recipientAsAddress,
@@ -386,6 +393,7 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 _playerId,
         bytes memory _requestMetadata
     ) public payable {
+        // Call the _transferRemote function in the PlayerStorageLib library to get the gateway contract address and request packet.
         (address gatewayContractAddress, bytes memory requestPacket) = PlayerStorageLib._transferRemote(
             PlayerStorageLib.TransferRemote({
                 _destination: _destination,
@@ -395,9 +403,16 @@ contract PlayerFacet is ERC721FacetInternal {
             })
         );
 
+        // Get the Router Gateway contract instance.
         IGateway gatewayContract = IGateway(gatewayContractAddress);
+
+        // Call the iSend function on the Router Gateway contract to send the request packet to the destination chain.
         gatewayContract.iSend{value: msg.value}(1, 0, string(""), _destination, _requestMetadata, requestPacket);
+
+        // Burn the player after the transfer.
         _burn(_playerId);
+
+        // Emit a SentTransferRemote event.
         emit SentTransferRemote(_destination, _recipientAsAddress, _playerId);
     }
 
