@@ -40,6 +40,7 @@ library PlayerStorageLib {
         PlayerSlotLib.Player playerData;
         address recipient;
     }
+
     struct TransferRemote {
         string _destination;
         address _recipientAsAddress;
@@ -81,7 +82,11 @@ library PlayerStorageLib {
         s.gatewayContract.setDappMetadata(_feePayer);
     }
 
-    function _getTransferParams(string calldata _chainId) internal view returns (address gateway, string storage contractOnChain, uint256 test) {
+    function _getTransferParams(string calldata _chainId)
+        internal
+        view
+        returns (address gateway, string storage contractOnChain, uint256 test)
+    {
         TransferStorage storage s = diamondStorageTransfer();
 
         gateway = address(s.gatewayContract);
@@ -352,7 +357,11 @@ contract PlayerFacet is ERC721FacetInternal {
         PlayerStorageLib._setGateway(gateway, feePayer);
     }
 
-    function getTransferParams(string calldata _chainId) external view returns (address gateway, string memory contractOnChain, uint256 test) {
+    function getTransferParams(string calldata _chainId)
+        external
+        view
+        returns (address gateway, string memory contractOnChain, uint256 test)
+    {
         (gateway, contractOnChain, test) = PlayerStorageLib._getTransferParams(_chainId);
     }
 
@@ -375,17 +384,17 @@ contract PlayerFacet is ERC721FacetInternal {
     }
 
     /**
-    * @dev Transfers a player to a remote chain using the Router Gateway.
-    * @param _destination The name of the destination chain.
-    * @param _recipientAsAddress The address of the recipient on the destination chain.
-    * @param _recipientAsString The string representation of the recipient on the destination chain.
-    * @param _playerId The ID of the player to transfer.
-    * @param _requestMetadata Additional metadata to include in the request packet.
-    * Requirements:
-    * - The player must exist in the local storage.
-    * - The player must be burned after the transfer.
-    * Emits a {SentTransferRemote} event.
-    */
+     * @dev Transfers a player to a remote chain using the Router Gateway.
+     * @param _destination The name of the destination chain.
+     * @param _recipientAsAddress The address of the recipient on the destination chain.
+     * @param _recipientAsString The string representation of the recipient on the destination chain.
+     * @param _playerId The ID of the player to transfer.
+     * @param _requestMetadata Additional metadata to include in the request packet.
+     * Requirements:
+     * - The player must exist in the local storage.
+     * - The player must be burned after the transfer.
+     * Emits a {SentTransferRemote} event.
+     */
     function transferRemote(
         string calldata _destination,
         address _recipientAsAddress,

@@ -42,6 +42,7 @@ module.exports = {
       polygonMumbai: process.env.MUMBAI_KEY,
       scroll: process.env.ETHERSCAN,
       arbitrumGoerli: process.env.ARBISCAN,
+      fuji: process.env.SNOWTRACE,
     },
     customChains: [
       {
@@ -58,6 +59,22 @@ module.exports = {
         urls: {
           apiURL: "https://api-goerli.arbiscan.io/",
           browserURL: "https://goerli.arbiscan.io/",
+        },
+      },
+      {
+        network: "fuji",
+        chainId: 43113,
+        urls: {
+          apiURL: "https://api-testnet.snowtrace.io/api",
+          browserURL: "https://testnet.snowtrace.io",
+        },
+      },
+      {
+        network: "polygonMumbai",
+        chainId: 80001,
+        urls: {
+          apiURL: "https://api-testnet.polygonscan.com/",
+          browserURL: "https://mumbai.polygonscan.com/",
         },
       },
     ],
@@ -92,9 +109,10 @@ module.exports = {
       gas: 2100000,
       gasPrice: 8000000000,
       gasLimit: 50000000000000,
-      url: "https://rpc-mumbai.maticvigil.com",
+      // url: "https://rpc-mumbai.maticvigil.com",
       // url: "https://gateway.tenderly.co/public/polygon-mumbai	",
       // url: "https://polygon-mumbai.infura.io/v3/4458cf4d1689497b9a38b1d6bbf05e78/",
+      url: "https://polygon-mumbai.g.alchemy.com/v2/A1HhakaFYuT5oFTaQXweIQKBnWIG4rZq",
       accounts: [keys],
     },
     mantletest: {
@@ -107,6 +125,10 @@ module.exports = {
     },
     arbitrumGoerli: {
       url: "https://arbitrum-goerli.blockpi.network/v1/rpc/public",
+      accounts: [keys],
+    },
+    fuji: {
+      url: "https://rpc.ankr.com/avalanche_fuji",
       accounts: [keys],
     },
   },
