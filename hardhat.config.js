@@ -73,7 +73,7 @@ module.exports = {
         network: "polygonMumbai",
         chainId: 80001,
         urls: {
-          apiURL: "https://api-testnet.polygonscan.com/",
+          apiURL: "https://api-testnet.polygonscan.com/api",
           browserURL: "https://mumbai.polygonscan.com/",
         },
       },
