@@ -67,4 +67,10 @@ library PlayerSlotLib {
         TotemCoin,
         DiamondCoin
     }
+
+    enum PlayerClass {
+        Warrior, 
+        Assasin, 
+        Mage
+    }
 }
