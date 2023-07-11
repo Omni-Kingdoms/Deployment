@@ -1,0 +1,87 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IGateway",
+  "sourceName": "contracts/interfaces/IGateway.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "currentVersion",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "version",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "routeAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "routeRecipient",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "destChainId",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "requestMetadata",
+          "type": "bytes"
+        },
+        {
+          "internalType": "bytes",
+          "name": "requestPacket",
+          "type": "bytes"
+        }
+      ],
+      "name": "iSend",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "feePayerAddress",
+          "type": "string"
+        }
+      ],
+      "name": "setDappMetadata",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
