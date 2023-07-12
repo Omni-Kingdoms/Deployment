@@ -215,15 +215,25 @@ library PlayerStorageLib {
     /// @param _name The name of the player
     /// @param _uri The IPFS URI of the player metadata
     /// @param _isMale The gender of the player
-    function _mint(string memory _name, string memory _uri, bool _isMale) internal {
+    function _mint(string memory _name, string memory _uri, bool _isMale, uint256 _class) internal {
         PlayerStorage storage s = diamondStorage();
         require(!s.usedNames[_name], "name is taken");
         require(bytes(_name).length <= 10);
         require(bytes(_name).length >= 3);
         s.playerCount++;
-        s.players[s.playerCount] = PlayerSlotLib.Player(
-            1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
-        );
+        if (_class == 0) { //warrior
+            s.players[s.playerCount] = PlayerSlotLib.Player(
+                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+            );
+        } else if (_class == 1) { //assasin
+            s.players[s.playerCount] = PlayerSlotLib.Player(
+                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+            );
+        } else { //mage
+            s.players[s.playerCount] = PlayerSlotLib.Player(
+                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+            );
+        }
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
         s.usedNames[_name] = true;
         s.owners[s.playerCount] = msg.sender;
@@ -332,7 +342,7 @@ contract PlayerFacet is ERC721FacetInternal {
     // contract PlayerFacet {
     using Strings for uint256;
 
-    event Mint(uint256 indexed id, address indexed owner, string name, string uri);
+    event Mint(uint256 indexed id, address indexed owner, string name, string uri, uint256 _class);
     event NameChange(address indexed owner, uint256 indexed id, string indexed newName);
 
     /**
@@ -446,10 +456,10 @@ contract PlayerFacet is ERC721FacetInternal {
     /// @param _name The name of the player
     /// @param _uri The IPFS URI of the player metadata
     /// @param _isMale The gender of the player
-    function mint(string memory _name, string memory _uri, bool _isMale) external {
-        PlayerStorageLib._mint(_name, _uri, _isMale);
+    function mint(string memory _name, string memory _uri, bool _isMale, uint256 _class) external {
+        PlayerStorageLib._mint(_name, _uri, _isMale, _class);
         uint256 count = playerCount();
-        emit Mint(count, msg.sender, _name, _uri);
+        emit Mint(count, msg.sender, _name, _uri, _class);
 
         //TODO - somehow
         _safeMint(msg.sender, count);

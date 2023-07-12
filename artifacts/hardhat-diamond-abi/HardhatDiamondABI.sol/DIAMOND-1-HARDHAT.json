@@ -1632,6 +1632,12 @@
           "internalType": "string",
           "name": "uri",
           "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_class",
+          "type": "uint256"
         }
       ],
       "name": "Mint",
@@ -2032,6 +2038,11 @@
           "internalType": "bool",
           "name": "_isMale",
           "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_class",
+          "type": "uint256"
         }
       ],
       "name": "mint",
