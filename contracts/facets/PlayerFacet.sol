@@ -213,25 +213,29 @@ library PlayerStorageLib {
 
     /// @notice Mints a new player
     /// @param _name The name of the player
-    /// @param _uri The IPFS URI of the player metadata
     /// @param _isMale The gender of the player
-    function _mint(string memory _name, string memory _uri, bool _isMale, uint256 _class) internal {
+    function _mint(string memory _name, bool _isMale, uint256 _class) internal {
         PlayerStorage storage s = diamondStorage();
         require(!s.usedNames[_name], "name is taken");
+        require(_class <= 2);
         require(bytes(_name).length <= 10);
         require(bytes(_name).length >= 3);
         s.playerCount++;
+        string memory uri;
         if (_class == 0) { //warrior
+            _isMale ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH" : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
             );
         } else if (_class == 1) { //assasin
+            _isMale ? uri = "https://ipfs.io/ipfs/QmQXeYe9rxRkkqfEB7DrZRSG2S1yrNgj64V8m6v7KetzQd" : uri = "https://ipfs.io/ipfs/QmUqZKRudnang1GXbD2nHHwmJfNNBFQVdmoH8WAneaii5h";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
             );
         } else { //mage
+            _isMale ? uri = "https://ipfs.io/ipfs/QmUbWxUd8sX4MZojKERUPmPu9YtAYfYroBS4Te1HJEKucy" : uri = "https://ipfs.io/ipfs/QmbVABt9sKpNUa8DgMJde3DBCQyorSCT9V1Dzd6cJ8ZUmP";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, _uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
             );
         }
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
@@ -342,7 +346,7 @@ contract PlayerFacet is ERC721FacetInternal {
     // contract PlayerFacet {
     using Strings for uint256;
 
-    event Mint(uint256 indexed id, address indexed owner, string name, string uri, uint256 _class);
+    event Mint(uint256 indexed id, address indexed owner, string name, uint256 _class);
     event NameChange(address indexed owner, uint256 indexed id, string indexed newName);
 
     /**
@@ -454,12 +458,11 @@ contract PlayerFacet is ERC721FacetInternal {
     /// @dev Emits a Mint event
     /// @dev Calls the _mint function from the PlayerStorageLib
     /// @param _name The name of the player
-    /// @param _uri The IPFS URI of the player metadata
     /// @param _isMale The gender of the player
-    function mint(string memory _name, string memory _uri, bool _isMale, uint256 _class) external {
-        PlayerStorageLib._mint(_name, _uri, _isMale, _class);
+    function mint(string memory _name, bool _isMale, uint256 _class) external {
+        PlayerStorageLib._mint(_name, _isMale, _class);
         uint256 count = playerCount();
-        emit Mint(count, msg.sender, _name, _uri, _class);
+        emit Mint(count, msg.sender, _name, _class);
 
         //TODO - somehow
         _safeMint(msg.sender, count);

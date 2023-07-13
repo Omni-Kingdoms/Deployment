@@ -1629,12 +1629,6 @@
         },
         {
           "indexed": false,
-          "internalType": "string",
-          "name": "uri",
-          "type": "string"
-        },
-        {
-          "indexed": false,
           "internalType": "uint256",
           "name": "_class",
           "type": "uint256"
@@ -2027,11 +2021,6 @@
         {
           "internalType": "string",
           "name": "_name",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_uri",
           "type": "string"
         },
         {

@@ -32,8 +32,7 @@ contract DiamondInit {
         ERC721Storage.layout()._name = "OmniKingdoms Players";
         ERC721Storage.layout()._symbol = "OKP";
         ERC721Storage.layout()._maleImage = "https://infura-ipfs.io/ipfs/QmVQPguk3yttbq9inEyFNrADpZpHUTxAmgBv44i1zyLor7";
-        ERC721Storage.layout()._femaleImage =
-            "https://infura-ipfs.io/ipfs/QmbcRntJWvu6XJM89YZcPMgvEPQmyv1yJtmaFihYrbrkJC";
+        ERC721Storage.layout()._femaleImage = "https://infura-ipfs.io/ipfs/QmbcRntJWvu6XJM89YZcPMgvEPQmyv1yJtmaFihYrbrkJC";
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
