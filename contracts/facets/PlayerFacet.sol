@@ -217,6 +217,7 @@ library PlayerStorageLib {
     /// @param _isMale The gender of the player
     function _mint(string memory _name, bool _isMale, uint256 _class) internal {
         PlayerStorage storage s = diamondStorage();
+        require(s.playerCount <= 500);
         require(!s.usedNames[_name], "name is taken");
         require(_class <= 2);
         require(bytes(_name).length <= 10);
@@ -232,9 +233,9 @@ library PlayerStorageLib {
                 1,
                 0,
                 0,
-                1,
-                10,
-                10,
+                11,
+                12,
+                12,
                 1,
                 1,
                 1,
@@ -286,7 +287,7 @@ library PlayerStorageLib {
                 1,
                 0,
                 0,
-                1,
+                10,
                 10,
                 10,
                 1,
