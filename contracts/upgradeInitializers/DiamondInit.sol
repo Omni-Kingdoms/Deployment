@@ -31,8 +31,18 @@ contract DiamondInit {
         //TODO - Change the name based on discussions
         ERC721Storage.layout()._name = "OmniKingdoms Players";
         ERC721Storage.layout()._symbol = "OKP";
-        ERC721Storage.layout()._maleImage = "https://infura-ipfs.io/ipfs/QmVQPguk3yttbq9inEyFNrADpZpHUTxAmgBv44i1zyLor7";
-        ERC721Storage.layout()._femaleImage = "https://infura-ipfs.io/ipfs/QmbcRntJWvu6XJM89YZcPMgvEPQmyv1yJtmaFihYrbrkJC";
+        ERC721Storage.layout()._class0maleImage =
+            "https://infura-ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH";
+        ERC721Storage.layout()._class0femaleImage =
+            "https://infura-ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
+        ERC721Storage.layout()._class1maleImage =
+            "https://infura-ipfs.io/ipfs/QmQXeYe9rxRkkqfEB7DrZRSG2S1yrNgj64V8m6v7KetzQd";
+        ERC721Storage.layout()._class1femaleImage =
+            "https://infura-ipfs.io/ipfs/QmUqZKRudnang1GXbD2nHHwmJfNNBFQVdmoH8WAneaii5h";
+        ERC721Storage.layout()._class2maleImage =
+            "https://infura-ipfs.io/ipfs/QmUbWxUd8sX4MZojKERUPmPu9YtAYfYroBS4Te1HJEKucy";
+        ERC721Storage.layout()._class2femaleImage =
+            "https://infura-ipfs.io/ipfs/QmbVABt9sKpNUa8DgMJde3DBCQyorSCT9V1Dzd6cJ8ZUmP";
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;

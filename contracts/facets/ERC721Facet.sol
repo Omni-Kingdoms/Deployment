@@ -100,11 +100,39 @@ contract ERC721Facet is ERC721FacetInternal {
                 '{"trait_type":"Gender","value":"',
                 player.male ? "Male" : "Female",
                 '"},',
+                '{"trait_type":"Class","value":"',
+                player.playerClass.toString(),
+                '"},',
                 '{"trait_type":"Strength","value":"',
                 player.strength.toString(),
                 '"}]'
             )
         );
+    }
+
+    //Finds an image for the player based on the player class
+    function findImageBasedOnPlayerClass(PlayerSlotLib.Player memory player) internal view returns (string memory) {
+        string memory image;
+        if (player.playerClass == 0) {
+            if (player.male) {
+                image = ERC721Storage.layout()._class0maleImage;
+            } else {
+                image = ERC721Storage.layout()._class0femaleImage;
+            }
+        } else if (player.playerClass == 1) {
+            if (player.male) {
+                image = ERC721Storage.layout()._class1maleImage;
+            } else {
+                image = ERC721Storage.layout()._class1femaleImage;
+            }
+        } else if (player.playerClass == 2) {
+            if (player.male) {
+                image = ERC721Storage.layout()._class2maleImage;
+            } else {
+                image = ERC721Storage.layout()._class2femaleImage;
+            }
+        }
+        return image;
     }
 
     /**
@@ -117,18 +145,13 @@ contract ERC721Facet is ERC721FacetInternal {
         PlayerSlotLib.Player memory player = PlayerStorageLib._getPlayer(tokenId);
         string memory attributes = constructAttributes(player);
         string memory base = "data:application/json;base64,";
+        string memory image = findImageBasedOnPlayerClass(player);
 
         string memory json = Base64.encode(
             bytes(
                 string(
                     abi.encodePacked(
-                        '{"name":"',
-                        player.name,
-                        '", "attributes":',
-                        attributes,
-                        ', "image":"',
-                        player.male ? ERC721Storage.layout()._maleImage : ERC721Storage.layout()._femaleImage,
-                        '"}'
+                        '{"name":"', player.name, '", "attributes":', attributes, ', "image":"', image, '"}'
                     )
                 )
             )

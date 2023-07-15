@@ -202,7 +202,8 @@ library PlayerStorageLib {
             _player.name,
             _player.uri,
             _player.male,
-            PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+            PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0),
+            _player.playerClass
         );
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
         s.usedNames[_player.name] = true;
@@ -222,20 +223,86 @@ library PlayerStorageLib {
         require(bytes(_name).length >= 3);
         s.playerCount++;
         string memory uri;
-        if (_class == 0) { //warrior
-            _isMale ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH" : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
+        if (_class == 0) {
+            //warrior
+            _isMale
+                ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH"
+                : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+                1,
+                0,
+                0,
+                1,
+                10,
+                10,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                _name,
+                uri,
+                _isMale,
+                PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0),
+                _class
             );
-        } else if (_class == 1) { //assasin
-            _isMale ? uri = "https://ipfs.io/ipfs/QmQXeYe9rxRkkqfEB7DrZRSG2S1yrNgj64V8m6v7KetzQd" : uri = "https://ipfs.io/ipfs/QmUqZKRudnang1GXbD2nHHwmJfNNBFQVdmoH8WAneaii5h";
+        } else if (_class == 1) {
+            //assasin
+            _isMale
+                ? uri = "https://ipfs.io/ipfs/QmQXeYe9rxRkkqfEB7DrZRSG2S1yrNgj64V8m6v7KetzQd"
+                : uri = "https://ipfs.io/ipfs/QmUqZKRudnang1GXbD2nHHwmJfNNBFQVdmoH8WAneaii5h";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+                1,
+                0,
+                0,
+                1,
+                10,
+                10,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                _name,
+                uri,
+                _isMale,
+                PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0),
+                _class
             );
-        } else { //mage
-            _isMale ? uri = "https://ipfs.io/ipfs/QmUbWxUd8sX4MZojKERUPmPu9YtAYfYroBS4Te1HJEKucy" : uri = "https://ipfs.io/ipfs/QmbVABt9sKpNUa8DgMJde3DBCQyorSCT9V1Dzd6cJ8ZUmP";
+        } else if (_class == 2) {
+            //mage
+            _isMale
+                ? uri = "https://ipfs.io/ipfs/QmUbWxUd8sX4MZojKERUPmPu9YtAYfYroBS4Te1HJEKucy"
+                : uri = "https://ipfs.io/ipfs/QmbVABt9sKpNUa8DgMJde3DBCQyorSCT9V1Dzd6cJ8ZUmP";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1, 0, 0, 1, 10, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, _name, uri, _isMale, PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0)
+                1,
+                0,
+                0,
+                1,
+                10,
+                10,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                _name,
+                uri,
+                _isMale,
+                PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0),
+                _class
             );
         }
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);

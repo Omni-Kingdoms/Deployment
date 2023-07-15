@@ -22,6 +22,7 @@ library PlayerSlotLib {
         string uri;
         bool male;
         Slot slot;
+        uint256 playerClass;
     }
 
     // slots {
@@ -69,8 +70,8 @@ library PlayerSlotLib {
     }
 
     enum PlayerClass {
-        Warrior, 
-        Assasin, 
+        Warrior,
+        Assasin,
         Mage
     }
 }
