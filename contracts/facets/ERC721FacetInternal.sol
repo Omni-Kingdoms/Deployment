@@ -13,6 +13,64 @@ import "../utils/Address.sol";
 import "../utils/Strings.sol";
 import "../ERC721Storage.sol";
 
+/// @title Player Storage Library
+/// @dev Library for managing storage of player data
+library PlayerStorageLib {
+    bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("player.test.storage.a");
+    bytes32 constant TRANSFER_STORAGE_POSITION = keccak256("transfer.test.storage.a");
+
+    using PlayerSlotLib for PlayerSlotLib.Player;
+    using PlayerSlotLib for PlayerSlotLib.Slot;
+    using PlayerSlotLib for PlayerSlotLib.TokenTypes;
+
+    /// @dev Struct defining player storage
+    struct PlayerStorage {
+        uint256 totalSupply;
+        uint256 playerCount;
+        mapping(uint256 => address) owners;
+        mapping(uint256 => PlayerSlotLib.Player) players;
+        mapping(address => uint256) balances;
+        mapping(address => mapping(address => uint256)) allowances;
+        mapping(string => bool) usedNames;
+        mapping(address => uint256[]) addressToPlayers;
+        mapping(uint256 => PlayerSlotLib.Slot) slots;
+    }
+
+
+    /// @dev Function to retrieve diamond storage slot for player data. Returns a reference.
+    function diamondStorage() internal pure returns (PlayerStorage storage ds) {
+        bytes32 position = DIAMOND_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
+
+
+    /// @notice Transfer the player to someone else
+    /// @param _to Address of the account where the caller wants to transfer the player
+    /// @param _id ID of the player to transfer
+    function _transfer(address _to, uint256 _id) internal {
+        PlayerStorage storage s = diamondStorage();
+        require(s.owners[_id] == msg.sender);
+        require(_to != address(0), "_to cannot be zero address");
+        s.owners[_id] = _to;
+
+        //Note - storing this in a memory variable to save gas
+        uint256 balances = s.balances[msg.sender];
+        for (uint256 i = 0; i < balances; i++) {
+            if (s.addressToPlayers[msg.sender][i] == _id) {
+                delete s.addressToPlayers[msg.sender][i];
+                break;
+            }
+        }
+        s.balances[msg.sender]--;
+        s.balances[_to]++;
+    }
+
+
+    
+}
+
 contract ERC721FacetInternal is Context {
     using ERC721Storage for ERC721Storage.Layout;
     using Address for address;
@@ -240,7 +298,7 @@ contract ERC721FacetInternal is Context {
             ERC721Storage.layout()._balances[to] += 1;
         }
         ERC721Storage.layout()._owners[tokenId] = to;
-
+        PlayerStorageLib._transfer(to, tokenId);
         emit Transfer(from, to, tokenId);
 
         _afterTokenTransfer(from, to, tokenId, 1);
