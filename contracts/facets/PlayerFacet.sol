@@ -230,21 +230,21 @@ library PlayerStorageLib {
                 ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH"
                 : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1,
-                0,
-                0,
-                11,
-                12,
-                12,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, //level
+                0, //xp 
+                0, //status
+                11, //strength
+                12, //health
+                12, //currentHealth
+                10, //magic
+                10, //mana
+                10, //maxMana
+                10, //agility
                 1,
                 1,
                 1,
+                1,
+                10, //defense
                 _name,
                 uri,
                 _isMale,
@@ -257,21 +257,21 @@ library PlayerStorageLib {
                 ? uri = "https://ipfs.io/ipfs/QmQXeYe9rxRkkqfEB7DrZRSG2S1yrNgj64V8m6v7KetzQd"
                 : uri = "https://ipfs.io/ipfs/QmUqZKRudnang1GXbD2nHHwmJfNNBFQVdmoH8WAneaii5h";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1,
-                0,
-                0,
-                1,
-                10,
-                10,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, //level
+                0, //xp
+                0, //status
+                11, //strength
+                11, //health
+                11, //currentHealth
+                10, //magic
+                10, //mana
+                10, //maxMana
+                12, //agility
                 1,
                 1,
                 1,
+                1,
+                10, //defense
                 _name,
                 uri,
                 _isMale,
@@ -284,21 +284,21 @@ library PlayerStorageLib {
                 ? uri = "https://ipfs.io/ipfs/QmUbWxUd8sX4MZojKERUPmPu9YtAYfYroBS4Te1HJEKucy"
                 : uri = "https://ipfs.io/ipfs/QmbVABt9sKpNUa8DgMJde3DBCQyorSCT9V1Dzd6cJ8ZUmP";
             s.players[s.playerCount] = PlayerSlotLib.Player(
-                1,
-                0,
-                0,
-                10,
-                10,
-                10,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, //level
+                0, //xp
+                0, //status
+                10, //strength
+                10, //health
+                10, //currentHealth
+                12, //magic
+                12, //mana
+                12, //maxMana
+                10, //agility
                 1,
                 1,
                 1,
+                1,
+                10, //defense
                 _name,
                 uri,
                 _isMale,

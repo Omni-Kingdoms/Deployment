@@ -1886,6 +1886,11 @@
               "internalType": "struct PlayerSlotLib.Slot",
               "name": "slot",
               "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "playerClass",
+              "type": "uint256"
             }
           ],
           "internalType": "struct PlayerSlotLib.Player",
