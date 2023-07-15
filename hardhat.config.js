@@ -77,6 +77,14 @@ module.exports = {
           browserURL: "https://mumbai.polygonscan.com/",
         },
       },
+      {
+        network: "mantle",
+        chainId: 5000,
+        urls: {
+          apiURL: "https://explorer.mantle.xyz/",
+          browserURL: "https://explorer.mantle.xyz/",
+        },
+      },
     ],
   },
   networks: {
@@ -117,6 +125,10 @@ module.exports = {
     },
     mantletest: {
       url: "https://rpc.testnet.mantle.xyz/",
+      accounts: [keys], // Uses the private key from the .env file
+    },
+    mantle: {
+      url: "https://rpc.mantle.xyz/",
       accounts: [keys], // Uses the private key from the .env file
     },
     omni: {

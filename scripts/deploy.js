@@ -47,7 +47,7 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    await verifyContract(facet, FacetName);
+    //await verifyContract(facet, FacetName);
   }
   //console.log("Facet Cuts = ", facetCuts);
 
@@ -72,7 +72,7 @@ async function deployDiamond() {
   console.log();
   console.log("Diamond deployed:", diamond.address);
 
-  // await verifyDiamond(diamond, facetCuts, diamondArgs);
+  await verifyDiamond(diamond, facetCuts, diamondArgs);
 
   // returning the address of the diamond
   return diamond.address;
@@ -100,6 +100,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
     "scroll",
     "arbitrumGoerli",
     "fuji",
+    "mantle"
   ];
   if (!liveNetworks.includes(hre.network.name)) {
     return; // Don't verify on test networks
@@ -127,7 +128,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
 }
 
 async function verifyDiamond(diamond, facetCuts, diamondArgs) {
-  const liveNetworks = ["mainnet", "goerli", "mumbai", "scroll"];
+  const liveNetworks = ["mainnet", "goerli", "mumbai", "scroll, mantle"];
   if (!liveNetworks.includes(hre.network.name)) {
     return; // Don't verify on test networks
   }
