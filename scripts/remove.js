@@ -1,7 +1,7 @@
 const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
 
 const upgradeExample = async () => {
-    const diamondAddress = "0x545Ad75E4A297Ff1cdb85147F5D0C8DFA0bA21E1"; //current v2 scroll
+    const diamondAddress = "0x6F1352200d913abc9fbB4a6F9D419ad6aE7b5A28"; //current v3 mantle
     //const diamondAddress = "0x5517607D21409833917F48b0826F9793a354f68F"; //current v2 mantle
     const newFacetAddress = "0x0000000000000000000000000000000000000000";
 
@@ -10,7 +10,7 @@ const upgradeExample = async () => {
         diamondAddress
     );
 
-    const NewFacet = await ethers.getContractFactory("QuestFacet");
+    const NewFacet = await ethers.getContractFactory("TrainFacet");
     const selectorsToAdd = getSelectors(NewFacet);
 
     const tx = await diamondCutFacet.diamondCut(
