@@ -63,6 +63,7 @@ library PlayerStorageLib {
                 break;
             }
         }
+        s.addressToPlayers[_to].push(_id);
         s.balances[msg.sender]--;
         s.balances[_to]++;
     }

@@ -30,7 +30,7 @@ async function deployDiamond() {
     // 'TrainFacet',
     // 'EquipFacet',
     //'ArenaFacet'
-    // 'ExchangeFacet',
+    'ExchangeFacet'
     // 'ScriptFacet',
     //'TreasureDropFacet'
   ];
@@ -47,7 +47,7 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    //await verifyContract(facet, FacetName);
+    await verifyContract(facet, FacetName);
   }
   //console.log("Facet Cuts = ", facetCuts);
 
