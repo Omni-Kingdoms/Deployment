@@ -152,7 +152,8 @@ library ExchangeStorageLib {
     function _purchasePlayer(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         ExchangeStorage storage ex = diamondStorageEx();
-        //require(_getTotalPricePlayer(_playerId) >= msg.value, "not enough value"); //require buyer send enough value
+        address seller = ex.playerListings[_playerId].seller;
+        require(_getTotalPricePlayer(_playerId) >= msg.value, "not enough value"); //require buyer send enough value
         require(s.owners[_playerId] == ex.playerListings[_playerId].seller, "this item as sold elsewhere"); //check if player has already sold on another exchange
         
         //remove from total listing array
@@ -164,11 +165,12 @@ library ExchangeStorageLib {
 
         //remove the players to address to listings array
         uint256 rowToDeleteAddress = ex.playerListings[_playerId].addressPointer;
-        uint256 keyToMoveAddress = ex.addressToPlayerListings[msg.sender][ex.addressToPlayerListings[msg.sender].length - 1];
-        ex.addressToPlayerListings[msg.sender][rowToDeleteAddress] = keyToMoveAddress;
+        uint256 keyToMoveAddress = ex.addressToPlayerListings[seller][ex.addressToPlayerListings[seller].length - 1];
+        ex.addressToPlayerListings[seller][rowToDeleteAddress] = keyToMoveAddress;
         ex.playerListings[keyToMoveAddress].addressPointer = rowToDeleteAddress; //change the pointer of the listing
-        ex.addressToPlayerListings[msg.sender].pop();
+        ex.addressToPlayerListings[seller].pop();
 
+        s.players[_playerId].status = 0; //return player to idle
         delete ex.playerListings[_playerId]; //delete the player listing form the lisitngs map
     }
 
@@ -191,6 +193,11 @@ library ExchangeStorageLib {
         ExchangeStorage storage ex = diamondStorageEx();
         return((ex.playerListings[_playerId].price*(105))/100);
     }
+
+    function _owners(uint256 _playerId) view internal returns (address) {
+        PlayerStorage storage s = diamondStoragePlayer();
+        return s.owners[_playerId];
+    }
 }
 
 contract ExchangeFacet is ERC721FacetInternal{
@@ -210,8 +217,8 @@ contract ExchangeFacet is ERC721FacetInternal{
     function purchasePlayer(uint256 _playerId) public {
         PlayerListing memory listing = ExchangeStorageLib._getPlayerListing(_playerId);
         ExchangeStorageLib._purchasePlayer(_playerId);
-        // listing.seller.transfer(listing.price);
-        // feeAccount.transfer((listing.price*105) - listing.price);
+        listing.seller.transfer(listing.price);
+        feeAccount.transfer((listing.price*105) - listing.price);
         _transfer(listing.seller, msg.sender, _playerId);
         emit PurchasePlayerListing(msg.sender, _playerId);
     }
@@ -226,6 +233,10 @@ contract ExchangeFacet is ERC721FacetInternal{
 
     function getAllPlayerListings() public view returns (uint256[] memory) {
         return ExchangeStorageLib._getAllPlayerListings();
+    }
+
+    function owners(uint256 _playerId) public view returns(address) {
+        return ExchangeStorageLib._owners(_playerId);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
