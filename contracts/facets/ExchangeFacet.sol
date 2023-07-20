@@ -174,6 +174,32 @@ library ExchangeStorageLib {
         delete ex.playerListings[_playerId]; //delete the player listing form the lisitngs map
     }
 
+    function _deListPlayer(uint256 _playerId) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        ExchangeStorage storage ex = diamondStorageEx();
+        require(ex.playerListings[_playerId].seller == msg.sender, 'caller must be the owner of the listing'); //make sure caller is the owner
+        address seller = ex.playerListings[_playerId].seller;
+        
+        //remove from total listing array
+        uint256 rowToDelete = ex.playerListings[_playerId].pointer;
+        uint256 keyToMove = ex.playerListingsArray[ex.playerListingsArray.length - 1];
+        ex.playerListingsArray[rowToDelete] = keyToMove;
+        ex.playerListings[keyToMove].pointer = rowToDelete;
+        ex.playerListingsArray.pop();
+
+        //remove the players to address to listings array
+        uint256 rowToDeleteAddress = ex.playerListings[_playerId].addressPointer;
+        uint256 keyToMoveAddress = ex.addressToPlayerListings[seller][ex.addressToPlayerListings[seller].length - 1];
+        ex.addressToPlayerListings[seller][rowToDeleteAddress] = keyToMoveAddress;
+        ex.playerListings[keyToMoveAddress].addressPointer = rowToDeleteAddress; //change the pointer of the listing
+        ex.addressToPlayerListings[seller].pop();
+
+        s.players[_playerId].status = 0; //return player to idle
+        delete ex.playerListings[_playerId]; //delete the player listing form the lisitngs map
+    }
+
+
+
     function _getPlayerListingsByAddress(address _address) internal view returns (uint256[] memory) {
         ExchangeStorage storage ex = diamondStorageEx();
         return ex.addressToPlayerListings[_address];
@@ -202,12 +228,13 @@ library ExchangeStorageLib {
 
 contract ExchangeFacet is ERC721FacetInternal{
 
-    address payable public feeAccount = payable(0xcE716032dFe9d5BB840568171F541A6A046bBf90);
+    address payable public feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
 
     event CreateEquipmentListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
     event PurchaseEquipmentLisitng(address indexed _to, uint256 _id);
     event CreatePlayerListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
     event PurchasePlayerListing(address indexed _to, uint256 _id);
+    event DelistPlayer(address indexed _from, uint256 indexed _playerId);
 
     function createPlayerListing(uint256 _playerId, uint256 _price) public {
         ExchangeStorageLib._createPlayerListing(_playerId, _price);
@@ -221,6 +248,11 @@ contract ExchangeFacet is ERC721FacetInternal{
         feeAccount.transfer((listing.price*105) - listing.price);
         _transfer(listing.seller, msg.sender, _playerId);
         emit PurchasePlayerListing(msg.sender, _playerId);
+    }
+
+    function deListPlayer(uint256 _playerId) public {
+        ExchangeStorageLib._deListPlayer(_playerId);
+        emit DelistPlayer(msg.sender, _playerId);
     }
 
     function getPlayerListing(uint256 _playerId) public view returns (PlayerListing memory) {
