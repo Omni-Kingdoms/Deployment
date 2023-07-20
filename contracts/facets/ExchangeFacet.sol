@@ -74,11 +74,9 @@ library ExchangeStorageLib {
         mapping(uint256 => PlayerListing) playerListings;
         mapping(address => uint256[]) addressToPlayerListings;
         uint256[] playerListingsArray;
-
         mapping(uint256 => EquipmentListing) equipmentListings;
         mapping(address => uint256[]) addressToEquipmentListings;
         uint256[] equipmentListingsArray;
-
         mapping(uint256 => TreasureListing) TreasureListings;
         mapping(address => uint256[]) addressToTreasureListings;
         uint256[] treasureListingsArray;
@@ -118,12 +116,14 @@ library ExchangeStorageLib {
             ds.slot := position
         }
     }
+
     function diamondStorageCoin() internal pure returns (CoinStorage storage ds) {
         bytes32 position = COIN_STORAGE_POSITION;
         assembly {
             ds.slot := position
         }
     }
+
     function diamondStorageEquipment() internal pure returns (EquipmentStorage storage ds) {
         bytes32 position = EQUIPMENT_STORAGE_POSITION;
         assembly {
@@ -144,7 +144,13 @@ library ExchangeStorageLib {
         require(s.owners[_playerId] == msg.sender, "You do not own this player"); //require that sender owns the player
         require(s.players[_playerId].status == 0, "Player staus is idle"); //require that player is idle
         s.players[_playerId].status = 99; //set the status code to 99
-        ex.playerListings[_playerId] = PlayerListing(payable(msg.sender), _playerId, _price, ex.playerListingsArray.length, ex.addressToPlayerListings[msg.sender].length); //create the listing and map
+        ex.playerListings[_playerId] = PlayerListing(
+            payable(msg.sender),
+            _playerId,
+            _price,
+            ex.playerListingsArray.length,
+            ex.addressToPlayerListings[msg.sender].length
+        ); //create the listing and map
         ex.playerListingsArray.push(_playerId); //push to the total equipment listing array
         ex.addressToPlayerListings[msg.sender].push(_playerId); //push to the equipemnt array owned by the address
     }
@@ -155,7 +161,7 @@ library ExchangeStorageLib {
         address seller = ex.playerListings[_playerId].seller;
         require(_getTotalPricePlayer(_playerId) >= msg.value, "not enough value"); //require buyer send enough value
         require(s.owners[_playerId] == ex.playerListings[_playerId].seller, "this item as sold elsewhere"); //check if player has already sold on another exchange
-        
+
         //remove from total listing array
         uint256 rowToDelete = ex.playerListings[_playerId].pointer;
         uint256 keyToMove = ex.playerListingsArray[ex.playerListingsArray.length - 1];
@@ -177,9 +183,9 @@ library ExchangeStorageLib {
     function _deListPlayer(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         ExchangeStorage storage ex = diamondStorageEx();
-        require(ex.playerListings[_playerId].seller == msg.sender, 'caller must be the owner of the listing'); //make sure caller is the owner
+        require(ex.playerListings[_playerId].seller == msg.sender, "caller must be the owner of the listing"); //make sure caller is the owner
         address seller = ex.playerListings[_playerId].seller;
-        
+
         //remove from total listing array
         uint256 rowToDelete = ex.playerListings[_playerId].pointer;
         uint256 keyToMove = ex.playerListingsArray[ex.playerListingsArray.length - 1];
@@ -198,8 +204,6 @@ library ExchangeStorageLib {
         delete ex.playerListings[_playerId]; //delete the player listing form the lisitngs map
     }
 
-
-
     function _getPlayerListingsByAddress(address _address) internal view returns (uint256[] memory) {
         ExchangeStorage storage ex = diamondStorageEx();
         return ex.addressToPlayerListings[_address];
@@ -215,19 +219,18 @@ library ExchangeStorageLib {
         return ex.playerListingsArray;
     }
 
-    function _getTotalPricePlayer(uint256 _playerId) view internal returns(uint256){
+    function _getTotalPricePlayer(uint256 _playerId) internal view returns (uint256) {
         ExchangeStorage storage ex = diamondStorageEx();
-        return((ex.playerListings[_playerId].price*(105))/100);
+        return ((ex.playerListings[_playerId].price * (105)) / 100);
     }
 
-    function _owners(uint256 _playerId) view internal returns (address) {
+    function _owners(uint256 _playerId) internal view returns (address) {
         PlayerStorage storage s = diamondStoragePlayer();
         return s.owners[_playerId];
     }
 }
 
-contract ExchangeFacet is ERC721FacetInternal{
-
+contract ExchangeFacet is ERC721FacetInternal {
     address payable public feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
 
     event CreateEquipmentListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
@@ -241,13 +244,21 @@ contract ExchangeFacet is ERC721FacetInternal{
         emit CreatePlayerListing(msg.sender, _playerId, _price);
     }
 
-    function purchasePlayer(uint256 _playerId) public {
+    function purchasePlayer(uint256 _playerId) public payable {
         PlayerListing memory listing = ExchangeStorageLib._getPlayerListing(_playerId);
+        require(msg.value == listing.price, "Send the exact amount");
         ExchangeStorageLib._purchasePlayer(_playerId);
-        listing.seller.transfer(listing.price);
-        feeAccount.transfer((listing.price*105) - listing.price);
         _transfer(listing.seller, msg.sender, _playerId);
         emit PurchasePlayerListing(msg.sender, _playerId);
+
+        uint256 royalty = (listing.price * 105) - listing.price;
+        uint256 to_seller = listing.price - royalty;
+
+        (bool sentSeller,) = listing.seller.call{value: to_seller}("");
+        require(sentSeller, "Failed to send Ether to the seller");
+
+        (bool sentRoyalty,) = feeAccount.call{value: royalty}("");
+        require(sentRoyalty, "Failed to send Ether to the fee account");
     }
 
     function deListPlayer(uint256 _playerId) public {
@@ -267,7 +278,7 @@ contract ExchangeFacet is ERC721FacetInternal{
         return ExchangeStorageLib._getAllPlayerListings();
     }
 
-    function owners(uint256 _playerId) public view returns(address) {
+    function owners(uint256 _playerId) public view returns (address) {
         return ExchangeStorageLib._owners(_playerId);
     }
 
