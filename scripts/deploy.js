@@ -72,7 +72,7 @@ async function deployDiamond() {
   console.log();
   console.log("Diamond deployed:", diamond.address);
 
-  await verifyDiamond(diamond, facetCuts, diamondArgs);
+  //await verifyDiamond(diamond, facetCuts, diamondArgs);
 
   // returning the address of the diamond
   return diamond.address;
@@ -108,7 +108,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
 
   try {
     console.log("Waiting for 10 blocks to be mined...");
-    await diamond.deployTransaction.wait(5);
+    await diamond.deployTransaction.wait(10);
     console.log("Running verification");
     await hre.run("verify:verify", {
       address: diamond.address,

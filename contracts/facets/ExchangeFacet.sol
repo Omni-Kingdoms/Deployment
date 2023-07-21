@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "../libraries/PlayerSlotLib.sol";
 import {ERC721Storage} from "../ERC721Storage.sol";
 import {ERC721FacetInternal} from "./ERC721FacetInternal.sol";
+import {ERC721Facet} from "./ERC721Facet.sol";
 
 struct PlayerListing {
     address payable seller;
@@ -159,7 +160,7 @@ library ExchangeStorageLib {
         PlayerStorage storage s = diamondStoragePlayer();
         ExchangeStorage storage ex = diamondStorageEx();
         address seller = ex.playerListings[_playerId].seller;
-        require(_getTotalPricePlayer(_playerId) >= msg.value, "not enough value"); //require buyer send enough value
+        //require(_getTotalPricePlayer(_playerId) >= msg.value, "not enough value"); //require buyer send enough value
         require(s.owners[_playerId] == ex.playerListings[_playerId].seller, "this item as sold elsewhere"); //check if player has already sold on another exchange
 
         //remove from total listing array
@@ -241,6 +242,7 @@ contract ExchangeFacet is ERC721FacetInternal {
 
     function createPlayerListing(uint256 _playerId, uint256 _price) public {
         ExchangeStorageLib._createPlayerListing(_playerId, _price);
+        //_transfer(msg.sender, address(this), _playerId);
         emit CreatePlayerListing(msg.sender, _playerId, _price);
     }
 
@@ -248,10 +250,12 @@ contract ExchangeFacet is ERC721FacetInternal {
         PlayerListing memory listing = ExchangeStorageLib._getPlayerListing(_playerId);
         require(msg.value == listing.price, "Send the exact amount");
         ExchangeStorageLib._purchasePlayer(_playerId);
-        _transfer(listing.seller, msg.sender, _playerId);
+        //safeTransferFrom(listing.seller, msg.sender, _playerId);
+        transferFrom(listing.seller, msg.sender, _playerId);
+        //_transfer(address(this), msg.sender, _playerId);
         emit PurchasePlayerListing(msg.sender, _playerId);
 
-        uint256 royalty = (listing.price * 105) - listing.price;
+        uint256 royalty = ((listing.price * 105) - (listing.price*100))/100;
         uint256 to_seller = listing.price - royalty;
 
         (bool sentSeller,) = listing.seller.call{value: to_seller}("");
@@ -260,6 +264,13 @@ contract ExchangeFacet is ERC721FacetInternal {
         (bool sentRoyalty,) = feeAccount.call{value: royalty}("");
         require(sentRoyalty, "Failed to send Ether to the fee account");
     }
+
+    function transferFrom(address from, address to, uint256 tokenId) public virtual {
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
+
+        _transfer(from, to, tokenId);
+    }
+
 
     function deListPlayer(uint256 _playerId) public {
         ExchangeStorageLib._deListPlayer(_playerId);

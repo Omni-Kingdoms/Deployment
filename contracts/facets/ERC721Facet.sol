@@ -198,14 +198,14 @@ contract ERC721Facet is ERC721FacetInternal {
         return ERC721Storage.layout()._operatorApprovals[owner][operator];
     }
 
-    /**
-     * @dev See {IERC721-transferFrom}.
-     */
-    function transferFrom(address from, address to, uint256 tokenId) public virtual {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
+    // /**
+    //  * @dev See {IERC721-transferFrom}.
+    //  */
+    // function transferFrom(address from, address to, uint256 tokenId) public virtual {
+    //     require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
 
-        _transfer(from, to, tokenId);
-    }
+    //     _transfer(from, to, tokenId);
+    // }
 
     /**
      * @dev See {IERC721-safeTransferFrom}.
