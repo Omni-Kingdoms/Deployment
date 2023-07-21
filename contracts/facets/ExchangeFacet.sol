@@ -246,6 +246,10 @@ contract ExchangeFacet is ERC721FacetInternal {
         emit CreatePlayerListing(msg.sender, _playerId, _price);
     }
 
+    function testTransfer(address _to, uint256 _tokenId) public {
+        _transfer(msg.sender, _to, _tokenId);
+    }
+
     function purchasePlayer(uint256 _playerId) public payable {
         PlayerListing memory listing = ExchangeStorageLib._getPlayerListing(_playerId);
         require(msg.value == listing.price, "Send the exact amount");

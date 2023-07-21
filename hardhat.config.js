@@ -57,7 +57,7 @@ module.exports = {
         network: "arbitrumGoerli",
         chainId: 421613,
         urls: {
-          apiURL: "https://api-goerli.arbiscan.io/",
+          apiURL: "https://api-goerli.arbiscan.io/api",
           browserURL: "https://goerli.arbiscan.io/",
         },
       },
