@@ -36,7 +36,6 @@ library PlayerStorageLib {
         mapping(uint256 => PlayerSlotLib.Slot) slots;
     }
 
-
     /// @dev Function to retrieve diamond storage slot for player data. Returns a reference.
     function diamondStorage() internal pure returns (PlayerStorage storage ds) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
@@ -44,7 +43,6 @@ library PlayerStorageLib {
             ds.slot := position
         }
     }
-
 
     /// @notice Transfer the player to someone else
     /// @param _to Address of the account where the caller wants to transfer the player
@@ -67,9 +65,6 @@ library PlayerStorageLib {
         s.balances[msg.sender]--;
         s.balances[_to]++;
     }
-
-
-    
 }
 
 contract ERC721FacetInternal is Context {
@@ -299,7 +294,7 @@ contract ERC721FacetInternal is Context {
             ERC721Storage.layout()._balances[to] += 1;
         }
         ERC721Storage.layout()._owners[tokenId] = to;
-        PlayerStorageLib._transfer(to, tokenId);
+        // PlayerStorageLib._transfer(to, tokenId);
         emit Transfer(from, to, tokenId);
 
         _afterTokenTransfer(from, to, tokenId, 1);

@@ -246,20 +246,15 @@ contract ExchangeFacet is ERC721FacetInternal {
         emit CreatePlayerListing(msg.sender, _playerId, _price);
     }
 
-    function testTransfer(address _to, uint256 _tokenId) public {
-        _transfer(msg.sender, _to, _tokenId);
-    }
-
     function purchasePlayer(uint256 _playerId) public payable {
         PlayerListing memory listing = ExchangeStorageLib._getPlayerListing(_playerId);
         require(msg.value == listing.price, "Send the exact amount");
         ExchangeStorageLib._purchasePlayer(_playerId);
-        //safeTransferFrom(listing.seller, msg.sender, _playerId);
-        transferFrom(listing.seller, msg.sender, _playerId);
-        //_transfer(address(this), msg.sender, _playerId);
+        require(_isApprovedOrOwner(listing.seller, _playerId), "ERC721: seller is not token owner or approved");
+        _transfer(listing.seller, msg.sender, _playerId);
         emit PurchasePlayerListing(msg.sender, _playerId);
 
-        uint256 royalty = ((listing.price * 105) - (listing.price*100))/100;
+        uint256 royalty = ((listing.price * 105) - (listing.price * 100)) / 100;
         uint256 to_seller = listing.price - royalty;
 
         (bool sentSeller,) = listing.seller.call{value: to_seller}("");
@@ -268,13 +263,6 @@ contract ExchangeFacet is ERC721FacetInternal {
         (bool sentRoyalty,) = feeAccount.call{value: royalty}("");
         require(sentRoyalty, "Failed to send Ether to the fee account");
     }
-
-    function transferFrom(address from, address to, uint256 tokenId) public virtual {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
-
-        _transfer(from, to, tokenId);
-    }
-
 
     function deListPlayer(uint256 _playerId) public {
         ExchangeStorageLib._deListPlayer(_playerId);
