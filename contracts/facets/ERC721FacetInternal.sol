@@ -47,22 +47,22 @@ library PlayerStorageLib {
     /// @notice Transfer the player to someone else
     /// @param _to Address of the account where the caller wants to transfer the player
     /// @param _id ID of the player to transfer
-    function _transfer(address _to, uint256 _id) internal {
+    function _transfer(address _from, address _to, uint256 _id) internal {
         PlayerStorage storage s = diamondStorage();
-        require(s.owners[_id] == msg.sender);
+        require(s.owners[_id] == _from);
         require(_to != address(0), "_to cannot be zero address");
         s.owners[_id] = _to;
 
         //Note - storing this in a memory variable to save gas
-        uint256 balances = s.balances[msg.sender];
+        uint256 balances = s.balances[_from];
         for (uint256 i = 0; i < balances; i++) {
-            if (s.addressToPlayers[msg.sender][i] == _id) {
-                delete s.addressToPlayers[msg.sender][i];
+            if (s.addressToPlayers[_from][i] == _id) {
+                delete s.addressToPlayers[_from][i];
                 break;
             }
         }
         s.addressToPlayers[_to].push(_id);
-        s.balances[msg.sender]--;
+        s.balances[_from]--;
         s.balances[_to]++;
     }
 }
@@ -294,7 +294,7 @@ contract ERC721FacetInternal is Context {
             ERC721Storage.layout()._balances[to] += 1;
         }
         ERC721Storage.layout()._owners[tokenId] = to;
-        // PlayerStorageLib._transfer(to, tokenId);
+        PlayerStorageLib._transfer(from, to, tokenId);
         emit Transfer(from, to, tokenId);
 
         _afterTokenTransfer(from, to, tokenId, 1);
