@@ -232,7 +232,7 @@ library ExchangeStorageLib {
 }
 
 contract ExchangeFacet is ERC721FacetInternal {
-    address payable public feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+    //address payable public feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
 
     event CreateEquipmentListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
     event PurchaseEquipmentLisitng(address indexed _to, uint256 _id);
@@ -247,6 +247,7 @@ contract ExchangeFacet is ERC721FacetInternal {
     }
 
     function purchasePlayer(uint256 _playerId) public payable {
+        address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         PlayerListing memory listing = ExchangeStorageLib._getPlayerListing(_playerId);
         require(msg.value == listing.price, "Send the exact amount");
         ExchangeStorageLib._purchasePlayer(_playerId);
