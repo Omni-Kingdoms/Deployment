@@ -54,16 +54,31 @@ library PlayerStorageLib {
         s.owners[_id] = _to;
 
         //Note - storing this in a memory variable to save gas
-        uint256 balances = s.balances[_from];
+        uint256 balances = s.addressToPlayers[_from].length;
         for (uint256 i = 0; i < balances; i++) {
             if (s.addressToPlayers[_from][i] == _id) {
-                delete s.addressToPlayers[_from][i];
+                if (s.addressToPlayers[_from].length == 1) {
+                    uint256[] memory hold;
+                    s.addressToPlayers[_from] = hold;
+                } else {
+                    s.addressToPlayers[_from][i] = s.addressToPlayers[_from][s.addressToPlayers[_from].length -1];
+                    s.addressToPlayers[_from].pop();
+                }
                 break;
             }
         }
         s.addressToPlayers[_to].push(_id);
         s.balances[_from]--;
         s.balances[_to]++;
+    }
+
+    function _remove(uint index, uint256[] storage array) internal returns(uint256[] memory) {
+        for (uint i = index; i<array.length-1; i++){
+            array[i] = array[i+1];
+        }
+        delete array[array.length-1];
+        array.pop();
+        return array;
     }
 }
 

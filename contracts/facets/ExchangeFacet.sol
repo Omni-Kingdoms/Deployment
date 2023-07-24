@@ -5,6 +5,8 @@ import "../libraries/PlayerSlotLib.sol";
 import {ERC721Storage} from "../ERC721Storage.sol";
 import {ERC721FacetInternal} from "./ERC721FacetInternal.sol";
 import {ERC721Facet} from "./ERC721Facet.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 
 struct PlayerListing {
     address payable seller;
@@ -160,7 +162,6 @@ library ExchangeStorageLib {
         PlayerStorage storage s = diamondStoragePlayer();
         ExchangeStorage storage ex = diamondStorageEx();
         address seller = ex.playerListings[_playerId].seller;
-        //require(_getTotalPricePlayer(_playerId) >= msg.value, "not enough value"); //require buyer send enough value
         require(s.owners[_playerId] == ex.playerListings[_playerId].seller, "this item as sold elsewhere"); //check if player has already sold on another exchange
 
         //remove from total listing array
@@ -231,38 +232,36 @@ library ExchangeStorageLib {
     }
 }
 
-contract ExchangeFacet is ERC721FacetInternal {
-    //address payable public feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
-
+contract ExchangeFacet is ERC721FacetInternal, ReentrancyGuard {
     event CreateEquipmentListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
     event PurchaseEquipmentLisitng(address indexed _to, uint256 _id);
     event CreatePlayerListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
     event PurchasePlayerListing(address indexed _to, uint256 _id);
     event DelistPlayer(address indexed _from, uint256 indexed _playerId);
 
-    function createPlayerListing(uint256 _playerId, uint256 _price) public {
+    function transferPlayer(address _to, uint256 _playerId) public nonReentrant {
+        _transfer(msg.sender, _to, _playerId);
+    }
+
+    function createPlayerListing(uint256 _playerId, uint256 _price) public nonReentrant {
         ExchangeStorageLib._createPlayerListing(_playerId, _price);
-        //_transfer(msg.sender, address(this), _playerId);
         emit CreatePlayerListing(msg.sender, _playerId, _price);
     }
 
-    function purchasePlayer(uint256 _playerId) public payable {
+    function purchasePlayer(uint256 _playerId) public payable nonReentrant {
         address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         PlayerListing memory listing = ExchangeStorageLib._getPlayerListing(_playerId);
         require(msg.value == listing.price, "Send the exact amount");
         ExchangeStorageLib._purchasePlayer(_playerId);
         require(_isApprovedOrOwner(listing.seller, _playerId), "ERC721: seller is not token owner or approved");
         _transfer(listing.seller, msg.sender, _playerId);
-        emit PurchasePlayerListing(msg.sender, _playerId);
-
         uint256 royalty = ((listing.price * 105) - (listing.price * 100)) / 100;
         uint256 to_seller = listing.price - royalty;
-
         (bool sentSeller,) = listing.seller.call{value: to_seller}("");
         require(sentSeller, "Failed to send Ether to the seller");
-
         (bool sentRoyalty,) = feeAccount.call{value: royalty}("");
         require(sentRoyalty, "Failed to send Ether to the fee account");
+        emit PurchasePlayerListing(msg.sender, _playerId);
     }
 
     function deListPlayer(uint256 _playerId) public {
