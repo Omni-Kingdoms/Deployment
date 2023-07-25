@@ -149,10 +149,19 @@ library StorageLib {
         MonsterStorage storage m = diamondStorageMonster();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
+        uint256 damage;        
+        s.players[_playerId].defense >= 15 ? damage = 1 : damage = 16 - s.players[_playerId].defense;
+        require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
+        uint256 timer;
+        s.players[_playerId].agility >= 300 ? timer = 300 : timer = 610 - s.players[_playerId].agility;
+        require(block.timestamp >= m.goblinCooldown[_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
+        s.players[_playerId].currentHealth -= damage;
+        s.players[_playerId].xp += 2;
+        m.goblinCooldown[_playerId] = block.timestamp; //set start time
+    }
 
-
-        require(block.timestamp >= m.dragonCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
-
+    function _fightWolf(uint256 _playerId) internal {
+        
     }
 
 
@@ -243,9 +252,9 @@ library StorageLib {
     }
 
 
-    function _getCooldown(uint256 _playerId) internal view returns (uint256) {
-        QuestStorage storage q = diamondStorageQuest();
-        return q.cooldowns[_playerId];
+    function _getGoblinCooldown(uint256 _playerId) internal view returns (uint256) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return m.goblinCooldown[_playerId];
     }
 
 }

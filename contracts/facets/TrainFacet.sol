@@ -57,7 +57,6 @@ library StorageLib {
         TrainStorage storage t = diamondStorageTrain();
         require(s.players[_tokenId].status == 0); //is idle
         require(s.owners[_tokenId] == msg.sender); // ownerOf
-
         s.players[_tokenId].status = 1;
         t.combat[_tokenId] = block.timestamp;
         delete t.cooldown[_tokenId];
@@ -82,7 +81,7 @@ library StorageLib {
         require(s.owners[_tokenId] == msg.sender); // ownerOf
         require(block.timestamp >= t.cooldown[_tokenId] + 1); //check time requirement
 
-        s.players[_tokenId].status = 3;
+        s.players[_tokenId].status = 3; //mana training
         t.mana[_tokenId] = block.timestamp;
         delete t.cooldown[_tokenId];
     }

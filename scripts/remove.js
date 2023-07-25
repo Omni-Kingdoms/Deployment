@@ -1,7 +1,7 @@
 const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
 
 const upgradeExample = async () => {
-    const diamondAddress = "0x6F1352200d913abc9fbB4a6F9D419ad6aE7b5A28"; //current v3 mantle
+    const diamondAddress = "0x542eB9Ee8Dd1008eee1822e36a7EcebB09A7fb1c"; //current v3 mantle test
     //const diamondAddress = "0x5517607D21409833917F48b0826F9793a354f68F"; //current v2 mantle
     const newFacetAddress = "0x0000000000000000000000000000000000000000";
 
@@ -10,7 +10,7 @@ const upgradeExample = async () => {
         diamondAddress
     );
 
-    const NewFacet = await ethers.getContractFactory("ERC721Facet");
+    const NewFacet = await ethers.getContractFactory("ExchangeFacet");
     const selectorsToAdd = getSelectors(NewFacet);
 
     const tx = await diamondCutFacet.diamondCut(

@@ -135,48 +135,52 @@ library StorageLib {
         QuestStorage storage q = diamondStorageQuest();
         require(s.players[_tokenId].status == 0); //make sure player is idle
         require(s.owners[_tokenId] == msg.sender); //ownerOf
-
         s.players[_tokenId].status = 2; //set quest status
         q.goldQuest[_tokenId] = block.timestamp; //set start time
     }
 
-    function _endQuestGold(uint256 _tokenId) internal {
+    function _endQuestGold(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
         QuestStorage storage q = diamondStorageQuest();
-        require(s.owners[_tokenId] == msg.sender);
-        require(s.players[_tokenId].status == 2);
-        require(block.timestamp >= q.goldQuest[_tokenId] + 120, "it's too early to pull out");
-        s.players[_tokenId].status = 0; //set back to idle
-        delete q.goldQuest[_tokenId]; //remove the start time
+        require(s.owners[_playerId] == msg.sender, "you are not the owner"); //onlyOwner
+        require(s.players[_playerId].status == 2, "Dog, you are not gold questing"); //currently gold questing
+        uint256 timer;
+        s.players[_playerId].agility >= 60 ? timer = 60 : timer = 130 - s.players[_playerId].agility;
+        require(block.timestamp >= q.goldQuest[_playerId] + timer, "it's too early to pull out");
+        s.players[_playerId].status = 0; //set back to idle
+        delete q.goldQuest[_playerId]; //remove the start time
         c.goldBalance[msg.sender]++; //mint one gold
     }
 
-    function _startQuestGem(uint256 _tokenId) internal {
+    function _startQuestGem(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         QuestStorage storage q = diamondStorageQuest();
-        require(s.players[_tokenId].status == 0); //make sure player is idle
-        require(s.owners[_tokenId] == msg.sender); //ownerOf
-        require(block.timestamp >= q.cooldowns[_tokenId] + 600); //make sure that they have waited 5 mins for gem
-
-        s.players[_tokenId].status = 5; //set gemQuest status
-        q.gemQuest[_tokenId] = block.timestamp; //set start time
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        uint256 timer;
+        s.players[_playerId].agility >= 300 ? timer = 300 : timer = 610 - s.players[_playerId].agility;
+        require(block.timestamp >= q.cooldowns[_playerId] + timer); //make sure that they have waited 5 mins for gem
+        s.players[_playerId].status = 5; //set gemQuest status
+        q.gemQuest[_playerId] = block.timestamp; //set start time
     }
 
-    function _endQuestGem(uint256 _tokenId) internal {
+    function _endQuestGem(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
         QuestStorage storage q = diamondStorageQuest();
-        require(s.owners[_tokenId] == msg.sender);
-        require(s.players[_tokenId].status == 5);
+        require(s.owners[_playerId] == msg.sender);
+        require(s.players[_playerId].status == 5);
+        uint256 timer;
+        s.players[_playerId].agility >= 300 ? timer = 300 : timer = 610 - s.players[_playerId].agility;
         require(
-            block.timestamp >= q.gemQuest[_tokenId] + 600, //must wait 5 mins
+            block.timestamp >= q.gemQuest[_playerId] + timer, //must wait 5 mins
             "it's too early to pull out"
         );
-        s.players[_tokenId].status = 0; //set back to idle
-        delete q.gemQuest[_tokenId]; //remove the start time
+        s.players[_playerId].status = 0; //set back to idle
+        delete q.gemQuest[_playerId]; //remove the start time
         c.gemBalance[msg.sender]++; //mint one gem
-        q.cooldowns[_tokenId] = block.timestamp;
+        q.cooldowns[_playerId] = block.timestamp; //set the cooldown to the current time
     }
 
     function _dragonQuest(uint256 _playerId) internal returns (bool) {

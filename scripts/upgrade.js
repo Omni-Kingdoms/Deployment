@@ -3,15 +3,15 @@ const hre = require('hardhat');
 
 const upgradeExample = async () => {
 
-    const FacetName = "TrainFacet"
+    const FacetName = "ExchangeFacet"
     const Facet = await ethers.getContractFactory(FacetName)
     const facet = await Facet.deploy()
     await facet.deployed()
     console.log(`${FacetName} deployed: ${facet.address}`);
 
-    //await verifyContract(facet, FacetName);
+    await verifyContract(facet, FacetName);
 
-    const diamondAddress = "0x6F1352200d913abc9fbB4a6F9D419ad6aE7b5A28"; //current v3 mantle
+    const diamondAddress = "0x542eB9Ee8Dd1008eee1822e36a7EcebB09A7fb1c"; //current v3 mantletest
     //const diamondAddress = "0x5517607D21409833917F48b0826F9793a354f68F"; //current v2 mantle
     const newFacetAddress = facet.address;
 
@@ -56,15 +56,44 @@ upgradeExample()
 }
 
 
-async function verifyContract (diamond, FacetName, constructorArguments = []) {
-    // const liveNetworks = ['mainnet', 'goerli', 'mumbai', 'scroll'];
-    // if (!liveNetworks.includes(hre.network.name)) {
-    //   return; // Don't verify on test networks
-    // }
+// async function verifyContract (diamond, FacetName, constructorArguments = []) {
+//     // const liveNetworks = ['mainnet', 'goerli', 'mumbai', 'scroll'];
+//     // if (!liveNetworks.includes(hre.network.name)) {
+//     //   return; // Don't verify on test networks
+//     // }
+  
+//     try {
+//       console.log("Waiting for 10 blocks to be mined...");
+//       //await diamond.deployTransaction.wait(10);
+//       console.log("Running verification");
+//       await hre.run("verify:verify", {
+//         address: diamond.address,
+//         contract: `contracts/facets/${FacetName}.sol:${FacetName}`,
+//         network: hardhatArguments.network,
+//         arguments: constructorArguments ? constructorArguments : [],
+//       });
+//     } catch (e) {
+//       console.log("Verification failed: ", JSON.stringify(e, null, 2));
+//     }    
+// }
+
+async function verifyContract(diamond, FacetName, constructorArguments = []) {
+    const liveNetworks = [
+      "mainnet",
+      "goerli",
+      "mumbai",
+      "scroll",
+      "arbitrumGoerli",
+      "fuji",
+      "mantle"
+    ];
+    if (!liveNetworks.includes(hre.network.name)) {
+      return; // Don't verify on test networks
+    }
   
     try {
       console.log("Waiting for 10 blocks to be mined...");
-      //await diamond.deployTransaction.wait(10);
+      await diamond.deployTransaction.wait(10);
       console.log("Running verification");
       await hre.run("verify:verify", {
         address: diamond.address,
@@ -74,5 +103,6 @@ async function verifyContract (diamond, FacetName, constructorArguments = []) {
       });
     } catch (e) {
       console.log("Verification failed: ", JSON.stringify(e, null, 2));
-    }    
+      console.log(e);
+    }
 }
