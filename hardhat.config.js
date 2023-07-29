@@ -143,6 +143,14 @@ module.exports = {
       url: "https://rpc.ankr.com/avalanche_fuji",
       accounts: [keys],
     },
+    opbnbtest: {
+      allowUnlimitedContractSize: true,
+      gas: 2100000,
+      gasPrice: 8000000000,
+      gasLimit: 50000000000000,
+      url: "https://opbnb-testnet-rpc.bnbchain.org",
+      accounts: [keys],
+    },
   },
   settings: {
     optimizer: {

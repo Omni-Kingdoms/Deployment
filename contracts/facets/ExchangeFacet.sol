@@ -50,6 +50,7 @@ struct Treasure {
     uint256 rank;
     uint256 pointer;
     string name;
+    string uri;
 }
 
 library ExchangeStorageLib {

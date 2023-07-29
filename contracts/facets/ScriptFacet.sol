@@ -3,15 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../libraries/PlayerSlotLib.sol";
 
-struct Item {
-    uint256 slot;
-    uint256 rank;
-    uint256 value;
-    uint256 stat;
-    string name;
-    address owner;
-    bool isEquiped;
-}
+
 
 // stat {
 //     0: strength;
@@ -26,7 +18,6 @@ library StorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
     bytes32 constant ARENA_STORAGE_POSITION = keccak256("Arena.test.storage.a");
-    bytes32 constant ITEM_STORAGE_POSITION = keccak256("item.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
     using PlayerSlotLib for PlayerSlotLib.Slot;
@@ -50,13 +41,6 @@ library StorageLib {
         mapping(address => uint256) diamondBalance;
     }
 
-    struct ItemStorage {
-        uint256 itemCount;
-        mapping(uint256 => address) owners;
-        mapping(uint256 => Item) items;
-        mapping(address => uint256[]) addressToItems;
-        mapping(uint256 => uint256) cooldown;
-    }
 
     struct ArenaStorage {
         bool open;
@@ -105,13 +89,6 @@ library StorageLib {
         }
     }
 
-    function diamondStorageItem() internal pure returns (ItemStorage storage ds) {
-        bytes32 position = ITEM_STORAGE_POSITION;
-        assembly {
-            ds.slot := position
-        }
-    }
-
     function _activeScript(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
@@ -125,11 +102,11 @@ library StorageLib {
         a.secondArena.open = true;
     }
 
-    function _forceUnEquip() internal {
-        ItemStorage storage i = diamondStorageItem();
-        for (uint256 j = 0; j < i.itemCount; j++) {
-            if (i.items[j].slot == 0) {
-                i.items[j].isEquiped = false;
+    function _udpateDefese() internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        for (uint256 i = 0; i < s.playerCount; i++) {
+            if (s.players[i].playerClass == 0) {
+                s.players[i].defense++;
             }
         }
     }
@@ -152,10 +129,11 @@ contract ScriptFacet {
     function activeScript(uint256 _playerId) public {
         StorageLib._activeScript(_playerId);
     }
+    function udpateDefese() public {
+        StorageLib._udpateDefese();
+    }
 
-    // function forceUnEquip() public {
-    //     StorageLib._forceUnEquip();
-    // }
+
 
     function openArena() public {
         StorageLib._openArenas();

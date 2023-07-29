@@ -78,7 +78,10 @@ library StorageLib {
         uint256[] orcParty;
         mapping(uint256 => uint256) dragonCooldown;
         mapping(uint256 => uint256) goblinCooldown;
+        mapping(uint256 => uint256) wolfCooldown;
         mapping(uint256 => uint256) orcCooldown;
+        mapping(uint256 => uint256) cooldowns;
+        mapping(uint256 => uint256) gravityHammerQuestCooldown;
     }
 
     struct CoinStorage {
@@ -160,8 +163,22 @@ library StorageLib {
         m.goblinCooldown[_playerId] = block.timestamp; //set start time
     }
 
-    function _fightWolf(uint256 _playerId) internal {
-        
+    function _fightWolf(uint256 _playerId) internal returns (bool){
+        PlayerStorage storage s = diamondStoragePlayer();
+        MonsterStorage storage m = diamondStorageMonster();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        uint256 damage;        
+        s.players[_playerId].defense >= 20 ? damage = 1 : damage = 21 - s.players[_playerId].defense;
+        require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
+        uint256 timer;
+        s.players[_playerId].agility >= 600 ? timer = 600 : timer = 1210 - s.players[_playerId].agility;
+        require(block.timestamp >= m.wolfCooldown[_playerId] + timer); //make sure that they have waited 10 mins since last quest (1200 seconds);
+        s.players[_playerId].currentHealth -= damage;
+
+
+        s.players[_playerId].xp += 5;
+        m.wolfCooldown[_playerId] = block.timestamp; //set start time
     }
 
 
