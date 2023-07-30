@@ -41,6 +41,16 @@ struct Treasure {
     string name;
 }
 
+struct BasicMonster {
+    uint256 monsterId;
+    uint256 xpReward;
+    uint256 damage;
+    uint256 hp;
+    uint256 cooldown;
+    string name;
+    string uri;
+}
+
 library StorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant QUEST_STORAGE_POSITION = keccak256("quest.test.storage.a");
@@ -74,7 +84,10 @@ library StorageLib {
     }
 
     struct MonsterStorage {
-        uint256 monsterCounter;
+        uint256 basicMonsterCounter;
+        uint256 treasureMonsterCounter;
+        mapping(uint256 => mapping(uint256 => uint256)) basicMonsterCooldowns;
+        mapping(uint256 => BasicMonster) basicMonsters;
         uint256[] orcParty;
         mapping(uint256 => uint256) dragonCooldown;
         mapping(uint256 => uint256) goblinCooldown;
@@ -145,6 +158,34 @@ library StorageLib {
         assembly {
             ds.slot := position
         }
+    }
+
+    function _createBasicMonster(
+        uint256 _xpReward,
+        uint256 _damage,
+        uint256 _hp,
+        uint256 _cooldown,
+        string memory _name,
+        string memory _uri
+    ) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        m.basicMonsterCounter++; //monster counter increment
+        m.basicMonsters[m.basicMonsterCounter] = BasicMonster(m.basicMonsterCounter,_xpReward,_damage,_hp,_cooldown,_name,_uri); //create the monster
+    }
+
+    function _fightBasicMonster(uint256 _playerId, uint256 _monsterId) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        uint256 damage;        
+        s.players[_playerId].defense >= m.basicMonsters[_monsterId].damage ? damage = 1 : damage = m.basicMonsters[_monsterId].damage - s.players[_playerId].defense + 1;
+        require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
+        uint256 timer;
+        s.players[_playerId].agility >= m.basicMonsters[_monsterId].cooldown/2  ? timer = m.basicMonsters[_monsterId].cooldown/2  : timer = m.basicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
+        require(block.timestamp >= m.basicMonsterCooldowns[_monsterId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
+        s.players[_playerId].xp += m.basicMonsters[_monsterId].xpReward; //give the player xp
+        m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
     }
 
     function _fightGoblin(uint256 _playerId) internal {
@@ -268,6 +309,20 @@ library StorageLib {
         return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, _nonce, q.questCounter)));
     }
 
+    function _getBasicMonsterCounter() internal view returns (uint256) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return (m.basicMonsterCounter);
+    }
+
+    function _getBasicMonster(uint256 _monsterId) internal view returns (BasicMonster memory) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return m.basicMonsters[_monsterId];
+    }
+
+    function _getBasicMonsterCooldown(uint256 _playerId, uint256 _monsterId) internal view returns (uint256) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return m.basicMonsterCooldowns[_monsterId][_playerId];
+    }
 
     function _getGoblinCooldown(uint256 _playerId) internal view returns (uint256) {
         MonsterStorage storage m = diamondStorageMonster();
@@ -279,12 +334,37 @@ library StorageLib {
 contract MonsterFacet {
 
     event DragonQuest(uint256 indexed _playerId);
+    event CreateBasicMonster(uint256 indexed _monsterId);
 
     function dragonQuest(uint256 _playerId) external returns (bool result) {
         result = StorageLib._dragonQuest(_playerId);
         if (result) emit DragonQuest(_playerId);
         return result;
     }
+
+    function createBasicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
+        address createAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+        require(msg.sender == createAccount);
+        StorageLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
+        emit CreateBasicMonster(StorageLib._getBasicMonsterCounter());
+    }
+
+    function getMonsterCounter() public view returns (uint256) {
+        return StorageLib._getBasicMonsterCounter();
+    }
+
+    function getBasicMonster(uint256 _monsterId) public view returns (BasicMonster memory) {
+        return StorageLib._getBasicMonster(_monsterId);
+    }
+
+    function getBasicMonsterCooldown(uint256 _playerId, uint256 _monsterId) public view returns (uint256) {
+        return StorageLib._getBasicMonsterCooldown(_playerId, _monsterId);
+    }
+
+
+
+
+
 
 
 

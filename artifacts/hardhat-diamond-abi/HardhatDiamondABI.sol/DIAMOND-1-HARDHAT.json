@@ -1819,12 +1819,63 @@
         {
           "indexed": true,
           "internalType": "uint256",
+          "name": "_monsterId",
+          "type": "uint256"
+        }
+      ],
+      "name": "CreateBasicMonster",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "_playerId",
           "type": "uint256"
         }
       ],
       "name": "DragonQuest",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_xpReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_damage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_hp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_cooldown",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_uri",
+          "type": "string"
+        }
+      ],
+      "name": "createBasicMonster",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [
@@ -1843,6 +1894,99 @@
         }
       ],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_monsterId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getBasicMonster",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "monsterId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "xpReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "damage",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cooldown",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct BasicMonster",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_monsterId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getBasicMonsterCooldown",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMonsterCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
