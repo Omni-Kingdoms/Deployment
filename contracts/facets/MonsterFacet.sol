@@ -51,6 +51,19 @@ struct BasicMonster {
     string uri;
 }
 
+struct TreasureMonster {
+    uint256 monsterId;
+    uint256 xpReward;
+    uint256 damage;
+    uint256 hp;
+    uint256 cooldown;
+    uint256 slot;
+    uint256 equipmentId;
+    uint256 treasureId;
+    string name;
+    string uri;
+}
+
 library StorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant QUEST_STORAGE_POSITION = keccak256("quest.test.storage.a");
@@ -88,11 +101,7 @@ library StorageLib {
         uint256 treasureMonsterCounter;
         mapping(uint256 => mapping(uint256 => uint256)) basicMonsterCooldowns;
         mapping(uint256 => BasicMonster) basicMonsters;
-        uint256[] orcParty;
         mapping(uint256 => uint256) dragonCooldown;
-        mapping(uint256 => uint256) goblinCooldown;
-        mapping(uint256 => uint256) wolfCooldown;
-        mapping(uint256 => uint256) orcCooldown;
         mapping(uint256 => uint256) cooldowns;
         mapping(uint256 => uint256) gravityHammerQuestCooldown;
     }
@@ -188,39 +197,7 @@ library StorageLib {
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
     }
 
-    function _fightGoblin(uint256 _playerId) internal {
-        PlayerStorage storage s = diamondStoragePlayer();
-        MonsterStorage storage m = diamondStorageMonster();
-        require(s.players[_playerId].status == 0); //make sure player is idle
-        require(s.owners[_playerId] == msg.sender); //ownerOf
-        uint256 damage;        
-        s.players[_playerId].defense >= 15 ? damage = 1 : damage = 16 - s.players[_playerId].defense;
-        require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
-        uint256 timer;
-        s.players[_playerId].agility >= 300 ? timer = 300 : timer = 610 - s.players[_playerId].agility;
-        require(block.timestamp >= m.goblinCooldown[_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
-        s.players[_playerId].currentHealth -= damage;
-        s.players[_playerId].xp += 2;
-        m.goblinCooldown[_playerId] = block.timestamp; //set start time
-    }
 
-    function _fightWolf(uint256 _playerId) internal returns (bool){
-        PlayerStorage storage s = diamondStoragePlayer();
-        MonsterStorage storage m = diamondStorageMonster();
-        require(s.players[_playerId].status == 0); //make sure player is idle
-        require(s.owners[_playerId] == msg.sender); //ownerOf
-        uint256 damage;        
-        s.players[_playerId].defense >= 20 ? damage = 1 : damage = 21 - s.players[_playerId].defense;
-        require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
-        uint256 timer;
-        s.players[_playerId].agility >= 600 ? timer = 600 : timer = 1210 - s.players[_playerId].agility;
-        require(block.timestamp >= m.wolfCooldown[_playerId] + timer); //make sure that they have waited 10 mins since last quest (1200 seconds);
-        s.players[_playerId].currentHealth -= damage;
-
-
-        s.players[_playerId].xp += 5;
-        m.wolfCooldown[_playerId] = block.timestamp; //set start time
-    }
 
 
     function _dragonQuest(uint256 _playerId) internal returns (bool) {
@@ -324,11 +301,6 @@ library StorageLib {
         return m.basicMonsterCooldowns[_monsterId][_playerId];
     }
 
-    function _getGoblinCooldown(uint256 _playerId) internal view returns (uint256) {
-        MonsterStorage storage m = diamondStorageMonster();
-        return m.goblinCooldown[_playerId];
-    }
-
 }
 
 contract MonsterFacet {
@@ -343,8 +315,8 @@ contract MonsterFacet {
     }
 
     function createBasicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
-        address createAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
-        require(msg.sender == createAccount);
+        //address createAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+        //require(msg.sender == createAccount);
         StorageLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
         emit CreateBasicMonster(StorageLib._getBasicMonsterCounter());
     }

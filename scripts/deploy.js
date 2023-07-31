@@ -24,13 +24,14 @@ async function deployDiamond() {
     "DiamondLoupeFacet",
     "OwnershipFacet",
     "ERC721Facet",
-    //"PlayerFacet",
+    "PlayerFacet",
     "QuestFacet",
     // 'CraftFacet',
     // 'TrainFacet',
     // 'EquipFacet',
     // 'ArenaFacet'
-    'ExchangeFacet'
+    'ExchangeFacet',
+    'MonsterFacet'
     // 'ScriptFacet',
     //'TreasureDropFacet'
   ];

@@ -12,6 +12,19 @@ struct Item {
     address owner;
     bool isEquiped;
 }
+
+struct Equipment {
+    uint256 id;
+    uint256 pointer;
+    uint256 slot;
+    uint256 rank;
+    uint256 value;
+    uint256 stat;
+    uint256 owner;
+    string name;
+    string uri;
+    bool isEquiped;
+}
 // stat {
 //     0: strength;
 //     1: health;

@@ -5,7 +5,7 @@ import "../libraries/PlayerSlotLib.sol";
 
 // StatusCodes {
 //     0: idle;
-//     1: combatTrain;
+//     1: healthTrain;
 //     2: goldQuest;
 //     3: manaTrain;
 //     4: Arena;
@@ -31,7 +31,7 @@ library StorageLib {
     }
 
     struct TrainStorage {
-        mapping(uint256 => uint256) combat;
+        mapping(uint256 => uint256) basicHealth;
         mapping(uint256 => uint256) mana;
         mapping(uint256 => uint256) meditation;
         mapping(uint256 => uint256) education;
@@ -52,26 +52,29 @@ library StorageLib {
         }
     }
 
-    function _startTrainingCombat(uint256 _tokenId) internal {
+    function _startTrainingBasicHealth(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         TrainStorage storage t = diamondStorageTrain();
-        require(s.players[_tokenId].status == 0); //is idle
-        require(s.owners[_tokenId] == msg.sender); // ownerOf
-        s.players[_tokenId].status = 1;
-        t.combat[_tokenId] = block.timestamp;
-        delete t.cooldown[_tokenId];
+        require(s.players[_playerId].status == 0); //is idle
+        require(s.owners[_playerId] == msg.sender); // ownerOf
+        require(s.players[_playerId].health > s.players[_playerId].currentHealth); //make sure player isnt at full health
+        s.players[_playerId].status = 1; //set status to trainHealth
+        t.basicHealth[_playerId] = block.timestamp;
+        delete t.cooldown[_playerId];
     }
 
-    function _endTrainingCombat(uint256 _tokenId) internal {
+    function _endTrainingBasicHealth(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         TrainStorage storage t = diamondStorageTrain();
-        require(s.owners[_tokenId] == msg.sender);
+        require(s.owners[_playerId] == msg.sender);
         require(tx.origin == msg.sender);
-        require(s.players[_tokenId].status == 1);
-        require(block.timestamp >= t.combat[_tokenId] + 120, "it's too early to pull out");
-        s.players[_tokenId].status = 0;
-        delete t.combat[_tokenId];
-        s.players[_tokenId].strength++;
+        require(s.players[_playerId].status == 1); //check that they are doing basic health
+        uint256 timer;
+        s.players[_playerId].agility >= 60 ? timer = 60 : timer = 130 - s.players[_playerId].agility;
+        require(block.timestamp >= t.basicHealth[_playerId] + 120, "it's too early to pull out");
+        s.players[_playerId].status = 0; //reset status back to idle
+        delete t.basicHealth[_playerId];
+        s.players[_playerId].currentHealth++;
     }
 
     function _startTrainingMana(uint256 _tokenId) internal {
@@ -112,7 +115,7 @@ library StorageLib {
 
     function _getCombatStart(uint256 _playerId) internal view returns (uint256) {
         TrainStorage storage t = diamondStorageTrain();
-        return t.combat[_playerId];
+        return t.basicHealth[_playerId];
     }
 
     function _getManaStart(uint256 _playerId) internal view returns (uint256) {
@@ -122,19 +125,19 @@ library StorageLib {
 }
 
 contract TrainFacet {
-    event BeginTrainingCombat(address indexed _playerAddress, uint256 indexed _id);
-    event EndTrainingCombat(address indexed _playerAddress, uint256 indexed _id);
+    event BeginTrainingBasicHealth(address indexed _playerAddress, uint256 indexed _id);
+    event EndTrainingBasicHealth(address indexed _playerAddress, uint256 indexed _id);
     event BeginTrainingMana(address indexed _playerAddress, uint256 indexed _id);
     event EndTrainingMana(address indexed _playerAddress, uint256 indexed _id);
 
-    function startTrainingCombat(uint256 _tokenId) external {
-        StorageLib._startTrainingCombat(_tokenId);
-        emit BeginTrainingCombat(msg.sender, _tokenId);
+    function startTrainingBasicHealth(uint256 _playerId) external {
+        StorageLib._startTrainingBasicHealth(_playerId);
+        emit BeginTrainingBasicHealth(msg.sender, _playerId);
     }
 
-    function endTrainingCombat(uint256 _tokenId) external {
-        StorageLib._endTrainingCombat(_tokenId);
-        emit EndTrainingCombat(msg.sender, _tokenId);
+    function endTrainingBasicHealth(uint256 _playerId) external {
+        StorageLib._endTrainingBasicHealth(_playerId);
+        emit EndTrainingBasicHealth(msg.sender, _playerId);
     }
 
     function startTrainingMana(uint256 _tokenId) external {

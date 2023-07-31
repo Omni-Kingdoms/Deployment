@@ -36,7 +36,7 @@ library PlayerSlotLib {
 
     // StatusCodes {
     //     0: idle;
-    //     1: combatTrain;
+    //     1: healthTrain;
     //     2: goldQuest;
     //     3: manaTrain;
     //     4: Arena;

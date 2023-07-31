@@ -572,42 +572,6 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "_uri",
-          "type": "string"
-        }
-      ],
-      "name": "craftGuitar",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "_uri",
-          "type": "string"
-        }
-      ],
-      "name": "craftSword",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "bytes4",
           "name": "_selector",
           "type": "bytes4"
@@ -3167,7 +3131,7 @@
           "type": "uint256"
         }
       ],
-      "name": "BeginTrainingCombat",
+      "name": "BeginTrainingBasicHealth",
       "type": "event"
     },
     {
@@ -3205,7 +3169,7 @@
           "type": "uint256"
         }
       ],
-      "name": "EndTrainingCombat",
+      "name": "EndTrainingBasicHealth",
       "type": "event"
     },
     {
@@ -3231,11 +3195,11 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_tokenId",
+          "name": "_playerId",
           "type": "uint256"
         }
       ],
-      "name": "endTrainingCombat",
+      "name": "endTrainingBasicHealth",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -3295,11 +3259,11 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_tokenId",
+          "name": "_playerId",
           "type": "uint256"
         }
       ],
-      "name": "startTrainingCombat",
+      "name": "startTrainingBasicHealth",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

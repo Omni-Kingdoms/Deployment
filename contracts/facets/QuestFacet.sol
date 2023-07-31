@@ -42,6 +42,8 @@ struct Treasure {
     string uri;
 }
 
+
+
 library StorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant QUEST_STORAGE_POSITION = keccak256("quest.test.storage.a");
