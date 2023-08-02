@@ -27,6 +27,7 @@ struct Equipment {
 }
 
 struct BasicCraft {
+    uint256 id;
     uint256 slot;
     uint256 value;
     uint256 cost;
@@ -158,7 +159,7 @@ library StorageLib {
         );
     }
 
-    function _purhcaseBasicEquipment(uint256 _playerId, uint256 _equipmentId) internal {
+    function _purchaseBasicEquipment(uint256 _playerId, uint256 _equipmentId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         EquipmentStorage storage e = diamondStorageItem();
         CoinStorage storage c = diamondStorageCoin();
@@ -167,7 +168,7 @@ library StorageLib {
         require(c.goldBalance[msg.sender] >= e.basicEquipment[_equipmentId].cost); //check user has enough gold
         e.equipmentCount++; //increment equipment count
         e.equipment[e.equipmentCount] = Equipment(
-            _equipmentId,
+            e.equipmentCount,
             e.playerToEquipment[_playerId].length,
             e.basicEquipment[_equipmentId].slot,
             1,
@@ -185,6 +186,7 @@ library StorageLib {
         EquipmentStorage storage e = diamondStorageItem();
         e.basicCraftCount++;
         e.basicCraft[e.basicCraftCount] = BasicCraft(
+            e.basicCraftCount,
             e.basicEquipment[_equipmentId].slot, 
             _value,
             _cost,
@@ -198,6 +200,22 @@ library StorageLib {
         PlayerStorage storage s = diamondStoragePlayer();
         EquipmentStorage storage e = diamondStorageItem();
         CoinStorage storage c = diamondStorageCoin();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender, "you do not own this player"); //ownerOf player
+        require(!e.equipment[_equipmentId].isEquiped, "must not be equipped"); //check that the hammer is not equipped
+        BasicCraft storage basicCraft = e.basicCraft[_craftId];
+        require(c.gemBalance[msg.sender] >= basicCraft.cost, "need more gem"); //check user has enough gem
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the hamemr
+        require(
+            keccak256(abi.encodePacked(e.equipment[_equipmentId].name))
+                == keccak256(abi.encodePacked(basicCraft.oldName)),
+            "not the same equipment name"
+        );
+        c.gemBalance[msg.sender] -= basicCraft.cost; //deduct 15 gem from the address' balance
+        e.equipment[_equipmentId].rank++;
+        e.equipment[_equipmentId].value = basicCraft.value;
+        e.equipment[_equipmentId].name = basicCraft.newName;
+        e.equipment[_equipmentId].uri = basicCraft.uri;
     }
 
 

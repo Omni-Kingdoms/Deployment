@@ -32,6 +32,7 @@ library PlayerSlotLib {
     //     3: rightHand;
     //     4: pants;
     //     5: feet;
+    //     6: neck;
     // }
 
     // StatusCodes {

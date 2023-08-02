@@ -1296,7 +1296,7 @@
         {
           "indexed": true,
           "internalType": "uint256",
-          "name": "_itemId",
+          "name": "_equipmentId",
           "type": "uint256"
         }
       ],
@@ -1321,7 +1321,7 @@
         {
           "indexed": true,
           "internalType": "uint256",
-          "name": "_itemId",
+          "name": "_equipmentId",
           "type": "uint256"
         }
       ],
@@ -1337,11 +1337,11 @@
         },
         {
           "internalType": "uint256",
-          "name": "_itemId",
+          "name": "_equipmentId",
           "type": "uint256"
         }
       ],
-      "name": "equipBody",
+      "name": "equip",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1355,83 +1355,11 @@
         },
         {
           "internalType": "uint256",
-          "name": "_itemId",
+          "name": "_equipmentId",
           "type": "uint256"
         }
       ],
-      "name": "equipHead",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_itemId",
-          "type": "uint256"
-        }
-      ],
-      "name": "equipRightHand",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_itemId",
-          "type": "uint256"
-        }
-      ],
-      "name": "unequipBody",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_itemId",
-          "type": "uint256"
-        }
-      ],
-      "name": "unequipHead",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_itemId",
-          "type": "uint256"
-        }
-      ],
-      "name": "unequipRightHand",
+      "name": "unequip",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -3435,6 +3363,25 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_player",
+          "type": "uint256"
+        }
+      ],
+      "name": "ItemCrafted",
+      "type": "event"
     },
     {
       "anonymous": false,

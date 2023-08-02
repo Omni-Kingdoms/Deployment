@@ -3,14 +3,14 @@ pragma solidity ^0.8.0;
 
 import "../libraries/PlayerSlotLib.sol";
 
-struct Item {
+
+struct BasicEquipment {
     uint256 slot;
-    uint256 rank;
     uint256 value;
     uint256 stat;
+    uint256 cost;
     string name;
-    address owner;
-    bool isEquiped;
+    string uri;
 }
 
 struct Equipment {
@@ -25,6 +25,25 @@ struct Equipment {
     string uri;
     bool isEquiped;
 }
+
+struct BasicCraft {
+    uint256 id;
+    uint256 slot;
+    uint256 value;
+    uint256 cost;
+    string oldName;
+    string newName;
+    string uri;
+}
+
+struct ManaCraft {
+    uint256 slot;
+    uint256 cost;
+    string oldName;
+    string newName;
+    string uri;
+}
+
 // stat {
 //     0: strength;
 //     1: health;
@@ -37,7 +56,7 @@ struct Equipment {
 
 library StorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
-    bytes32 constant ITEM_STORAGE_POSITION = keccak256("item.test.storage.a");
+    bytes32 constant EQUIPMENT_STORAGE_POSITION = keccak256("equipment.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
     using PlayerSlotLib for PlayerSlotLib.Slot;
@@ -54,11 +73,18 @@ library StorageLib {
         mapping(uint256 => PlayerSlotLib.Slot) slots;
     }
 
-    struct ItemStorage {
-        uint256 itemCount;
-        mapping(uint256 => address) owners;
-        mapping(uint256 => Item) items;
-        mapping(address => uint256[]) addressToItems;
+    struct EquipmentStorage {
+        uint256 equipmentCount;
+        uint256 basicEquipmentCount;
+        mapping(uint256 => BasicEquipment) basicEquipment;
+        mapping(uint256 => Equipment) equipment;
+
+        uint256 basicCraftCount;
+        mapping(uint256 => BasicCraft) basicCraft;
+
+
+
+        mapping(uint256 => uint256[]) playerToEquipment;
     }
 
     function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
@@ -68,200 +94,337 @@ library StorageLib {
         }
     }
 
-    function diamondStorageItem() internal pure returns (ItemStorage storage ds) {
-        bytes32 position = ITEM_STORAGE_POSITION;
+    function diamondStorageItem() internal pure returns (EquipmentStorage storage ds) {
+        bytes32 position = EQUIPMENT_STORAGE_POSITION;
         assembly {
             ds.slot := position
         }
     }
 
-    function _increaseStats(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _increaseStats(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        uint256 stat = i.items[_itemId].stat;
+        Equipment storage equipment = e.equipment[_equipmentId];
+        uint256 stat = equipment.stat;
         if (stat == 0) {
             //if strength
-            s.players[_playerId].strength += i.items[_itemId].value;
+            s.players[_playerId].strength += equipment.value;
         } else if (stat == 1) {
             //if health
-            s.players[_playerId].health += i.items[_itemId].value;
+            s.players[_playerId].health += equipment.value;
+            s.players[_playerId].currentHealth += equipment.value;
         } else if (stat == 2) {
             //if agility
-            s.players[_playerId].agility += i.items[_itemId].value;
+            s.players[_playerId].agility += equipment.value;
         } else if (stat == 3) {
             //if magic
-            s.players[_playerId].magic += i.items[_itemId].value;
+            s.players[_playerId].magic += equipment.value;
         } else if (stat == 4) {
             //if defense
-            s.players[_playerId].defense += i.items[_itemId].value;
+            s.players[_playerId].defense += equipment.value;
         } else if (stat == 5) {
             //if maxMana
-            s.players[_playerId].maxMana += i.items[_itemId].value;
-            s.players[_playerId].mana += i.items[_itemId].value;
+            s.players[_playerId].maxMana += equipment.value;
+            s.players[_playerId].mana += equipment.value;
         } else {
             // must be luck
-            s.players[_playerId].luck += i.items[_itemId].value;
+            s.players[_playerId].luck += equipment.value;
         }
     }
 
-    function _decreaseStats(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _decreaseStats(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        uint256 stat = i.items[_itemId].stat;
+        Equipment storage equipment = e.equipment[_equipmentId];
+        uint256 stat = equipment.stat;
         if (stat == 0) {
             //if strength
-            s.players[_playerId].strength -= i.items[_itemId].value;
+            s.players[_playerId].strength -= equipment.value;
         } else if (stat == 1) {
             //if health
-            s.players[_playerId].health -= i.items[_itemId].value;
+            s.players[_playerId].health -= equipment.value;
+            if (s.players[_playerId].currentHealth <= equipment.value) {
+                s.players[_playerId].currentHealth = 0;
+            } else {
+                s.players[_playerId].currentHealth -= equipment.value;
+            }
         } else if (stat == 2) {
             //if agility
-            s.players[_playerId].agility -= i.items[_itemId].value;
+            s.players[_playerId].agility -= equipment.value;
         } else if (stat == 3) {
             //if magic
-            s.players[_playerId].magic -= i.items[_itemId].value;
+            s.players[_playerId].magic -= equipment.value;
         } else if (stat == 4) {
             //if defense
-            s.players[_playerId].defense -= i.items[_itemId].value;
+            s.players[_playerId].defense -= equipment.value;
         } else if (stat == 5) {
             //if maxMana
-            s.players[_playerId].maxMana -= i.items[_itemId].value;
-            if (s.players[_playerId].mana <= i.items[_itemId].value) {
+            s.players[_playerId].maxMana -= equipment.value;
+            if (s.players[_playerId].mana <= equipment.value) {
                 s.players[_playerId].mana = 0;
             } else {
-                s.players[_playerId].mana -= i.items[_itemId].value;
+                s.players[_playerId].mana -= equipment.value;
             }
         } else {
             // must be luck
-            s.players[_playerId].luck -= i.items[_itemId].value;
+            s.players[_playerId].luck -= equipment.value;
         }
     }
 
-    function _equipHead(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _equip(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        uint256 slot = e.equipment[_equipmentId].slot;
+        if (slot == 0) { //head
+            _equipHead(_playerId, _equipmentId);
+        } else if (slot == 1) { //body
+            _equipBody(_playerId, _equipmentId);
+        } else if (slot == 2) { //leftHand
+            _equipLeftHand(_playerId, _equipmentId);
+        } else if (slot == 3) { //rightHand
+            _equipRightHand(_playerId, _equipmentId);
+        } else if (slot == 4) { //pants
+            _equipPants(_playerId, _equipmentId);
+        } else if (slot == 5) { //pants
+            _equipFeet(_playerId, _equipmentId);
+        } else {
+            _equipNeck(_playerId, _equipmentId);
+        }
+    }
+
+    function _unequip(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        uint256 slot = e.equipment[_equipmentId].slot;
+        if (slot == 0) { //head
+            _unequipHead(_playerId, _equipmentId);
+        } else if (slot == 1) { //body
+            _unequipBody(_playerId, _equipmentId);
+        } else if (slot == 2) { //leftHand
+            _unequipLeftHand(_playerId, _equipmentId);
+        } else if (slot == 3) { //rightHand
+            _unequipRightHand(_playerId, _equipmentId);
+        } else if (slot == 4) { //pants
+            _unequipPants(_playerId, _equipmentId);
+        } else if (slot == 5) { //pants
+            _unequipFeet(_playerId, _equipmentId);
+        } else {
+            _unequipNeck(_playerId, _equipmentId);
+        }
+    }
+
+    function _equipHead(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        require(i.owners[_itemId] == msg.sender); //require owner of Item
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
-        require(i.items[_itemId].slot == 0); //require item head
-        require(!i.items[_itemId].isEquiped); //require item isn't equiped
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(equipment.slot == 0); //require item head
+        require(!equipment.isEquiped); //require item isn't equiped
         require(s.players[_playerId].slot.head == 0); //require that player doesnt have a head item on
-
-        i.items[_itemId].isEquiped = true; //set equiped status to true;
-        s.players[_playerId].slot.head = _itemId; //equip the item to the player
-        _increaseStats(_playerId, _itemId);
-        //return (i.items[_itemId].value, i.items[_itemId].stat);
+        e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
+        s.players[_playerId].slot.head = equipment.id; //equip the item to the player
+        _increaseStats(_playerId, _equipmentId);
     }
-
-    function _unequipHead(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _unequipHead(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        require(i.owners[_itemId] == msg.sender); //require owner of Item
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
-        require(i.items[_itemId].slot == 0); //require item head
-        require(i.items[_itemId].isEquiped); //require item is equiped
-        require(s.players[_playerId].slot.head == _itemId); //require that player has the same item on
-
-        i.items[_itemId].isEquiped = false; //set isEquiped status to false;
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(equipment.slot == 0); //require item head
+        require(equipment.isEquiped); //require item is equiped
+        require(s.players[_playerId].slot.head == _equipmentId); //require that player has the same item on
+        e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
         s.players[_playerId].slot.head = 0; //reset the slot value to 0
-        _decreaseStats(_playerId, _itemId);
+        _decreaseStats(_playerId, _equipmentId);
     }
 
-    function _equipBody(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _equipBody(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        require(i.owners[_itemId] == msg.sender); //require owner of Item
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
-        require(i.items[_itemId].slot == 1); //require item body
-        require(!i.items[_itemId].isEquiped); //require item isn't equiped
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(equipment.slot == 1); //require item body
+        require(!equipment.isEquiped); //require item isn't equiped
         require(s.players[_playerId].slot.body == 0); //require that player doesnt have a body item on
-
-        i.items[_itemId].isEquiped = true; //set equiped status to true;
-        s.players[_playerId].slot.body = _itemId; //equip the item to the player
-        _increaseStats(_playerId, _itemId);
+        e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
+        s.players[_playerId].slot.body = equipment.id; //equip the item to the player
+        _increaseStats(_playerId, _equipmentId);
     }
-
-    function _unequipBody(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _unequipBody(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        require(i.owners[_itemId] == msg.sender); //require owner of Item
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
-        require(i.items[_itemId].slot == 1); //require item body
-        require(i.items[_itemId].isEquiped); //require item is equiped
-        require(s.players[_playerId].slot.body == _itemId); //require that player has the same item on
-
-        i.items[_itemId].isEquiped = false; //set isEquiped status to false;
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(equipment.slot == 1); //require item body
+        require(equipment.isEquiped); //require item is equiped
+        require(s.players[_playerId].slot.body == _equipmentId); //require that player has the same item on
+        e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
         s.players[_playerId].slot.body = 0; //reset the slot value to 0
-        _decreaseStats(_playerId, _itemId);
+        _decreaseStats(_playerId, _equipmentId);
     }
 
-    function _equipRightHand(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _equipLeftHand(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        require(i.owners[_itemId] == msg.sender); //require owner of Item
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
-        require(i.items[_itemId].slot == 3 || i.items[_itemId].slot == 2); //require item is a hand item
-        require(!i.items[_itemId].isEquiped); //require item isn't equiped
-        require(s.players[_playerId].slot.rightHand == 0); //require that player doesnt have a right hand item on
-
-        i.items[_itemId].isEquiped = true; //set equiped status to true;
-        s.players[_playerId].slot.rightHand = _itemId; //equip the item to the player
-        _increaseStats(_playerId, _itemId);
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(equipment.slot == 2); //require item leftHand
+        require(!equipment.isEquiped); //require item isn't equiped
+        require(s.players[_playerId].slot.leftHand == 0); //require that player doesnt have a leftHand item on
+        e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
+        s.players[_playerId].slot.leftHand = equipment.id; //equip the item to the player
+        _increaseStats(_playerId, _equipmentId);
+    }
+    function _unequipLeftHand(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(equipment.slot == 2); //require item leftHand
+        require(equipment.isEquiped); //require item is equiped
+        require(s.players[_playerId].slot.leftHand == _equipmentId); //require that player has the same item on
+        e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
+        s.players[_playerId].slot.leftHand = 0; //reset the slot value to 0
+        _decreaseStats(_playerId, _equipmentId);
     }
 
-    function _unequipRightHand(uint256 _playerId, uint256 _itemId) internal {
-        ItemStorage storage i = diamondStorageItem();
+    function _equipRightHand(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
         PlayerStorage storage s = diamondStoragePlayer();
-        require(i.owners[_itemId] == msg.sender); //require owner of Item
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
-        require(i.items[_itemId].slot == 3 || i.items[_itemId].slot == 2); //require item on right hand
-        require(i.items[_itemId].isEquiped); //require item is equiped
-        require(s.players[_playerId].slot.rightHand == _itemId); //require that player has the same item on
-
-        i.items[_itemId].isEquiped = false; //set isEquiped status to false;
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(equipment.slot == 3); //require item rightHand
+        require(!equipment.isEquiped); //require item isn't equiped
+        require(s.players[_playerId].slot.rightHand == 0); //require that player doesnt have a rightHand item on
+        e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
+        s.players[_playerId].slot.rightHand = equipment.id; //equip the item to the player
+        _increaseStats(_playerId, _equipmentId);
+    }
+    function _unequipRightHand(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(equipment.slot == 3); //require item rightHand
+        require(equipment.isEquiped); //require item is equiped
+        require(s.players[_playerId].slot.rightHand == _equipmentId); //require that player has the same item on
+        e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
         s.players[_playerId].slot.rightHand = 0; //reset the slot value to 0
-        _decreaseStats(_playerId, _itemId);
+        _decreaseStats(_playerId, _equipmentId);
     }
+
+    function _equipPants(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(equipment.slot == 4); //require item pants
+        require(!equipment.isEquiped); //require item isn't equiped
+        require(s.players[_playerId].slot.pants == 0); //require that player doesnt have a pants item on
+        e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
+        s.players[_playerId].slot.pants = equipment.id; //equip the item to the player
+        _increaseStats(_playerId, _equipmentId);
+    }
+    function _unequipPants(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(equipment.slot == 4); //require item pants
+        require(equipment.isEquiped); //require item is equiped
+        require(s.players[_playerId].slot.pants == _equipmentId); //require that player has the same item on
+        e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
+        s.players[_playerId].slot.pants = 0; //reset the slot value to 0
+        _decreaseStats(_playerId, _equipmentId);
+    }
+
+    function _equipFeet(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(equipment.slot == 5); //require item feet
+        require(!equipment.isEquiped); //require item isn't equiped
+        require(s.players[_playerId].slot.feet == 0); //require that player doesnt have a pants item on
+        e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
+        s.players[_playerId].slot.feet = equipment.id; //equip the item to the player
+        _increaseStats(_playerId, _equipmentId);
+    }
+    function _unequipFeet(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(equipment.slot == 5); //require item feet
+        require(equipment.isEquiped); //require item is equiped
+        require(s.players[_playerId].slot.feet == _equipmentId); //require that player has the same item on
+        e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
+        s.players[_playerId].slot.feet = 0; //reset the slot value to 0
+        _decreaseStats(_playerId, _equipmentId);
+    }
+
+    function _equipNeck(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(equipment.slot == 6); //require item feet
+        require(!equipment.isEquiped); //require item isn't equiped
+        require(s.players[_playerId].slot.neck == 0); //require that player doesnt have a pants item on
+        e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
+        s.players[_playerId].slot.neck = equipment.id; //equip the item to the player
+        _increaseStats(_playerId, _equipmentId);
+    }
+    function _unequipNeck(uint256 _playerId, uint256 _equipmentId) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(equipment.slot == 6); //require item neck
+        require(equipment.isEquiped); //require item is equiped
+        require(s.players[_playerId].slot.neck == _equipmentId); //require that player has the same item on
+        e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
+        s.players[_playerId].slot.neck = 0; //reset the slot value to 0
+        _decreaseStats(_playerId, _equipmentId);
+    }
+
+
+
+
 }
 
 contract EquipFacet {
-    event ItemEquiped(address indexed _owner, uint256 indexed _playerId, uint256 indexed _itemId);
-    event ItemUnequiped(address indexed _owner, uint256 indexed _playerId, uint256 indexed _itemId);
+    event ItemEquiped(address indexed _owner, uint256 indexed _playerId, uint256 indexed _equipmentId);
+    event ItemUnequiped(address indexed _owner, uint256 indexed _playerId, uint256 indexed _equipmentId);
 
-    function equipHead(uint256 _playerId, uint256 _itemId) external {
-        StorageLib._equipHead(_playerId, _itemId);
-        emit ItemEquiped(msg.sender, _playerId, _itemId);
+    function equip(uint256 _playerId, uint256 _equipmentId) public {
+        StorageLib._equip(_playerId, _equipmentId);
+        emit ItemEquiped(msg.sender, _playerId, _equipmentId);
+    }
+    function unequip(uint256 _playerId, uint256 _equipmentId) public {
+        StorageLib._unequip(_playerId, _equipmentId);
+        emit ItemUnequiped(msg.sender, _playerId, _equipmentId);
     }
 
-    function equipBody(uint256 _playerId, uint256 _itemId) external {
-        StorageLib._equipBody(_playerId, _itemId);
-        emit ItemEquiped(msg.sender, _playerId, _itemId);
-    }
-
-    function equipRightHand(uint256 _playerId, uint256 _itemId) external {
-        StorageLib._equipRightHand(_playerId, _itemId);
-        emit ItemEquiped(msg.sender, _playerId, _itemId);
-    }
-
-    function unequipHead(uint256 _playerId, uint256 _itemId) external {
-        StorageLib._unequipHead(_playerId, _itemId);
-        emit ItemUnequiped(msg.sender, _playerId, _itemId);
-    }
-
-    function unequipBody(uint256 _playerId, uint256 _itemId) external {
-        StorageLib._unequipBody(_playerId, _itemId);
-        emit ItemUnequiped(msg.sender, _playerId, _itemId);
-    }
-
-    function unequipRightHand(uint256 _playerId, uint256 _itemId) external {
-        StorageLib._unequipRightHand(_playerId, _itemId);
-        emit ItemUnequiped(msg.sender, _playerId, _itemId);
-    }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 }
