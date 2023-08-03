@@ -3190,7 +3190,7 @@
           "type": "uint256"
         }
       ],
-      "name": "getCombatStart",
+      "name": "getHealthStart",
       "outputs": [
         {
           "internalType": "uint256",
@@ -3400,25 +3400,6 @@
       ],
       "stateMutability": "view",
       "type": "function"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "_owner",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "_player",
-          "type": "uint256"
-        }
-      ],
-      "name": "ItemCrafted",
-      "type": "event"
     },
     {
       "anonymous": false,

@@ -32,7 +32,7 @@ library StorageLib {
 
     struct TrainStorage {
         mapping(uint256 => uint256) basicHealth;
-        mapping(uint256 => uint256) mana;
+        mapping(uint256 => uint256) basicMana;
         mapping(uint256 => uint256) meditation;
         mapping(uint256 => uint256) education;
         mapping(uint256 => uint256) cooldown;
@@ -85,7 +85,7 @@ library StorageLib {
         require(block.timestamp >= t.cooldown[_tokenId] + 1); //check time requirement
 
         s.players[_tokenId].status = 3; //mana training
-        t.mana[_tokenId] = block.timestamp;
+        t.basicMana[_tokenId] = block.timestamp;
         delete t.cooldown[_tokenId];
     }
 
@@ -94,9 +94,9 @@ library StorageLib {
         TrainStorage storage t = diamondStorageTrain();
         require(s.owners[_playerId] == msg.sender);
         require(s.players[_playerId].status == 3); //require that they are training mana
-        require(block.timestamp >= t.mana[_playerId] + 300, "it's too early to pull out");
+        require(block.timestamp >= t.basicMana[_playerId] + 300, "it's too early to pull out");
         s.players[_playerId].status = 0;
-        delete t.mana[_playerId];
+        delete t.basicMana[_playerId];
         t.cooldown[_playerId] = block.timestamp; //reset the cool down
         require(s.players[_playerId].mana < s.players[_playerId].maxMana);
         s.players[_playerId].mana++;
@@ -113,14 +113,14 @@ library StorageLib {
         delete t.cooldown[_tokenId];
     }
 
-    function _getCombatStart(uint256 _playerId) internal view returns (uint256) {
+    function _getHealthStart(uint256 _playerId) internal view returns (uint256) {
         TrainStorage storage t = diamondStorageTrain();
         return t.basicHealth[_playerId];
     }
 
     function _getManaStart(uint256 _playerId) internal view returns (uint256) {
         TrainStorage storage t = diamondStorageTrain();
-        return t.mana[_playerId];
+        return t.basicMana[_playerId];
     }
 }
 
@@ -150,8 +150,8 @@ contract TrainFacet {
         emit EndTrainingMana(msg.sender, _tokenId);
     }
 
-    function getCombatStart(uint256 _playerId) external view returns (uint256) {
-        return StorageLib._getCombatStart(_playerId);
+    function getHealthStart(uint256 _playerId) external view returns (uint256) {
+        return StorageLib._getHealthStart(_playerId);
     }
 
     function getManaStart(uint256 _playerId) external view returns (uint256) {
