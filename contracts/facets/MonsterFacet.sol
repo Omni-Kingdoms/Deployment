@@ -194,6 +194,7 @@ library StorageLib {
         s.players[_playerId].agility >= m.basicMonsters[_monsterId].cooldown/2  ? timer = m.basicMonsters[_monsterId].cooldown/2  : timer = m.basicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
         require(block.timestamp >= m.basicMonsterCooldowns[_monsterId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
         s.players[_playerId].xp += m.basicMonsters[_monsterId].xpReward; //give the player xp
+        s.players[_playerId].currentHealth -= damage; //deduct damage
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
     }
 
