@@ -307,6 +307,7 @@ contract MonsterFacet {
 
     event DragonQuest(uint256 indexed _playerId);
     event CreateBasicMonster(uint256 indexed _monsterId);
+    event FightBasicMonster(uint256 indexed _monsterId, uint256 _playerId);
 
     function dragonQuest(uint256 _playerId) external returns (bool result) {
         result = StorageLib._dragonQuest(_playerId);
@@ -319,6 +320,11 @@ contract MonsterFacet {
         //require(msg.sender == createAccount);
         StorageLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
         emit CreateBasicMonster(StorageLib._getBasicMonsterCounter());
+    }
+
+    function fightBasicMonster(uint256 _playerId, uint256 _monsterId) public {
+        StorageLib._fightBasicMonster(_playerId, _monsterId);
+        emit FightBasicMonster(_monsterId, _playerId);
     }
 
     function getMonsterCounter() public view returns (uint256) {
