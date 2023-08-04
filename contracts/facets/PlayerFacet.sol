@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import "../libraries/PlayerSlotLib.sol";
 import {ERC721Facet} from "./ERC721Facet.sol";
@@ -395,13 +395,14 @@ library PlayerStorageLib {
             s.players[_playerId].magic++;
         } else if (_stat == 4) {
             //if defense
-            player.defense += player.level;
+            s.players[_playerId].defense++;
         } else if (_stat == 5) {
             // if luck
-            player.luck += player.level;
+            s.players[_playerId].luck++;
         } else {
-            // must be haki
-            player.haki += player.level;
+            // must be mana
+            s.players[_playerId].maxMana++;
+            s.players[_playerId].mana = s.players[_playerId].maxMana;
         }
         s.players[_playerId].xp = player.xp - (player.level * 10); //subtract xp form the player
         s.players[_playerId].level++; //level up the player

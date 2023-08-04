@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 import "../libraries/PlayerSlotLib.sol";
 
 
-struct BasicEquipment {
+struct BasicEquipmentSchema {
+    uint256 basicEquipmentSchemaId;
     uint256 slot;
     uint256 value;
     uint256 stat;
@@ -86,7 +87,7 @@ library StorageLib {
     struct EquipmentStorage {
         uint256 equipmentCount;
         uint256 basicEquipmentCount;
-        mapping(uint256 => BasicEquipment) basicEquipment;
+        mapping(uint256 => BasicEquipmentSchema) basicEquipmentSchema;
         mapping(uint256 => Equipment) equipment;
 
         uint256 basicCraftCount;
@@ -154,43 +155,43 @@ library StorageLib {
     ) internal {
         EquipmentStorage storage e = diamondStorageItem();
         e.basicEquipmentCount++;
-        e.basicEquipment[e.basicEquipmentCount] = BasicEquipment(
-            _slot, _value, _stat, _cost, _name, _uri
+        e.basicEquipmentSchema[e.basicEquipmentCount] = BasicEquipmentSchema(
+            e.basicEquipmentCount, _slot, _value, _stat, _cost, _name, _uri
         );
     }
 
-    function _purchaseBasicEquipment(uint256 _playerId, uint256 _equipmentId) internal {
+    function _purchaseBasicEquipment(uint256 _playerId, uint256 _equipmentSchemaId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         EquipmentStorage storage e = diamondStorageItem();
         CoinStorage storage c = diamondStorageCoin();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
-        require(c.goldBalance[msg.sender] >= e.basicEquipment[_equipmentId].cost); //check user has enough gold
+        require(c.goldBalance[msg.sender] >= e.basicEquipmentSchema[_equipmentSchemaId].cost); //check user has enough gold
         e.equipmentCount++; //increment equipment count
         e.equipment[e.equipmentCount] = Equipment(
             e.equipmentCount,
             e.playerToEquipment[_playerId].length,
-            e.basicEquipment[_equipmentId].slot,
+            e.basicEquipmentSchema[_equipmentSchemaId].slot,
             1,
-            e.basicEquipment[_equipmentId].value,
-            e.basicEquipment[_equipmentId].stat,
+            e.basicEquipmentSchema[_equipmentSchemaId].value,
+            e.basicEquipmentSchema[_equipmentSchemaId].stat,
             _playerId,
-            e.basicEquipment[_equipmentId].name,
-            e.basicEquipment[_equipmentId].uri,
+            e.basicEquipmentSchema[_equipmentSchemaId].name,
+            e.basicEquipmentSchema[_equipmentSchemaId].uri,
             false
         );
         e.playerToEquipment[_playerId].push(e.equipmentCount); //add to the player array
     }
 
-    function _createBasicCraft(uint256 _equipmentId, uint256 _value, uint256 _cost, string memory _newName, string memory _uri) internal {
+    function _createBasicCraft(uint256 _equipmenSchematId, uint256 _value, uint256 _cost, string memory _newName, string memory _uri) internal {
         EquipmentStorage storage e = diamondStorageItem();
         e.basicCraftCount++;
         e.basicCraft[e.basicCraftCount] = BasicCraft(
             e.basicCraftCount,
-            e.basicEquipment[_equipmentId].slot, 
+            e.basicEquipmentSchema[_equipmenSchematId].slot, 
             _value,
             _cost,
-            e.basicEquipment[_equipmentId].name,
+            e.basicEquipmentSchema[_equipmenSchematId].name,
             _newName,
             _uri
         );
@@ -217,60 +218,6 @@ library StorageLib {
         e.equipment[_equipmentId].name = basicCraft.newName;
         e.equipment[_equipmentId].uri = basicCraft.uri;
     }
-
-
-
-
-
-
-
-    // function _craftGravityHammer(uint256 _playerId, uint256 _itemId, string memory _uri) internal {
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     EquipmentStorage storage e = diamondStorageItem();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     require(s.players[_playerId].status == 0, "must be idle"); //make sure player is idle
-    //     require(s.owners[_playerId] == msg.sender, "you are not the owner"); //ownerOf
-    //     require(e.owners[_itemId] == _playerId); //check that the player is the onwer of the hamemr
-    //     require(!e.equipment[_itemId].isEquiped, "must not be equipped"); //check that the hammer is not equipped
-    //     require(
-    //         keccak256(abi.encodePacked(e.equipment[_itemId].name))
-    //             == keccak256(abi.encodePacked("WHammer")),
-    //         "this is not a war hammer"
-    //     );
-    //     require(c.gemBalance[msg.sender] >= 15); //check user has enough gem
-    //     c.gemBalance[msg.sender] -= 15; //deduct 15 gem from the address' balance
-
-    //     uint256 keyToDelete = e.equipment[_itemId].pointer; //sets the index to delete as the desired key
-    //     uint256 keyToMove = e.playerToEquipment[_playerId].length - 1; //gets the index of the last equipment that is owned by the player
-    //     e.playerToEquipment[_playerId][keyToDelete] = keyToMove; //the id in the playerToEquipment is replaced w the last index key 
-    //     e.equipment[e.playerToEquipment[_playerId][keyToDelete]].pointer = keyToDelete; //reset the pointer
-    //     e.playerToEquipment[_playerId].pop(); //remove the last key item
-    //     delete e.playerToEquipment[_itemId]; //delete the item
-
-    //     e.equipmentCount++; //increment equipmentCount
-    //     e.owners[e.equipmentCount] = _playerId; //set owner to playerId
-    //     e.equipment[e.equipmentCount] = Equipment(e.equipmentCount, e.playerToEquipment[_playerId].length, 2, 1, 10, 0, _playerId, "GHammer", _uri, false);
-    //     e.playerToEquipment[_playerId].push(e.equipmentCount);
-    // }
-
-
-    // function _craftArmor(uint256 _playerId, string memory _uri) internal {
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     EquipmentStorage storage e = diamondStorageItem();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     require(s.players[_playerId].status == 0); //make sure player is idle
-    //     require(s.owners[_playerId] == msg.sender); //ownerOf
-    //     require(c.goldBalance[msg.sender] >= 10); //check user has enough gold
-    //     require(s.players[_playerId].mana >= 2); //make sure player has at least 2 mana
-    //     c.goldBalance[msg.sender] -= 10; //deduct 10 gold from the address' balance
-    //     s.players[_playerId].mana -= 2; //deduct 2 mana from the player
-    //     e.equipmentCount++; //increment equipmentCount
-    //     e.owners[e.equipmentCount] = _playerId; //set owner to playerId
-    //     e.equipment[e.equipmentCount] = Equipment(e.equipmentCount, e.playerToEquipment[_playerId].length, 1, 1, 10, 1, _playerId, "Armor", _uri, false);
-    //     e.playerToEquipment[_playerId].push(e.equipmentCount);
-    // }
-
-
 
 
     function _getPlayerToEquipment(uint256 _playerId) internal view returns (uint256[] memory) {

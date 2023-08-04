@@ -45,6 +45,26 @@ library PlayerSlotLib {
     //     99: exchangeListing;
     // }
 
+    // stat/equipment {
+    //     0: strength;
+    //     1: health;
+    //     2: agility;
+    //     3: magic;
+    //     4: defense;
+    //     5: maxMana;
+    //     6: luck;
+    // }
+
+    // stat/Levelup {
+    //     0: strength;
+    //     1: health;
+    //     2: agility;
+    //     3: magic;
+    //     4: defense;
+    //     5: luck;
+    //     6: haki;
+    // }
+
     struct Slot {
         uint256 head;
         uint256 body;

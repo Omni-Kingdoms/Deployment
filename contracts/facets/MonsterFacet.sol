@@ -1,7 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
+//import "redstone-evm-connector/lib/contracts/message-based/PriceAwareOwnable.sol";
 import "../libraries/PlayerSlotLib.sol";
+import "../libraries/TreasureLib.sol";
+
+struct BasicEquipmentSchema {
+    uint256 basicEquipmentSchemaId;
+    uint256 slot;
+    uint256 value;
+    uint256 stat;
+    uint256 cost;
+    string name;
+    string uri;
+}
 
 // StatusCodes {
 //     0: idle;
@@ -11,6 +23,16 @@ import "../libraries/PlayerSlotLib.sol";
 //     4: Arena;
 //     5: gemQuest;
 // }
+
+struct BasicCraft {
+    uint256 id;
+    uint256 slot;
+    uint256 value;
+    uint256 cost;
+    string oldName;
+    string newName;
+    string uri;
+}
 
 struct Equipment {
     uint256 id;
@@ -34,15 +56,9 @@ struct Equipment {
 //     5: luck;
 // }
 
-struct Treasure {
-    uint256 id;
-    uint256 rank;
-    uint256 pointer;
-    string name;
-}
 
 struct BasicMonster {
-    uint256 monsterId;
+    uint256 basicMonsterId;
     uint256 xpReward;
     uint256 damage;
     uint256 hp;
@@ -52,19 +68,19 @@ struct BasicMonster {
 }
 
 struct TreasureMonster {
-    uint256 monsterId;
+    uint256 treasureMonsterId;
     uint256 xpReward;
     uint256 damage;
     uint256 hp;
     uint256 cooldown;
     uint256 slot;
-    uint256 equipmentId;
-    uint256 treasureId;
+    uint256 equipmentSchemaId;
+    uint256 treasureSchemaId;
     string name;
     string uri;
 }
 
-library StorageLib {
+library StorageMonsterLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant QUEST_STORAGE_POSITION = keccak256("quest.test.storage.a");
     bytes32 constant MONSTER_STORAGE_POSITION = keccak256("monster.test.storage.a");
@@ -101,9 +117,8 @@ library StorageLib {
         uint256 treasureMonsterCounter;
         mapping(uint256 => mapping(uint256 => uint256)) basicMonsterCooldowns;
         mapping(uint256 => BasicMonster) basicMonsters;
-        mapping(uint256 => uint256) dragonCooldown;
-        mapping(uint256 => uint256) cooldowns;
-        mapping(uint256 => uint256) gravityHammerQuestCooldown;
+        mapping(uint256 => mapping(uint256 => uint256)) treasureMonsterCooldowns;
+        mapping(uint256 => TreasureMonster) treasureMonsters;
     }
 
     struct CoinStorage {
@@ -113,16 +128,24 @@ library StorageLib {
         mapping(address => uint256) diamondBalance;
     }
 
-    struct EquipmentStorage {
+   struct EquipmentStorage {
         uint256 equipmentCount;
-        mapping(uint256 => uint256) owners; //maps equipment id to player id
+        uint256 basicEquipmentCount;
+        mapping(uint256 => BasicEquipmentSchema) basicEquipmentSchema;
         mapping(uint256 => Equipment) equipment;
+
+        uint256 basicCraftCount;
+        mapping(uint256 => BasicCraft) basicCraft;
+
+
+
         mapping(uint256 => uint256[]) playerToEquipment;
-        mapping(uint256 => uint256) cooldown;
     }
 
     struct TreasureStorage {
         uint256 treasureCount;
+        uint256 treasureScehmaCount;
+        mapping(uint256 => TreasureSchema) treasureSchema;
         mapping(uint256 => address) owners;
         mapping(uint256 => Treasure) treasures;
         mapping(uint256 => uint256[]) playerToTreasure;
@@ -198,93 +221,120 @@ library StorageLib {
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
     }
 
-
-
-
-    function _dragonQuest(uint256 _playerId) internal returns (bool) {
-        PlayerStorage storage s = diamondStoragePlayer();
+    function _createTreasureMonster(
+        uint256 _xpReward,
+        uint256 _damage,
+        uint256 _hp,
+        uint256 _cooldown,
+        uint256 _equipmentScehmaId,
+        uint256 _treasureScehmaId,
+        string memory _name,
+        string memory _uri
+    ) internal {
         MonsterStorage storage m = diamondStorageMonster();
         EquipmentStorage storage e = diamondStorageEquipment();
-        TreasureStorage storage t = diamondStorageTreasure();
-        require(s.players[_playerId].status == 0); //make sure player is idle
-        require(s.owners[_playerId] == msg.sender); //ownerOf
-        require(block.timestamp >= m.dragonCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
-        require(
-            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.head].name))
-                == keccak256(abi.encodePacked("WizHat")),
-            "not wearing hat"
-        ); // must have wizard hat on
-        m.dragonCooldown[_playerId] = block.timestamp; //reset cooldown
-        if (_random(_playerId) % 20 >= 19) {
-            //5%
-            t.treasureCount++;
-            t.treasures[t.treasureCount] = Treasure(t.treasureCount, 2, t.playerToTreasure[_playerId].length, "Dscale"); //create treasure and add it main map
-            t.playerToTreasure[_playerId].push(t.treasureCount); //push
-            t.owners[t.treasureCount] = msg.sender; //set the user as the owner of the item;
-            s.players[_playerId].xp++; //increment xp
-            return true;
-        } else {
-            return false;
-        }
+        m.treasureMonsterCounter++; //monster counter increment
+        m.treasureMonsters[m.basicMonsterCounter] = TreasureMonster(
+            m.treasureMonsterCounter,
+            _xpReward,
+            _damage,
+            _hp,
+            _cooldown,
+            e.basicEquipmentSchema[_equipmentScehmaId].slot,
+            _equipmentScehmaId,
+            _treasureScehmaId,
+            _name,
+            _uri); //create the monster
     }
 
-    function _dragonGateQuest(uint256 _playerId) internal returns (bool) {
-        PlayerStorage storage s = diamondStoragePlayer();
-        MonsterStorage storage m = diamondStorageMonster();
-        EquipmentStorage storage e = diamondStorageEquipment();
-        TreasureStorage storage t = diamondStorageTreasure();
-        require(s.players[_playerId].status == 0); //make sure player is idle
-        require(s.owners[_playerId] == msg.sender); //ownerOf
-        require(block.timestamp >= m.dragonCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
-        require(
-            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("Guitar")) || 
-            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("Guitar"))
-        );
-        m.dragonCooldown[_playerId] = block.timestamp; //reset cooldown
-        uint256 mod = _random(_playerId) % 20;
-        if (s.players[_playerId].strength > 100 && s.players[_playerId].strength < 200) {
-            mod += 2;
-        } else if (s.players[_playerId].strength > 200 && s.players[_playerId].strength < 300) {
-            mod += 4;
-        }
-        if (mod >= 19) {
-            //5%
-            t.treasureCount++;
-            t.treasures[t.treasureCount] = Treasure(t.treasureCount, 1, t.playerToTreasure[_playerId].length, "Degg"); //create treasure and add it main map
-            t.playerToTreasure[_playerId].push(t.treasureCount); //push
-            t.owners[t.treasureCount] = msg.sender; //set the user as the owner of the item;
-            s.players[_playerId].xp++; //increment xp
-            return true;
-        } else {
-            return false;
-        }
-    }
+    
 
-    function _gravityHammerQuest(uint256 _playerId) internal {
-        PlayerStorage storage s = diamondStoragePlayer();
-        QuestStorage storage q = diamondStorageQuest();
-        EquipmentStorage storage e = diamondStorageEquipment();
-        require(s.players[_playerId].status == 0); //make sure player is idle
-        require(s.owners[_playerId] == msg.sender); //ownerOf
-        require(block.timestamp >= q.gravityHammerQuestCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
-        require(
-            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("GHammer")) || 
-            keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("GHammer"))
-        );
-        q.gravityHammerQuestCooldown[_playerId] = block.timestamp; //reset cooldown
-        if (keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("GHammer"))) { 
-            e.equipment[s.players[_playerId].slot.rightHand].value += 1; 
-        } else {
-            e.equipment[s.players[_playerId].slot.leftHand].value += 1;
-        }
-        q.gravityHammerQuestCooldown[_playerId] = block.timestamp; //reset timer
-        s.players[_playerId].strength += 1;
-    }
+
+    // function _dragonQuest(uint256 _playerId) internal returns (bool) {
+    //     PlayerStorage storage s = diamondStoragePlayer();
+    //     MonsterStorage storage m = diamondStorageMonster();
+    //     EquipmentStorage storage e = diamondStorageEquipment();
+    //     TreasureStorage storage t = diamondStorageTreasure();
+    //     require(s.players[_playerId].status == 0); //make sure player is idle
+    //     require(s.owners[_playerId] == msg.sender); //ownerOf
+    //     require(block.timestamp >= m.dragonCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+    //     require(
+    //         keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.head].name))
+    //             == keccak256(abi.encodePacked("WizHat")),
+    //         "not wearing hat"
+    //     ); // must have wizard hat on
+    //     m.dragonCooldown[_playerId] = block.timestamp; //reset cooldown
+    //     if (_random(_playerId) % 20 >= 19) {
+    //         //5%
+    //         t.treasureCount++;
+    //         t.treasures[t.treasureCount] = Treasure(t.treasureCount, 2, t.playerToTreasure[_playerId].length, "Dscale"); //create treasure and add it main map
+    //         t.playerToTreasure[_playerId].push(t.treasureCount); //push
+    //         t.owners[t.treasureCount] = msg.sender; //set the user as the owner of the item;
+    //         s.players[_playerId].xp++; //increment xp
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    // function _dragonGateQuest(uint256 _playerId) internal returns (bool) {
+    //     PlayerStorage storage s = diamondStoragePlayer();
+    //     MonsterStorage storage m = diamondStorageMonster();
+    //     EquipmentStorage storage e = diamondStorageEquipment();
+    //     TreasureStorage storage t = diamondStorageTreasure();
+    //     require(s.players[_playerId].status == 0); //make sure player is idle
+    //     require(s.owners[_playerId] == msg.sender); //ownerOf
+    //     require(block.timestamp >= m.dragonCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+    //     require(
+    //         keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("Guitar")) || 
+    //         keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("Guitar"))
+    //     );
+    //     m.dragonCooldown[_playerId] = block.timestamp; //reset cooldown
+    //     uint256 mod = _random(_playerId) % 20;
+    //     if (s.players[_playerId].strength > 100 && s.players[_playerId].strength < 200) {
+    //         mod += 2;
+    //     } else if (s.players[_playerId].strength > 200 && s.players[_playerId].strength < 300) {
+    //         mod += 4;
+    //     }
+    //     if (mod >= 19) {
+    //         //5%
+    //         t.treasureCount++;
+    //         t.treasures[t.treasureCount] = Treasure(t.treasureCount, 1, t.playerToTreasure[_playerId].length, "Degg"); //create treasure and add it main map
+    //         t.playerToTreasure[_playerId].push(t.treasureCount); //push
+    //         t.owners[t.treasureCount] = msg.sender; //set the user as the owner of the item;
+    //         s.players[_playerId].xp++; //increment xp
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    // function _gravityHammerQuest(uint256 _playerId) internal {
+    //     PlayerStorage storage s = diamondStoragePlayer();
+    //     QuestStorage storage q = diamondStorageQuest();
+    //     EquipmentStorage storage e = diamondStorageEquipment();
+    //     require(s.players[_playerId].status == 0); //make sure player is idle
+    //     require(s.owners[_playerId] == msg.sender); //ownerOf
+    //     require(block.timestamp >= q.gravityHammerQuestCooldown[_playerId] + 43200); //make sure that they have waited 12 hours since last quest (43200 seconds);
+    //     require(
+    //         keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("GHammer")) || 
+    //         keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.leftHand].name)) == keccak256(abi.encodePacked("GHammer"))
+    //     );
+    //     q.gravityHammerQuestCooldown[_playerId] = block.timestamp; //reset cooldown
+    //     if (keccak256(abi.encodePacked(e.equipment[s.players[_playerId].slot.rightHand].name)) == keccak256(abi.encodePacked("GHammer"))) { 
+    //         e.equipment[s.players[_playerId].slot.rightHand].value += 1; 
+    //     } else {
+    //         e.equipment[s.players[_playerId].slot.leftHand].value += 1;
+    //     }
+    //     q.gravityHammerQuestCooldown[_playerId] = block.timestamp; //reset timer
+    //     s.players[_playerId].strength += 1;
+    // }
 
     function _random(uint256 _nonce) internal returns (uint256) {
         QuestStorage storage q = diamondStorageQuest();
         q.questCounter++;
-        return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, _nonce, q.questCounter)));
+        //return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, _nonce, q.questCounter)));
+        return uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, _nonce, q.questCounter)));
     }
 
     function _getBasicMonsterCounter() internal view returns (uint256) {
@@ -310,34 +360,34 @@ contract MonsterFacet {
     event CreateBasicMonster(uint256 indexed _monsterId);
     event FightBasicMonster(uint256 indexed _monsterId, uint256 _playerId);
 
-    function dragonQuest(uint256 _playerId) external returns (bool result) {
-        result = StorageLib._dragonQuest(_playerId);
-        if (result) emit DragonQuest(_playerId);
-        return result;
-    }
+    // function dragonQuest(uint256 _playerId) external returns (bool result) {
+    //     result = StorageMonsterLib._dragonQuest(_playerId);
+    //     if (result) emit DragonQuest(_playerId);
+    //     return result;
+    // }
 
     function createBasicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
         //address createAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         //require(msg.sender == createAccount);
-        StorageLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
-        emit CreateBasicMonster(StorageLib._getBasicMonsterCounter());
+        StorageMonsterLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
+        emit CreateBasicMonster(StorageMonsterLib._getBasicMonsterCounter());
     }
 
     function fightBasicMonster(uint256 _playerId, uint256 _monsterId) public {
-        StorageLib._fightBasicMonster(_playerId, _monsterId);
+        StorageMonsterLib._fightBasicMonster(_playerId, _monsterId);
         emit FightBasicMonster(_monsterId, _playerId);
     }
 
     function getMonsterCounter() public view returns (uint256) {
-        return StorageLib._getBasicMonsterCounter();
+        return StorageMonsterLib._getBasicMonsterCounter();
     }
 
     function getBasicMonster(uint256 _monsterId) public view returns (BasicMonster memory) {
-        return StorageLib._getBasicMonster(_monsterId);
+        return StorageMonsterLib._getBasicMonster(_monsterId);
     }
 
     function getBasicMonsterCooldown(uint256 _playerId, uint256 _monsterId) public view returns (uint256) {
-        return StorageLib._getBasicMonsterCooldown(_playerId, _monsterId);
+        return StorageMonsterLib._getBasicMonsterCooldown(_playerId, _monsterId);
     }
 
 

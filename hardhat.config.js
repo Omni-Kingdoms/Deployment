@@ -28,7 +28,7 @@ const keys = process.env.WALLET;
 const scrollUrl = "https://alpha-rpc.scroll.io/l2";
 
 module.exports = {
-  solidity: "0.8.17",
+  solidity: "0.8.18",
   hardhat: {
     allowUnlimitedContractSize: true,
   },
