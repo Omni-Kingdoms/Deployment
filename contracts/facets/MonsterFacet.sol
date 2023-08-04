@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-//import "redstone-evm-connector/lib/contracts/message-based/PriceAwareOwnable.sol";
+import "@redstone-finance/evm-connector/contracts/data-services/MainDemoConsumerBase.sol";
 import "../libraries/PlayerSlotLib.sol";
 import "../libraries/TreasureLib.sol";
 
@@ -216,6 +216,7 @@ library StorageMonsterLib {
         uint256 timer;
         s.players[_playerId].agility >= m.basicMonsters[_monsterId].cooldown/2  ? timer = m.basicMonsters[_monsterId].cooldown/2  : timer = m.basicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
         require(block.timestamp >= m.basicMonsterCooldowns[_monsterId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
+        require(s.players[_playerId].strength >=  m.basicMonsters[_monsterId].hp, "not strong enough"); //require strong enough to kill monster
         s.players[_playerId].xp += m.basicMonsters[_monsterId].xpReward; //give the player xp
         s.players[_playerId].currentHealth -= damage; //deduct damage
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
@@ -330,6 +331,7 @@ library StorageMonsterLib {
     //     s.players[_playerId].strength += 1;
     // }
 
+
     function _random(uint256 _nonce) internal returns (uint256) {
         QuestStorage storage q = diamondStorageQuest();
         q.questCounter++;
@@ -389,7 +391,6 @@ contract MonsterFacet {
     function getBasicMonsterCooldown(uint256 _playerId, uint256 _monsterId) public view returns (uint256) {
         return StorageMonsterLib._getBasicMonsterCooldown(_playerId, _monsterId);
     }
-
 
 
 

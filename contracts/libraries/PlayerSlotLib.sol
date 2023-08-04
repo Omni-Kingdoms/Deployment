@@ -62,7 +62,7 @@ library PlayerSlotLib {
     //     3: magic;
     //     4: defense;
     //     5: luck;
-    //     6: haki;
+    //     6: mana;
     // }
 
     struct Slot {
