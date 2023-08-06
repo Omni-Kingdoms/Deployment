@@ -12,17 +12,17 @@ abstract contract PriceAware {
 
     /* ========== VIRTUAL FUNCTIONS (MAY BE OVERRIDEN IN CHILD CONTRACTS) ========== */
 
-    function getMaxDataTimestampDelay() public view virtual returns (uint256) {
+    function getMaxDataTimestampDelay() internal view virtual returns (uint256) {
         return _MAX_DATA_TIMESTAMP_DELAY;
     }
 
-    function getMaxBlockTimestampDelay() public view virtual returns (uint256) {
+    function getMaxBlockTimestampDelay() internal view virtual returns (uint256) {
         return _MAX_BLOCK_TIMESTAMP_DELAY;
     }
 
-    function isSignerAuthorized(address _receviedSigner) public view virtual returns (bool);
+    function isSignerAuthorized(address _receviedSigner) internal view virtual returns (bool);
 
-    function isTimestampValid(uint256 _receivedTimestamp) public view virtual returns (bool) {
+    function isTimestampValid(uint256 _receivedTimestamp) internal view virtual returns (bool) {
         // Getting data timestamp from future seems quite unlikely
         // But we've already spent too much time with different cases
         // Where block.timestamp was less than dataPackage.timestamp.

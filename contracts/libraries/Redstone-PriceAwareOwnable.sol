@@ -8,14 +8,14 @@ import "./Redstone-PriceAware.sol";
 contract PriceAwareOwnable is PriceAware, Ownable {
     address private trustedSigner;
 
-    function authorizeSigner(address _trustedSigner) external onlyOwner {
+    function authorizeSigner(address _trustedSigner) internal onlyOwner {
         require(_trustedSigner != address(0));
         trustedSigner = _trustedSigner;
 
         emit TrustedSignerChanged(trustedSigner);
     }
 
-    function isSignerAuthorized(address _receviedSigner) public view virtual override returns (bool) {
+    function isSignerAuthorized(address _receviedSigner) internal view virtual override returns (bool) {
         return _receviedSigner == trustedSigner;
     }
 
