@@ -386,7 +386,6 @@ library PlayerStorageLib {
         } else if (_stat == 1) {
             //if health
             s.players[_playerId].health++;
-            s.players[_playerId].currentHealth = s.players[_playerId].health;
         } else if (_stat == 2) {
             //if agility
             s.players[_playerId].agility++;
@@ -404,6 +403,7 @@ library PlayerStorageLib {
             s.players[_playerId].maxMana++;
             s.players[_playerId].mana = s.players[_playerId].maxMana;
         }
+        s.players[_playerId].currentHealth = s.players[_playerId].health; //restore health to full
         s.players[_playerId].xp = player.xp - (player.level * 10); //subtract xp form the player
         s.players[_playerId].level++; //level up the player
     }
