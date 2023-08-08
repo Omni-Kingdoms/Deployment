@@ -3,15 +3,15 @@ const hre = require('hardhat');
 
 const upgradeExample = async () => {
 
-    const FacetName = "PlayerFacet"
+    const FacetName = "MonsterFacet"
     const Facet = await ethers.getContractFactory(FacetName)
     const facet = await Facet.deploy()
     await facet.deployed()
     console.log(`${FacetName} deployed: ${facet.address}`);
 
-    await verifyContract(facet, FacetName);
+    //await verifyContract(facet, FacetName);
 
-    const diamondAddress = "0x7F4Db05B38280ff6537293f53C0C2b0E1753F5F5"; //current v3 mantletest
+    const diamondAddress = "0xEC738bfde51731059d74b61B24dd278E16588A70"; //current v3 mantletest
     //const diamondAddress = "0x5517607D21409833917F48b0826F9793a354f68F"; //current v2 mantle
     const newFacetAddress = facet.address;
 

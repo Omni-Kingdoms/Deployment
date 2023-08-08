@@ -206,13 +206,15 @@ library StorageMonsterLib {
         PlayerStorage storage s = diamondStoragePlayer();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
+        uint256 power;
+        s.players[_playerId].strength >= s.players[_playerId].magic ? power = s.players[_playerId].strength : power = s.players[_playerId].magic;
         uint256 damage;        
         s.players[_playerId].defense >= m.basicMonsters[_monsterId].damage ? damage = 1 : damage = m.basicMonsters[_monsterId].damage - s.players[_playerId].defense + 1;
         require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
         uint256 timer;
         s.players[_playerId].agility >= m.basicMonsters[_monsterId].cooldown/2  ? timer = m.basicMonsters[_monsterId].cooldown/2  : timer = m.basicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
         require(block.timestamp >= m.basicMonsterCooldowns[_monsterId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
-        require(s.players[_playerId].strength >=  m.basicMonsters[_monsterId].hp, "not strong enough"); //require strong enough to kill monster
+        require(power >=  m.basicMonsters[_monsterId].hp, "not strong enough"); //require strong enough to kill monster
         s.players[_playerId].xp += m.basicMonsters[_monsterId].xpReward; //give the player xp
         s.players[_playerId].currentHealth -= damage; //deduct damage
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
