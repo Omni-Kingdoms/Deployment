@@ -218,6 +218,25 @@ library StorageMonsterLib {
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
     }
 
+    function _editBasicMonster(
+        uint256 _basicMonsterId,
+        uint256 _xpReward,
+        uint256 _damage,
+        uint256 _hp,
+        uint256 _cooldown,
+        string memory _name,
+        string memory _uri
+    
+    ) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        m.basicMonsters[_basicMonsterId].xpReward = _xpReward;
+        m.basicMonsters[_basicMonsterId].damage = _damage;
+        m.basicMonsters[_basicMonsterId].hp = _hp;
+        m.basicMonsters[_basicMonsterId].cooldown = _cooldown;
+        m.basicMonsters[_basicMonsterId].name = _name;
+        m.basicMonsters[_basicMonsterId].uri = _uri;
+    }
+
     function _createTreasureMonster(
         uint256 _xpReward,
         uint256 _damage,
@@ -302,6 +321,7 @@ contract MonsterFacet {
 
     event DragonQuest(uint256 indexed _playerId);
     event CreateBasicMonster(uint256 indexed _monsterId);
+    event EditBasicMonster(uint256 indexed _monsterId);
     event FightBasicMonster(uint256 indexed _monsterId, uint256 _playerId);
 
     // function dragonQuest(uint256 _playerId) external returns (bool result) {
@@ -315,6 +335,13 @@ contract MonsterFacet {
         require(msg.sender == createAccount);
         StorageMonsterLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
         emit CreateBasicMonster(StorageMonsterLib._getBasicMonsterCounter());
+    }
+
+    function editBasicMonster(uint256 _basicMonsterId, uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
+        address editAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == editAccount);
+        StorageMonsterLib._editBasicMonster(_basicMonsterId, _xpReward, _damage, _hp, _cooldown, _name, _uri);
+        emit EditBasicMonster(_basicMonsterId);
     }
 
     function fightBasicMonster(uint256 _playerId, uint256 _monsterId) public {
