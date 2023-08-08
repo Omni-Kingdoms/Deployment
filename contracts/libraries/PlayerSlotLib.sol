@@ -96,4 +96,14 @@ library PlayerSlotLib {
         Assasin,
         Mage
     }
+
+    enum status {
+        idle,
+        healthTrain,
+        goldQuest,
+        manaTrain,
+        Arena,
+        gemQuest,
+        exchangeListing
+    }
 }

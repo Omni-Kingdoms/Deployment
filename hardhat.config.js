@@ -41,6 +41,7 @@ module.exports = {
     apiKey: {
       polygonMumbai: process.env.MUMBAI_KEY,
       scroll: process.env.ETHERSCAN,
+      scroll_sepolia: process.env.ETHERSCAN,
       arbitrumGoerli: process.env.ARBISCAN,
       fuji: process.env.SNOWTRACE,
     },
@@ -51,6 +52,14 @@ module.exports = {
         urls: {
           apiURL: "https://blockscout.scroll.io/api",
           browserURL: "https://blockscout.scroll.io",
+        },
+      },
+      {
+        network: "scroll_sepolia",
+        chainId: 534351,
+        urls: {
+          apiURL: "https://sepolia-blockscout.scroll.io/api",
+          browserURL: "https://sepolia-blockscout.scroll.io/",
         },
       },
       {
@@ -98,8 +107,12 @@ module.exports = {
       url: "http://127.0.0.1:8545/",
       accounts: [keys],
     },
-    scroll: {
+    scroll_alpha: {
       url: scrollUrl,
+      accounts: [keys],
+    },
+    scroll_sepolia: {
+      url: "https://sepolia-rpc.scroll.io/",
       accounts: [keys],
     },
     taiko_testnet: {

@@ -27,11 +27,11 @@ async function deployDiamond() {
     "PlayerFacet",
     "QuestFacet",
     // 'CraftFacet',
-    // 'TrainFacet',
+    'TrainFacet',
     // 'EquipFacet',
     // 'ArenaFacet'
-    //'ExchangeFacet',
-    //'MonsterFacet'
+    'ExchangeFacet',
+    'MonsterFacet'
     // 'ScriptFacet',
     //'TreasureDropFacet'
   ];
@@ -99,6 +99,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
     "goerli",
     "mumbai",
     "scroll",
+    "scroll_sepolia",
     "arbitrumGoerli",
     "fuji",
     "mantle"
@@ -129,7 +130,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
 }
 
 async function verifyDiamond(diamond, facetCuts, diamondArgs) {
-  const liveNetworks = ["mainnet", "goerli", "mumbai", "scroll, mantle"];
+  const liveNetworks = ["mainnet", "goerli", "mumbai", "scroll, mantle, scroll_sepolia"];
   if (!liveNetworks.includes(hre.network.name)) {
     return; // Don't verify on test networks
   }

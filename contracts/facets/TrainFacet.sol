@@ -70,8 +70,8 @@ library StorageLib {
         require(tx.origin == msg.sender);
         require(s.players[_playerId].status == 1); //check that they are doing basic health
         uint256 timer;
-        s.players[_playerId].agility >= 60 ? timer = 60 : timer = 130 - s.players[_playerId].agility;
-        require(block.timestamp >= t.basicHealth[_playerId] + 120, "it's too early to pull out");
+        s.players[_playerId].agility >= 20 ? timer = 10 : timer = 30 - s.players[_playerId].agility;
+        require(block.timestamp >= t.basicHealth[_playerId] + timer, "it's too early to pull out");
         s.players[_playerId].status = 0; //reset status back to idle
         delete t.basicHealth[_playerId];
         s.players[_playerId].currentHealth++;
