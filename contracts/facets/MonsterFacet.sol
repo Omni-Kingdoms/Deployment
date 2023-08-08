@@ -209,7 +209,7 @@ library StorageMonsterLib {
         uint256 power;
         s.players[_playerId].strength >= s.players[_playerId].magic ? power = s.players[_playerId].strength : power = s.players[_playerId].magic;
         uint256 damage;        
-        s.players[_playerId].defense >= m.basicMonsters[_monsterId].damage ? damage = 1 : damage = m.basicMonsters[_monsterId].damage - s.players[_playerId].defense + 1;
+        s.players[_playerId].defense >= m.basicMonsters[_monsterId].damage ? damage = 1 : damage = m.basicMonsters[_monsterId].damage - s.players[_playerId].defense;
         require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
         uint256 timer;
         s.players[_playerId].agility >= m.basicMonsters[_monsterId].cooldown/2  ? timer = m.basicMonsters[_monsterId].cooldown/2  : timer = m.basicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
