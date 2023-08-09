@@ -226,67 +226,45 @@ library StorageLib {
         return e.equipment[_equipmentId];
     }
 
-    function _getEquipmentCount() internal view returns (uint256) {
+    function _getBasicEquipmentCount() internal view returns (uint256) {
         EquipmentStorage storage e = diamondStorageItem();
-        return e.equipmentCount;
+        return e.basicEquipmentCount;
     }
 
-    // function _mintCoins() internal {
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     c.goldBalance[msg.sender] += 100; //mint one gold
-    //     c.gemBalance[msg.sender] += 100; //mint one gold
-    //     c.diamondBalance[msg.sender] += 100; //mint one gold
-    //     c.totemBalance[msg.sender] += 100; //mint one gold
-    // }
 
-    // function _getCoinBalances(address _player)
-    //     internal
-    //     view
-    //     returns (uint256 goldBalance, uint256 gemBalance, uint256 totemBalance, uint256 diamondBalance)
-    // {
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     goldBalance = c.goldBalance[_player];
-    //     gemBalance = c.gemBalance[_player];
-    //     totemBalance = c.totemBalance[_player];
-    //     diamondBalance = c.diamondBalance[_player];
-    // }
 }
 
 contract CraftFacet {
-    event ItemCrafted(address indexed _owner, uint256 _player);
+    event BasicEquipmentSchemaCreated(uint256 indexed _basicEquipmentSchemaId, uint256 indexed _value, string _uri);
+    event PurchaseBasicEquipment(uint256 indexed _playerId, uint256 _equipmentSchemaId);
 
+    function _createBasicEquipment(
+        uint256 _slot,
+        uint256 _value,
+        uint256 _stat,
+        uint256 _cost,
+        string memory _name,
+        string memory _uri
+    ) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
+        StorageLib._createBasicEquipment(_slot, _value, _stat, _cost, _name, _uri);
+        emit BasicEquipmentSchemaCreated(StorageLib._getBasicEquipmentCount(), _value, _uri);
+    }
 
-    // function craftArmor(uint256 _tokenId) external {
-    //     StorageLib._craftArmor(_tokenId);
-    //     emit ItemCrafted(msg.sender, _tokenId);
-    // }
+    function purchaseBasicEquipment(uint256 _playerId, uint256 _equipmentSchemaId) public {
+        StorageLib._purchaseBasicEquipment(_playerId, _equipmentSchemaId);
+        emit PurchaseBasicEquipment(_playerId, _equipmentSchemaId);
+    }
 
-    // function craftHelmet(uint256 _tokenId) external {
-    //     StorageLib._craftHelmet(_tokenId);
-    //     emit ItemCrafted(msg.sender, _tokenId);
-    // }
+    function getPlayerToEquipment(uint256 _playerId) public view returns (uint256[] memory) {
+        return StorageLib._getPlayerToEquipment(_playerId);
+    }
 
-    // function craftSorcerShoes(uint256 _tokenId) external {
-    //     StorageLib._craftSorcerShoes(_tokenId);
-    //     emit ItemCrafted(msg.sender, _tokenId);
-    // }
+    function getEquipment(uint256 _equipmentId) public view returns (Equipment memory) {
+        return StorageLib._getEquipment(_equipmentId);
+    }
 
-    // function craftWizardHat(uint256 _tokenId) external {
-    //     StorageLib._craftWizardHat(_tokenId);
-    //     emit ItemCrafted(msg.sender, _tokenId);
-    // }
-
-    // function getItems(address _address) public view returns (uint256[] memory items) {
-    //     items = StorageLib._getItems(_address);
-    // }
-
-    // function getItem(uint256 _itemId) public view returns (Item memory item) {
-    //     item = StorageLib._getItem(_itemId);
-    // }
-
-    // function getItemCount() public view returns (uint256 count) {
-    //     count = StorageLib._getItemCount();
-    // }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 }

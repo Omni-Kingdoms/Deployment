@@ -78,12 +78,8 @@ library StorageLib {
         uint256 basicEquipmentCount;
         mapping(uint256 => BasicEquipment) basicEquipment;
         mapping(uint256 => Equipment) equipment;
-
         uint256 basicCraftCount;
         mapping(uint256 => BasicCraft) basicCraft;
-
-
-
         mapping(uint256 => uint256[]) playerToEquipment;
     }
 

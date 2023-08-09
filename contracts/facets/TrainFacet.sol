@@ -10,6 +10,7 @@ import "../libraries/PlayerSlotLib.sol";
 //     3: manaTrain;
 //     4: Arena;
 //     5: gemQuest;
+//     99: exchange
 // }
 
 library StorageLib {

@@ -26,9 +26,9 @@ async function deployDiamond() {
     "ERC721Facet",
     "PlayerFacet",
     "QuestFacet",
-    // 'CraftFacet',
+    "CraftFacet",
     'TrainFacet',
-    // 'EquipFacet',
+    'EquipFacet',
     // 'ArenaFacet'
     'ExchangeFacet',
     'MonsterFacet'
