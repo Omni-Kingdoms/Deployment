@@ -29,6 +29,7 @@ async function deployDiamond() {
     "CraftFacet",
     'TrainFacet',
     'EquipFacet',
+    'ShopFacet',
     // 'ArenaFacet'
     'ExchangeFacet',
     'MonsterFacet'

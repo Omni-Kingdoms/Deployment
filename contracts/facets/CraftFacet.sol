@@ -177,6 +177,7 @@ library StorageLib {
             false
         );
         e.playerToEquipment[_playerId].push(e.equipmentCount); //add to the player array
+        c.goldBalance[msg.sender] -= e.basicEquipmentSchema[_equipmentSchemaId].cost;
     }
 
     function _createBasicCraft(uint256 _equipmenSchematId, uint256 _value, uint256 _cost, string memory _newName, string memory _uri) internal {
@@ -263,6 +264,10 @@ contract CraftFacet {
 
     function getEquipment(uint256 _equipmentId) public view returns (Equipment memory) {
         return StorageLib._getEquipment(_equipmentId);
+    }
+
+    function getBasicEquipmentCount() public view returns (uint256) {
+        return StorageLib._getBasicEquipmentCount();
     }
 
 

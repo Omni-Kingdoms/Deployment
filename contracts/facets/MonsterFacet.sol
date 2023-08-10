@@ -67,6 +67,17 @@ struct BasicMonster {
     string uri;
 }
 
+struct MagicMonster {
+    uint256 basicMonsterId;
+    uint256 xpReward;
+    uint256 damage;
+    uint256 hp;
+    uint256 cooldown;
+    uint256 cost;
+    string name;
+    string uri;
+}
+
 struct TreasureMonster {
     uint256 treasureMonsterId;
     uint256 xpReward;
@@ -114,9 +125,12 @@ library StorageMonsterLib {
 
     struct MonsterStorage {
         uint256 basicMonsterCounter;
+        uint256 magicMonsterCounter;
         uint256 treasureMonsterCounter;
         mapping(uint256 => mapping(uint256 => uint256)) basicMonsterCooldowns;
         mapping(uint256 => BasicMonster) basicMonsters;
+        mapping(uint256 => mapping(uint256 => uint256)) magicMonsterCooldowns;
+        mapping(uint256 => MagicMonster) magicMonsters;
         mapping(uint256 => mapping(uint256 => uint256)) treasureMonsterCooldowns;
         mapping(uint256 => TreasureMonster) treasureMonsters;
     }
@@ -201,6 +215,20 @@ library StorageMonsterLib {
         m.basicMonsters[m.basicMonsterCounter] = BasicMonster(m.basicMonsterCounter,_xpReward,_damage,_hp,_cooldown,_name,_uri); //create the monster
     }
 
+    function _createMagicMonster(
+        uint256 _xpReward,
+        uint256 _damage,
+        uint256 _hp,
+        uint256 _cooldown,
+        uint256 _cost,
+        string memory _name,
+        string memory _uri
+    ) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        m.magicMonsterCounter++; //monster counter increment
+        m.magicMonsters[m.magicMonsterCounter] = MagicMonster(m.basicMonsterCounter,_xpReward,_damage,_hp,_cooldown,_cost,_name,_uri); //create the monster
+    }
+
     function _fightBasicMonster(uint256 _playerId, uint256 _monsterId) internal {
         MonsterStorage storage m = diamondStorageMonster();
         PlayerStorage storage s = diamondStoragePlayer();
@@ -217,6 +245,24 @@ library StorageMonsterLib {
         require(power >=  m.basicMonsters[_monsterId].hp, "not strong enough"); //require strong enough to kill monster
         s.players[_playerId].xp += m.basicMonsters[_monsterId].xpReward; //give the player xp
         s.players[_playerId].currentHealth -= damage; //deduct damage
+        m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
+    }
+    function _fightMagicMonster(uint256 _playerId, uint256 _monsterId) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        require(s.players[_playerId].mana >= m.magicMonsters[_monsterId].cost); //check player has enough mana
+        uint256 damage;        
+        s.players[_playerId].defense >= m.basicMonsters[_monsterId].damage ? damage = 1 : damage = m.basicMonsters[_monsterId].damage - s.players[_playerId].defense;
+        require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
+        uint256 timer;
+        s.players[_playerId].agility >= m.basicMonsters[_monsterId].cooldown/2  ? timer = m.basicMonsters[_monsterId].cooldown/2  : timer = m.basicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
+        require(block.timestamp >= m.basicMonsterCooldowns[_monsterId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
+        require(s.players[_playerId].magic >=  m.basicMonsters[_monsterId].hp, "not strong enough"); //require strong enough to kill monster
+        s.players[_playerId].xp += m.basicMonsters[_monsterId].xpReward; //give the player xp
+        s.players[_playerId].currentHealth -= damage; //deduct damage
+        s.players[_playerId].mana -= m.magicMonsters[_monsterId].cost; //deduct mana
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
     }
 
@@ -317,14 +363,31 @@ library StorageMonsterLib {
         return m.basicMonsterCooldowns[_monsterId][_playerId];
     }
 
+    function _getMagicMonsterCounter() internal view returns (uint256) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return (m.magicMonsterCounter);
+    }
+
+    function _getMagicMonster(uint256 _monsterId) internal view returns (MagicMonster memory) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return m.magicMonsters[_monsterId];
+    }
+
+    function _getMagicMonsterCooldown(uint256 _playerId, uint256 _monsterId) internal view returns (uint256) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return m.magicMonsterCooldowns[_monsterId][_playerId];
+    }
+
 }
 
 contract MonsterFacet {
 
     event DragonQuest(uint256 indexed _playerId);
     event CreateBasicMonster(uint256 indexed _monsterId);
+    event CreateMagicMonster(uint256 indexed _monsterId);
     event EditBasicMonster(uint256 indexed _monsterId);
     event FightBasicMonster(uint256 indexed _monsterId, uint256 _playerId);
+    event FightMagicMonster(uint256 indexed _monsterId, uint256 _playerId);
 
     // function dragonQuest(uint256 _playerId) external returns (bool result) {
     //     result = StorageMonsterLib._dragonQuest(_playerId);
@@ -338,29 +401,53 @@ contract MonsterFacet {
         StorageMonsterLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
         emit CreateBasicMonster(StorageMonsterLib._getBasicMonsterCounter());
     }
-
     function editBasicMonster(uint256 _basicMonsterId, uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
         address editAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
         require(msg.sender == editAccount);
         StorageMonsterLib._editBasicMonster(_basicMonsterId, _xpReward, _damage, _hp, _cooldown, _name, _uri);
         emit EditBasicMonster(_basicMonsterId);
     }
-
     function fightBasicMonster(uint256 _playerId, uint256 _monsterId) public {
         StorageMonsterLib._fightBasicMonster(_playerId, _monsterId);
         emit FightBasicMonster(_monsterId, _playerId);
     }
-
-    function getMonsterCounter() public view returns (uint256) {
-        return StorageMonsterLib._getBasicMonsterCounter();
+    function createMagicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, uint256 _cost, string memory _name, string memory _uri) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
+        StorageMonsterLib._createMagicMonster(_xpReward, _damage, _hp, _cooldown, _cost, _name, _uri);
+        emit CreateBasicMonster(StorageMonsterLib._getMagicMonsterCounter());
+    }
+    // function editBasicMonster(uint256 _basicMonsterId, uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
+    //     address editAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+    //     require(msg.sender == editAccount);
+    //     StorageMonsterLib._editBasicMonster(_basicMonsterId, _xpReward, _damage, _hp, _cooldown, _name, _uri);
+    //     emit EditBasicMonster(_basicMonsterId);
+    // }
+    function fightMagicMonster(uint256 _playerId, uint256 _monsterId) public {
+        StorageMonsterLib._fightMagicMonster(_playerId, _monsterId);
+        emit FightMagicMonster(_monsterId, _playerId);
     }
 
+
+    ///////////////////////////////////////////////     view    ////////////////////////////////////
+
+    function getBasicMonsterCounter() public view returns (uint256) {
+        return StorageMonsterLib._getBasicMonsterCounter();
+    }
     function getBasicMonster(uint256 _monsterId) public view returns (BasicMonster memory) {
         return StorageMonsterLib._getBasicMonster(_monsterId);
     }
-
     function getBasicMonsterCooldown(uint256 _playerId, uint256 _monsterId) public view returns (uint256) {
         return StorageMonsterLib._getBasicMonsterCooldown(_playerId, _monsterId);
+    }
+    function getMagicMonsterCounter() public view returns (uint256) {
+        return StorageMonsterLib._getMagicMonsterCounter();
+    }
+    function getMagicMonster(uint256 _monsterId) public view returns (MagicMonster memory) {
+        return StorageMonsterLib._getMagicMonster(_monsterId);
+    }
+    function getMagicMonsterCooldown(uint256 _playerId, uint256 _monsterId) public view returns (uint256) {
+        return StorageMonsterLib._getMagicMonsterCooldown(_playerId, _monsterId);
     }
 
 

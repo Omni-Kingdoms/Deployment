@@ -1,123 +1,181 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-// import "../libraries/PlayerSlotLib.sol";
+import "../libraries/PlayerSlotLib.sol";
 
 
-// struct BasicHealthPotionSchema {
-//     uint256 basicHealthPotionSchemaId;
-//     uint256 value;
-//     uint256 cost;
-//     string name;
-//     string uri;
-// }
-// struct BasicManaPotionSchema {
-//     uint256 basicManaPotionSchemaId;
-//     uint256 value;
-//     uint256 cost;
-//     string name;
-//     string uri;
-// }
+struct BasicPotionSchema {
+    uint256 basicHealthPotionSchemaId;
+    uint256 value;
+    uint256 cost;
+    bool isHealth;
+    string name;
+    string uri;
+}
 
-// // stat {
-// //     0: strength;
-// //     1: health;
-// //     2: agility;
-// //     3: magic;
-// //     4: defense;
-// //     5: maxMana;
-// //     6: luck;
-// // }
-
-// struct Treasure {
-//     uint256 id;
-//     uint256 rank;
-//     uint256 pointer;
-//     string name;
+// stat {
+//     0: strength;
+//     1: health;
+//     2: agility;
+//     3: magic;
+//     4: defense;
+//     5: maxMana;
+//     6: luck;
 // }
 
-// library StorageLib {
-//     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
-//     bytes32 constant POTION_STORAGE_POSITION = keccak256("potion.test.storage.a");
-//     bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
 
-//     using PlayerSlotLib for PlayerSlotLib.Player;
-//     using PlayerSlotLib for PlayerSlotLib.Slot;
+library StorageLib {
+    bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
+    bytes32 constant POTION_STORAGE_POSITION = keccak256("potion.test.storage.a");
+    bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
 
-//     struct PlayerStorage {
-//         uint256 totalSupply;
-//         uint256 playerCount;
-//         mapping(uint256 => address) owners;
-//         mapping(uint256 => PlayerSlotLib.Player) players;
-//         mapping(address => uint256) balances;
-//         mapping(address => mapping(address => uint256)) allowances;
-//         mapping(string => bool) usedNames;
-//         mapping(address => uint256[]) addressToPlayers;
-//     }
+    using PlayerSlotLib for PlayerSlotLib.Player;
+    using PlayerSlotLib for PlayerSlotLib.Slot;
 
-//     struct PotionStorage {
-//         uint256 BasicHealthPotionSchemaCount;
-//         uint256 BasicManaPotionSchemaCount;
-//         mapping(uint256 => BasicHealthPotionSchema) basicHealthPotionSchema;
-//         mapping(uint256 => mapping(uint256 => uint256)) basicHealthPotionToPlayer;
-//     }
+    struct PlayerStorage {
+        uint256 totalSupply;
+        uint256 playerCount;
+        mapping(uint256 => address) owners;
+        mapping(uint256 => PlayerSlotLib.Player) players;
+        mapping(address => uint256) balances;
+        mapping(address => mapping(address => uint256)) allowances;
+        mapping(string => bool) usedNames;
+        mapping(address => uint256[]) addressToPlayers;
+    }
 
-//     struct CoinStorage {
-//         mapping(address => uint256) goldBalance;
-//         mapping(address => uint256) gemBalance;
-//         mapping(address => uint256) totemBalance;
-//         mapping(address => uint256) diamondBalance;
-//     }
+    struct PotionStorage {
+        uint256 BasicPotionSchemaCount;
+        mapping(uint256 => BasicPotionSchema) basicPotionSchema;
+        mapping(uint256 => mapping(uint256 => uint256)) basicPotionToPlayer;
+    }
 
-//     struct ResourceStorage {
-//         uint256 treasureCount;
-//         mapping(uint256 => address) owners;
-//         mapping(uint256 => Treasure) treasures;
-//         mapping(uint256 => uint256[]) playerToTreasure;
-//     }
+    struct CoinStorage {
+        mapping(address => uint256) goldBalance;
+        mapping(address => uint256) gemBalance;
+        mapping(address => uint256) totemBalance;
+        mapping(address => uint256) diamondBalance;
+    }
 
-//     function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
-//         bytes32 position = PLAYER_STORAGE_POSITION;
-//         assembly {
-//             ds.slot := position
-//         }
-//     }
-//     function diamondStorageCoin() internal pure returns (CoinStorage storage ds) {
-//         bytes32 position = COIN_STORAGE_POSITION;
-//         assembly {
-//             ds.slot := position
-//         }
-//     }
-//     function diamondStoragePotion() internal pure returns (PotionStorage storage ds) {
-//         bytes32 position = POTION_STORAGE_POSITION;
-//         assembly {
-//             ds.slot := position
-//         }
-//     }
+    function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
+        bytes32 position = PLAYER_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
+    function diamondStorageCoin() internal pure returns (CoinStorage storage ds) {
+        bytes32 position = COIN_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
+    function diamondStoragePotion() internal pure returns (PotionStorage storage ds) {
+        bytes32 position = POTION_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
 
 
-//     function _createBasicHealthPotion(uint256 _value, uint256 _cost, string memory _name, string memory _uri) internal {
-//         PotionStorage storage p = diamondStoragePotion();
-//         p.BasicHealthPotionSchemaCount++;
-//         p.basicHealthPotioSchema
-//     }
-  
+    function _createBasicPotion(uint256 _value, uint256 _cost, bool _isHealth, string memory _name, string memory _uri) internal {
+        PotionStorage storage p = diamondStoragePotion();
+        p.BasicPotionSchemaCount++;
+        p.basicPotionSchema[p.BasicPotionSchemaCount] = BasicPotionSchema(
+            p.BasicPotionSchemaCount,
+            _value,
+            _cost,
+            _isHealth,
+            _name,
+            _uri
+        );
+    }
+    
+    function _purchaseBasicPotion(uint256 _playerId, uint256 _basicPotionSchemaId) internal {
+        PotionStorage storage p = diamondStoragePotion();
+        PlayerStorage storage s = diamondStoragePlayer();
+        CoinStorage storage c = diamondStorageCoin();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        uint256 cost = p.basicPotionSchema[_basicPotionSchemaId].cost;
+        require(c.goldBalance[msg.sender] >= cost); //check user has enough gold
+        p.basicPotionToPlayer[_basicPotionSchemaId][_playerId]++; //add potion to count
+        c.goldBalance[msg.sender] -= cost; //deduct gold balance
+    }
+
+    function _consumeBasicPotion(uint256 _playerId, uint256 _basicPotionSchemaId) internal {
+        PotionStorage storage p = diamondStoragePotion();
+        PlayerStorage storage s = diamondStoragePlayer();
+        require(s.players[_playerId].status == 0, "you are not idle"); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender, "you are not the owner"); //ownerOf
+        require(p.basicPotionToPlayer[_basicPotionSchemaId][_playerId] >= 1, "no pot fool"); //check that they have one
+        //BasicHealthPotionSchema memory potion = p.basicHealthPotionSchema[_basicPotionSchemaId];
+        uint256 value = p.basicPotionSchema[_basicPotionSchemaId].value;
+        if (p.basicPotionSchema[_basicPotionSchemaId].isHealth) {
+            value >= s.players[_playerId].health - s.players[_playerId].currentHealth ?
+                s.players[_playerId].currentHealth = s.players[_playerId].health
+                :
+                s.players[_playerId].currentHealth += value;
+        } else {
+            value >= s.players[_playerId].maxMana - s.players[_playerId].mana ?
+                s.players[_playerId].mana = s.players[_playerId].maxMana
+                :
+                s.players[_playerId].mana += value;
+        }
+        p.basicPotionToPlayer[_basicPotionSchemaId][_playerId]--;
+    }
+
+    function _getBaiscPotionCount(uint256 _playerId, uint256 _basicPotionSchemaId) internal view returns(uint256) {
+        PotionStorage storage p = diamondStoragePotion();
+        return p.basicPotionToPlayer[_basicPotionSchemaId][_playerId];
+    }
+
+    function _getBasicPotion(uint256 _basicPotionSchemaId) internal view returns (BasicPotionSchema memory) {
+        PotionStorage storage p = diamondStoragePotion();
+        return p.basicPotionSchema[_basicPotionSchemaId];
+    }
+
+    function _getBasicPotionSchemaCount() internal view returns (uint256) {
+        PotionStorage storage p = diamondStoragePotion();
+        return p.BasicPotionSchemaCount;
+    }
 
 
 
+}
+
+contract ShopFacet {
+
+    event CreateBasicPotion(uint256 indexed _basicPotionSchemaId, uint256 indexed _value, uint256 indexed _cost);
+    event PurchaseBasicPotion(uint256 _playerId, uint256 indexed _basicPotionSchemaId);
+    event ConsumeBasicPotion(uint256 _playerId, uint256 indexed _basicPotionSchemaId);
+    
+
+    function createBasicPotion(uint256 _value, uint256 _cost, bool _isHealth, string memory _name, string memory _uri) public {
+        StorageLib._createBasicPotion(_value, _cost, _isHealth, _name, _uri);
+        emit CreateBasicPotion(StorageLib._getBasicPotionSchemaCount(), _value, _cost);
+    }
+
+    function purchaseBasicPotion(uint256 _playerId, uint256 _basicPotionSchemaId) public {
+        StorageLib._purchaseBasicPotion(_playerId, _basicPotionSchemaId);
+        emit PurchaseBasicPotion(_playerId, _basicPotionSchemaId);
+    }
+
+    function consumeBasicHealthPotion(uint256 _playerId, uint256 _basicPotionSchemaId) public {
+        StorageLib._consumeBasicPotion(_playerId, _basicPotionSchemaId);
+        emit ConsumeBasicPotion(_playerId, _basicPotionSchemaId);
+    }
+
+    function getBaiscPotionCount(uint256 _playerId, uint256 _basicPotionSchemaId) public view returns(uint256) {
+        return StorageLib._getBaiscPotionCount(_playerId, _basicPotionSchemaId);
+    }
+
+    function getBasicPotion(uint256 _basicPotionSchemaId) public view returns (BasicPotionSchema memory) {
+        return StorageLib._getBasicPotion(_basicPotionSchemaId);
+    }
+
+    function getBasicPotionSchemaCount() public view returns (uint256) {
+        return StorageLib._getBasicPotionSchemaCount();
+    }
 
 
-
-
-
-
-
-// }
-
-// contract ShopFacet {
-
-
-
-
-//     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
-// }
+    //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
+}

@@ -90,9 +90,6 @@ library StorageLib {
         return tr.treasureSchema[_treasureSchemaId];
     }
 
-
-
-
 }
 
 contract TreasureFacet {
