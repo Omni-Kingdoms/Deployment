@@ -232,6 +232,11 @@ library StorageLib {
         return e.basicEquipmentCount;
     }
 
+    function _getBasicEquipmentScehma(uint256 _basicEquipmentSchemaId) internal view returns (BasicEquipmentSchema memory) {
+        EquipmentStorage storage e = diamondStorageItem();
+        return e.basicEquipmentSchema[_basicEquipmentSchemaId];
+    }
+
 
 }
 
@@ -268,6 +273,10 @@ contract CraftFacet {
 
     function getBasicEquipmentCount() public view returns (uint256) {
         return StorageLib._getBasicEquipmentCount();
+    }
+
+    function getBasicEquipmentSchema(uint256 _basicEquipmentSchemaId) public view returns (BasicEquipmentSchema memory) {
+        return StorageLib._getBasicEquipmentScehma(_basicEquipmentSchemaId);
     }
 
 

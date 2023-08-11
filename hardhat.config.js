@@ -115,7 +115,11 @@ module.exports = {
       url: "https://sepolia-rpc.scroll.io/",
       accounts: [keys],
     },
-    taiko_testnet: {
+    taiko_testnet: {    
+      // allowUnlimitedContractSize: true,
+      // gas: 2100000,
+      // gasPrice: 8000000000,
+      // gasLimit: 50000000000000,  
       url: "https://rpc.test.taiko.xyz",
       chainId: 167005,
       accounts: [keys],
