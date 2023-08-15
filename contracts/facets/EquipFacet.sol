@@ -270,7 +270,7 @@ library StorageLib {
         require(s.owners[_playerId] == msg.sender); //ownerOf player
         Equipment storage equipment = e.equipment[_equipmentId];
         require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
-        require(equipment.slot == 2); //require item leftHand
+        require(equipment.slot == 2 || equipment.slot == 3); //require item leftHand
         require(!equipment.isEquiped); //require item isn't equiped
         require(s.players[_playerId].slot.leftHand == 0); //require that player doesnt have a leftHand item on
         e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
@@ -283,7 +283,7 @@ library StorageLib {
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
         Equipment storage equipment = e.equipment[_equipmentId];
-        require(equipment.slot == 2); //require item leftHand
+        require(equipment.slot == 2 || equipment.slot == 3); //require item leftHand or left hand
         require(equipment.isEquiped); //require item is equiped
         require(s.players[_playerId].slot.leftHand == _equipmentId); //require that player has the same item on
         e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
@@ -298,7 +298,7 @@ library StorageLib {
         require(s.owners[_playerId] == msg.sender); //ownerOf player
         Equipment storage equipment = e.equipment[_equipmentId];
         require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
-        require(equipment.slot == 3); //require item rightHand
+        require(equipment.slot == 3 || equipment.slot == 2); //require item rightHand
         require(!equipment.isEquiped); //require item isn't equiped
         require(s.players[_playerId].slot.rightHand == 0); //require that player doesnt have a rightHand item on
         e.equipment[_equipmentId].isEquiped = true; //set equiped status to true;
@@ -311,7 +311,7 @@ library StorageLib {
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
         Equipment storage equipment = e.equipment[_equipmentId];
-        require(equipment.slot == 3); //require item rightHand
+        require(equipment.slot == 3 || equipment.slot == 2); //require item rightHand
         require(equipment.isEquiped); //require item is equiped
         require(s.players[_playerId].slot.rightHand == _equipmentId); //require that player has the same item on
         e.equipment[_equipmentId].isEquiped = false; //set isEquiped status to false;
