@@ -175,11 +175,11 @@ library StorageLib {
         c.goldBalance[msg.sender] += a.basicArenas[_basicArenaId].cost; //increase gold
     }
 
-    function _random(uint256 _nonce, uint256 _value) internal returns (uint256) {
+    function _random(uint256 _nonce, uint256 _value) internal view returns (uint256) {
         return uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, _nonce, _value)));
     }
 
-    function _basicRandom(uint256 _nonce, uint256 _value) internal returns (uint256) {
+    function _basicRandom(uint256 _nonce, uint256 _value) internal view  returns (uint256) {
         uint256 random = _random(_nonce, _value) % 9 + 100;
         return ((_value * random) / 100);
     }
@@ -248,6 +248,10 @@ contract ArenaFacet {
 
     function getTotalLosses(uint256 _playerId) public view returns (uint256) {
         return StorageLib._getTotalLosses(_playerId);
+    }
+
+    function getBasicArenaCount() public view returns(uint256) {
+        return StorageLib._getBasicArenaCount();
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
