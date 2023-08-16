@@ -144,14 +144,15 @@ library StorageLib {
 
 contract ShopFacet {
 
-    event CreateBasicPotion(uint256 indexed _basicPotionSchemaId, uint256 indexed _value, uint256 indexed _cost);
+    event CreateBasicPotion(uint256 indexed _basicPotionSchemaId, BasicPotionSchema potionSchema);
     event PurchaseBasicPotion(uint256 _playerId, uint256 indexed _basicPotionSchemaId);
     event ConsumeBasicPotion(uint256 _playerId, uint256 indexed _basicPotionSchemaId);
     
 
     function createBasicPotion(uint256 _value, uint256 _cost, bool _isHealth, string memory _name, string memory _uri) public {
         StorageLib._createBasicPotion(_value, _cost, _isHealth, _name, _uri);
-        emit CreateBasicPotion(StorageLib._getBasicPotionSchemaCount(), _value, _cost);
+        uint256 id = StorageLib._getBasicPotionSchemaCount();
+        emit CreateBasicPotion(id, getBasicPotion(id));
     }
 
     function purchaseBasicPotion(uint256 _playerId, uint256 _basicPotionSchemaId) public {

@@ -384,7 +384,7 @@ contract MonsterFacet {
 
     event DragonQuest(uint256 indexed _playerId);
     event CreateBasicMonster(uint256 indexed _monsterId, BasicMonster _basicMonster);
-    event CreateMagicMonster(uint256 indexed _monsterId);
+    event CreateMagicMonster(uint256 indexed _monsterId, MagicMonster _magicMonster);
     event EditBasicMonster(uint256 indexed _monsterId);
     event FightBasicMonster(uint256 indexed _monsterId, uint256 _playerId);
     event FightMagicMonster(uint256 indexed _monsterId, uint256 _playerId);
@@ -412,12 +412,13 @@ contract MonsterFacet {
         StorageMonsterLib._fightBasicMonster(_playerId, _monsterId);
         emit FightBasicMonster(_monsterId, _playerId);
     }
-    // function createMagicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, uint256 _cost, string memory _name, string memory _uri) public {
-    //     address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
-    //     require(msg.sender == createAccount);
-    //     StorageMonsterLib._createMagicMonster(_xpReward, _damage, _hp, _cooldown, _cost, _name, _uri);
-    //     emit CreateBasicMonster(StorageMonsterLib._getMagicMonsterCounter());
-    // }
+    function createMagicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, uint256 _cost, string memory _name, string memory _uri) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
+        StorageMonsterLib._createMagicMonster(_xpReward, _damage, _hp, _cooldown, _cost, _name, _uri);
+        uint id = StorageMonsterLib._getMagicMonsterCounter();
+        emit CreateMagicMonster(id, getMagicMonster(id));
+    }
     // function editBasicMonster(uint256 _basicMonsterId, uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
     //     address editAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
     //     require(msg.sender == editAccount);

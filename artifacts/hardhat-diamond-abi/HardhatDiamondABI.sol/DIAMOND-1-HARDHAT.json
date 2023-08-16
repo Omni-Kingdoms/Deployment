@@ -1300,6 +1300,49 @@
           "internalType": "string",
           "name": "_uri",
           "type": "string"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "basicEquipmentSchemaId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "slot",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stat",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cost",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct BasicEquipmentSchema",
+          "name": "_basicEQuipmentSchema",
+          "type": "tuple"
         }
       ],
       "name": "BasicEquipmentSchemaCreated",
@@ -2739,6 +2782,54 @@
           "internalType": "uint256",
           "name": "_monsterId",
           "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "basicMonsterId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "xpReward",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "damage",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cooldown",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cost",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct MagicMonster",
+          "name": "_magicMonster",
+          "type": "tuple"
         }
       ],
       "name": "CreateMagicMonster",
@@ -2842,6 +2933,49 @@
         }
       ],
       "name": "createBasicMonster",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_xpReward",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_damage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_hp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_cooldown",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_cost",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_uri",
+          "type": "string"
+        }
+      ],
+      "name": "createMagicMonster",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -4372,16 +4506,42 @@
           "type": "uint256"
         },
         {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "_cost",
-          "type": "uint256"
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "basicHealthPotionSchemaId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cost",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isHealth",
+              "type": "bool"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct BasicPotionSchema",
+          "name": "potionSchema",
+          "type": "tuple"
         }
       ],
       "name": "CreateBasicPotion",

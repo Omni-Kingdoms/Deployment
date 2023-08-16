@@ -169,21 +169,26 @@ library StorageLib {
 
     function _equip(uint256 _playerId, uint256 _equipmentId) internal {
         EquipmentStorage storage e = diamondStorageItem();
+        PlayerStorage storage s = diamondStoragePlayer();
         uint256 slot = e.equipment[_equipmentId].slot;
         if (slot == 0) { //head
             _equipHead(_playerId, _equipmentId);
         } else if (slot == 1) { //body
             _equipBody(_playerId, _equipmentId);
-        } else if (slot == 2) { //leftHand
-            _equipLeftHand(_playerId, _equipmentId);
-        } else if (slot == 3) { //rightHand
-            _equipRightHand(_playerId, _equipmentId);
+        } else if (slot == 2 || slot == 3) { //Hand
+            if (s.players[_playerId].slot.leftHand == 0) {
+                _equipLeftHand(_playerId, _equipmentId);
+            } else  {
+                _equipRightHand(_playerId, _equipmentId);
+            }
         } else if (slot == 4) { //pants
             _equipPants(_playerId, _equipmentId);
         } else if (slot == 5) { //pants
             _equipFeet(_playerId, _equipmentId);
-        } else {
+        } else if (slot == 6) {
             _equipNeck(_playerId, _equipmentId);
+        } else {
+            return;
         }
     }
 

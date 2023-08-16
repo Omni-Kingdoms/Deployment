@@ -241,7 +241,7 @@ library StorageLib {
 }
 
 contract CraftFacet {
-    event BasicEquipmentSchemaCreated(uint256 indexed _basicEquipmentSchemaId, uint256 indexed _value, string _uri);
+    event BasicEquipmentSchemaCreated(uint256 indexed _basicEquipmentSchemaId, uint256 indexed _value, string _uri, BasicEquipmentSchema _basicEQuipmentSchema);
     event PurchaseBasicEquipment(uint256 indexed _playerId, uint256 _equipmentSchemaId);
 
     function _createBasicEquipment(
@@ -255,7 +255,8 @@ contract CraftFacet {
         address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
         require(msg.sender == createAccount);
         StorageLib._createBasicEquipment(_slot, _value, _stat, _cost, _name, _uri);
-        emit BasicEquipmentSchemaCreated(StorageLib._getBasicEquipmentCount(), _value, _uri);
+        uint256 id = StorageLib._getBasicEquipmentCount();
+        emit BasicEquipmentSchemaCreated(id, _value, _uri, getBasicEquipmentSchema(id));
     }
 
     function purchaseBasicEquipment(uint256 _playerId, uint256 _equipmentSchemaId) public {
