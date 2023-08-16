@@ -206,6 +206,11 @@ library StorageLib {
         return a.basicArenaCounter;
     }
 
+    function _getBasicArenaCooldown(uint256 _playerId, uint256 _basicArenaId) internal view returns (uint256){
+        ArenaStorage storage a = diamondStorageArena();
+        return a.basicArenaCooldowns[_basicArenaId][_playerId];
+    }
+
 }
 
 contract ArenaFacet {
@@ -252,6 +257,10 @@ contract ArenaFacet {
 
     function getBasicArenaCount() public view returns(uint256) {
         return StorageLib._getBasicArenaCount();
+    }
+
+    function getBasicArenaCooldowns(uint256 _playerId, uint256 _basicArenaId) public view returns (uint256) {
+        return StorageLib._getBasicArenaCooldown(_playerId, _basicArenaId);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
