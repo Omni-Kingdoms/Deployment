@@ -41,7 +41,8 @@ module.exports = {
     apiKey: {
       polygonMumbai: process.env.MUMBAI_KEY,
       scroll: process.env.ETHERSCAN,
-      scroll_sepolia: process.env.ETHERSCAN,
+      //scroll_sepolia: process.env.ETHERSCAN,
+      scroll_sepolia: 'abc',
       arbitrumGoerli: process.env.ARBISCAN,
       fuji: process.env.SNOWTRACE,
     },

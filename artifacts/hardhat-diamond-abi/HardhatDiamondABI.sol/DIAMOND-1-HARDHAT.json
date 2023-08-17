@@ -4294,6 +4294,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getGold",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",

@@ -221,6 +221,11 @@ library StorageLib {
         TreasureStorage storage t = diamondStorageTreasure();
         return t.treasures[_treasureId];
     }
+
+    function getGold() internal {
+        CoinStorage storage c = diamondStorageCoin();
+        c.goldBalance[msg.sender] += 100;
+    }
 }
 
 contract QuestFacet {
@@ -274,6 +279,10 @@ contract QuestFacet {
 
     function getTreasure(uint256 _treasureId) external view returns (Treasure memory) {
         return StorageLib._getTreasure(_treasureId);
+    }
+
+    function getGold() public {
+        StorageLib.getGold();
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
