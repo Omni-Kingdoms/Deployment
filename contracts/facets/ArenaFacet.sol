@@ -151,21 +151,20 @@ library StorageLib {
         PlayerSlotLib.Player storage challenger = s.players[_challengerId];
         uint256 cp = _basicRandom(_challengerId, challenger.strength);
         uint256 hp = _basicRandom(_hostId, host.strength);
-
-        _basicRandom(_challengerId, challenger.strength) >= host.currentHealth + host.defense ?
-            s.players[_hostId].currentHealth = 0 
-            : 
-            _basicRandom(_challengerId, challenger.strength) >= host.defense ?
-                s.players[_hostId].currentHealth = host.currentHealth + host.defense - _basicRandom(_challengerId, challenger.strength)
-            :
-                s.players[_hostId].currentHealth;
-        _basicRandom(_hostId, host.strength) >= challenger.currentHealth + challenger.defense ?
-            s.players[_challengerId].currentHealth = 0 
-            : 
-            _basicRandom(_hostId, host.strength) >= challenger.defense ?
-                s.players[_challengerId].currentHealth -= challenger.currentHealth + challenger.defense - _basicRandom(_hostId, host.strength)
-            :
-                s.players[_challengerId].currentHealth;
+        if (cp >= host.currentHealth + host.defense) { //no contest
+            s.players[_hostId].currentHealth = 0;
+        } else {
+            if (cp >= host.defense) {
+                s.players[_hostId].currentHealth -= (cp - host.defense);
+            }
+        }
+        if (hp >= challenger.currentHealth + challenger.defense) { //no contest
+            s.players[_challengerId].currentHealth = 0;
+        } else {
+            if (hp >= challenger.defense) {
+                s.players[_challengerId].currentHealth -= (hp - challenger.defense);
+            }
+        }
         if (s.players[_challengerId].currentHealth > s.players[_hostId].currentHealth) {
             return (_challengerId);
         } else {
