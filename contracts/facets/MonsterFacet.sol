@@ -419,7 +419,7 @@ contract MonsterFacet {
         uint id = StorageMonsterLib._getMagicMonsterCounter();
         emit CreateMagicMonster(id, getMagicMonster(id));
     }
-    // function editBasicMonster(uint256 _basicMonsterId, uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
+    // function editMagicMonster(uint256 _basicMonsterId, uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
     //     address editAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
     //     require(msg.sender == editAccount);
     //     StorageMonsterLib._editBasicMonster(_basicMonsterId, _xpReward, _damage, _hp, _cooldown, _name, _uri);

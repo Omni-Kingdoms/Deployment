@@ -25,14 +25,14 @@ async function deployDiamond() {
     "OwnershipFacet",
     "ERC721Facet",
     "PlayerFacet",
-    //"QuestFacet",
+    "QuestFacet",
     //"CraftFacet",
-    //'TrainFacet',
+    'TrainFacet',
     //'EquipFacet',
     //'ShopFacet',
-    'ArenaFacet'
-    //'ExchangeFacet',
-    //'MonsterFacet'
+    //'ArenaFacet'
+    'ExchangeFacet',
+    'MonsterFacet'
     // 'ScriptFacet',
     //'TreasureDropFacet'
   ];
@@ -49,7 +49,7 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    await verifyContract(facet, FacetName);
+    //await verifyContract(facet, FacetName);
   }
   //console.log("Facet Cuts = ", facetCuts);
 

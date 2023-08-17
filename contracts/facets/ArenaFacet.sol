@@ -138,6 +138,8 @@ library StorageLib {
             c.goldBalance[arena.hostAddress] += arena.cost*2; //increase gold of the host
             c.goldBalance[msg.sender] -= arena.cost; //decrease gold
         }
+        a.basicArenaCooldowns[_basicArenaId][_playerId] = block.timestamp;
+        a.basicArenaCooldowns[_basicArenaId][arena.hostId] = block.timestamp;
         a.basicArenas[_basicArenaId].open = true; // open the areana
         s.players[arena.hostId].status = 0; // set the host to idle
         return (_winner, _loser);
@@ -150,11 +152,11 @@ library StorageLib {
         _basicRandom(_challengerId, challenger.strength) >= host.currentHealth + host.defense ?
             s.players[_hostId].currentHealth = 0 
             : 
-            s.players[_hostId].currentHealth = host.currentHealth + host.defense - challenger.strength;
+            s.players[_hostId].currentHealth -= host.currentHealth + host.defense - challenger.strength;
         _basicRandom(_hostId, host.strength) >= challenger.currentHealth + challenger.defense ?
             s.players[_challengerId].currentHealth = 0 
             : 
-            s.players[_challengerId].currentHealth = challenger.currentHealth + challenger.defense - host.strength;
+            s.players[_challengerId].currentHealth -= challenger.currentHealth + challenger.defense - host.strength;
         if (s.players[_challengerId].currentHealth > s.players[_hostId].currentHealth) {
             return (_challengerId);
         } else {
