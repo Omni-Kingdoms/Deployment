@@ -149,6 +149,9 @@ library StorageLib {
         PlayerStorage storage s = diamondStoragePlayer();
         PlayerSlotLib.Player storage host = s.players[_hostId];
         PlayerSlotLib.Player storage challenger = s.players[_challengerId];
+        uint256 cp = _basicRandom(_challengerId, challenger.strength);
+        uint256 hp = _basicRandom(_hostId, host.strength);
+
         _basicRandom(_challengerId, challenger.strength) >= host.currentHealth + host.defense ?
             s.players[_hostId].currentHealth = 0 
             : 
@@ -188,7 +191,7 @@ library StorageLib {
     }
 
     function _basicRandom(uint256 _nonce, uint256 _value) internal view  returns (uint256) {
-        uint256 random = _random(_nonce, _value) % 9 + 100;
+        uint256 random = (_random(_nonce, _value) % 9) + 100;
         return ((_value * random) / 100);
     }
 
@@ -222,7 +225,7 @@ library StorageLib {
 }
 
 contract ArenaFacet {
-    event CreateBasicArena(uint256 _basicArenaId);
+    event CreateBasicArena(uint256 _basicArenaId, BasicArena _basicArena);
     event BasicArenaWin(uint256 indexed _playerId, uint256 indexed _basicArenaId);
     event BasicArenaLoss(uint256 indexed _playerId, uint256 indexed _basicArenaId);
     event EnterBasicArena(uint256 indexed _playerId, uint256 indexed _basicArenaId);
@@ -230,7 +233,8 @@ contract ArenaFacet {
 
     function creatBasicArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
         StorageLib._createBasicArena(_cost, _cooldown, _name, _uri);
-        emit CreateBasicArena(StorageLib._getBasicArenaCount());
+        uint256 id = StorageLib._getBasicArenaCount();
+        emit CreateBasicArena(id, getBasicArena(id));
     }
 
     function enterBasicArena(uint256 _playerId, uint256 _basicArenaId) public {

@@ -1056,6 +1056,54 @@
           "internalType": "uint256",
           "name": "_basicArenaId",
           "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "basicArenaId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cost",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cooldown",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "hostId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "open",
+              "type": "bool"
+            },
+            {
+              "internalType": "address payable",
+              "name": "hostAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "url",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct BasicArena",
+          "name": "_basicArena",
+          "type": "tuple"
         }
       ],
       "name": "CreateBasicArena",
