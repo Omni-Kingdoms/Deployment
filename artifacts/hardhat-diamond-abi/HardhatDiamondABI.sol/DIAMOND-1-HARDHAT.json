@@ -3620,6 +3620,25 @@
         {
           "indexed": true,
           "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_stat",
+          "type": "uint256"
+        }
+      ],
+      "name": "LevelUp",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "id",
           "type": "uint256"
         },

@@ -417,6 +417,7 @@ contract PlayerFacet is ERC721FacetInternal {
 
     event Mint(uint256 indexed id, address indexed owner, string name, uint256 _class);
     event NameChange(address indexed owner, uint256 indexed id, string indexed newName);
+    event LevelUp(uint256 indexed _playerId, uint256 indexed _stat);
 
     /**
      * @dev Emitted on `transferRemote` when a transfer message is dispatched.
@@ -576,6 +577,7 @@ contract PlayerFacet is ERC721FacetInternal {
 
     function levelUp(uint256 _playerId, uint256 _stat) external {
         PlayerStorageLib._levelUp(_playerId, _stat);
+        emit LevelUp(_playerId, _stat);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
