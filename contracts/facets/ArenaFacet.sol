@@ -152,11 +152,17 @@ library StorageLib {
         _basicRandom(_challengerId, challenger.strength) >= host.currentHealth + host.defense ?
             s.players[_hostId].currentHealth = 0 
             : 
-            s.players[_hostId].currentHealth -= host.currentHealth + host.defense - challenger.strength;
+            _basicRandom(_challengerId, challenger.strength) >= host.defense ?
+                s.players[_hostId].currentHealth = host.currentHealth + host.defense - _basicRandom(_challengerId, challenger.strength)
+            :
+                s.players[_hostId].currentHealth;
         _basicRandom(_hostId, host.strength) >= challenger.currentHealth + challenger.defense ?
             s.players[_challengerId].currentHealth = 0 
             : 
-            s.players[_challengerId].currentHealth -= challenger.currentHealth + challenger.defense - host.strength;
+            _basicRandom(_hostId, host.strength) >= challenger.defense ?
+                s.players[_challengerId].currentHealth -= challenger.currentHealth + challenger.defense - _basicRandom(_hostId, host.strength)
+            :
+                s.players[_challengerId].currentHealth;
         if (s.players[_challengerId].currentHealth > s.players[_hostId].currentHealth) {
             return (_challengerId);
         } else {
