@@ -34,6 +34,7 @@
     "standard": "^16.0.3"
   },
   "dependencies": {
+    "@omni/contracts": "https://github.com/omni-network/omni-std",
     "@openzeppelin/contracts": "^4.8.3",
     "@redstone-finance/evm-connector": "^0.2.3",
     "@routerprotocol/evm-gateway-contracts": "^1.1.11",

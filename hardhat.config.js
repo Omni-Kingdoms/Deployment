@@ -150,7 +150,7 @@ module.exports = {
       accounts: [keys], // Uses the private key from the .env file
     },
     omni: {
-      url: "https://testnet-1.omni.network/",
+      url: "https://testnet.omni.network/",
       accounts: [keys], // Uses the private key from the .env file
     },
     arbitrumGoerli: {
