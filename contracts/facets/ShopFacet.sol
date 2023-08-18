@@ -139,7 +139,6 @@ library StorageLib {
     }
 
 
-
 }
 
 contract ShopFacet {

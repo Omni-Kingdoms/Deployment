@@ -1,51 +1,36 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8;
 
-import {OmniScient} from "@omni/contracts/contracts/OmniScient.sol";
-import {OmniCodec} from '@omni/contracts/contracts/OmniCodec.sol';
+import {IOmniPortal} from "@omni/contracts/contracts/interfaces/IOmniPortal.sol";
 
-contract BridgeFacet is OmniScient {
+contract BridgeFacet {
     uint256 public count;
+    uint256 public globalCount;
+    uint256 public globalBlockNumber;
 
-    mapping(string => uint256) internal countByChain;
-    mapping(uint256 => bool) public incrementSuccess;
+    mapping(string => uint256) public countByChain;
 
-    event IncrementOnChainSuccess(uint256 nonce);
-    event IncrementOnChainReverted(uint256 nonces);
+    IOmniPortal public omni;
 
     event Increment(uint256 count);
 
-    constructor() {
-        count = 0;
-    }
-
-    function increment() public {
+    function incrementRU() public {
         count += 1;
-        countByChain[omni.txSourceChain()] += 1;
-        emit Increment(count);
     }
 
-    function incrementOnChain(string memory chain, address counter) public {
-      omni.sendTx(
-        chain,
-        counter,
-        0, // value
-        100_000, // gas limit
-        abi.encodeWithSignature("increment()")
-      );
+    function incrementOnChainRU(string memory chain, address counter) public {
+        omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
+        omni.sendXChainTx(
+            chain, // destination rollup
+            counter, // contract on destination rollup
+            0, // msg.value
+            100_000, // gas limit
+            abi.encodeWithSignature("incrementRU()")
+        );
     }
 
-    function getCountFor(string memory chain) public view returns (uint256) {
-        return countByChain[chain];
+    function getCounter() public view returns (uint256) {
+        return count;
     }
 
-    function onXChainTxSuccess(OmniCodec.Tx memory _xtx, address _sender, bytes memory _returnValue, uint256 _gasSpent) external override onlyOmni {
-        incrementSuccess[_xtx.nonce] = true;
-        emit IncrementOnChainSuccess(_xtx.nonce);
-    }
-
-    function onXChainTxReverted(OmniCodec.Tx memory _xtx, address _sender, uint256 _gasSpent) external override onlyOmni {
-        incrementSuccess[_xtx.nonce] = false;
-        emit IncrementOnChainReverted(_xtx.nonce);
-    }
 }

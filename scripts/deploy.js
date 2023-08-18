@@ -25,16 +25,17 @@ async function deployDiamond() {
     "OwnershipFacet",
     "ERC721Facet",
     "PlayerFacet",
-    //"QuestFacet",
+    "QuestFacet",
     //"CraftFacet",
     //'TrainFacet',
     //'EquipFacet',
     //'ShopFacet',
-    //'ArenaFacet'
+    'ArenaFacet',
     //'ExchangeFacet',
     //'MonsterFacet'
     // 'ScriptFacet',
     'BridgeFacet',
+    //'OmniFacet',
     //'TreasureDropFacet'
   ];
   // The `facetCuts` variable is the FacetCut[] that contains the functions to add during diamond deployment
@@ -50,7 +51,7 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    await verifyContract(facet, FacetName);
+    //await verifyContract(facet, FacetName);
   }
   //console.log("Facet Cuts = ", facetCuts);
 

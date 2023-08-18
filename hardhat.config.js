@@ -130,6 +130,13 @@ module.exports = {
       chainId: 5,
       accounts: [keys],
     },
+    opgoerli: {
+      // gas: 2100000,
+      // gasPrice: 8000000000,
+      // gasLimit: 50000000000000,
+      url: "https://goerli.optimism.io",
+      accounts: [keys],
+    },
     mumbai: {
       allowUnlimitedContractSize: true,
       gas: 2100000,
