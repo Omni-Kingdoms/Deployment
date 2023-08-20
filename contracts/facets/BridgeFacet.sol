@@ -80,22 +80,22 @@
 //         }
 //     }
 
-//     function _bridgePlayer(uint256 _playerId, uint256 _chainId) internal returns (BridgeFormat memory) {
+//     function _bridgePlayer(uint256 _playerId) internal returns (BridgeFormat memory) {
 //         PlayerStorage storage s = diamondStorage();
 //         BridgeStorage storage br = diamondStorageBridge(); 
 //         require(s.players[_playerId].status == 0, "you are not idle"); //make sure player is idle
 //         require(s.owners[_playerId] == msg.sender, "you are not the owner"); //ownerOf
 //         s.players[_playerId].status = 100; //set status to bridging 
 //         PlayerSlotLib.Player storage player = s.players[_playerId];
-//         uint256 chainId;
+//         uint256 baseChain;
 //         uint256 baseId;
 //         if (!br.origin[_playerId]) { //have not bridged before
-//             chainId = block.chainid; // set origin chain to this chain
+//             baseChain = block.chainid; // set origin chain to this chain
 //             baseId = _playerId;
 //             br.origin[_playerId] = true;
-//         } else {
-//             chainId = br.playerToBaseChain[_playerId];
-//             baseId = br.chainToPlayerId[chainId][_playerId];
+//         } else { //have bridged before
+//             baseChain = br.playerToBaseChain[_playerId];
+//             baseId = br.chainToPlayerId[baseChain][_playerId];
 //         }
 //         BridgeFormat memory bridgeFormat = BridgeFormat(
 //             player.playerClass,
@@ -106,7 +106,7 @@
 //             player.magic,
 //             player.maxMana,
 //             player.agility,
-//             chainId, 
+//             baseChain, 
 //             baseId,
 //             player.name, 
 //             player.male
@@ -118,25 +118,31 @@
 //     function _remintPlayer(BridgeFormat memory _format) internal {
 //         PlayerStorage storage s = diamondStorage();
 //         BridgeStorage storage br = diamondStorageBridge();
-
+//         uint256 _playerId;
 //         if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
-
-//         } else {
-
-//         }
+//             _playerId = br.chainToPlayerId[_format.baseChain][_format.baseId];
+//             s.players[_playerId].status = 0; //unfreeze player
+//             s.players[_playerId].level = _format.level; 
+//             s.players[_playerId].xp = _format.xp; 
+//             s.players[_playerId].strength = _format.strength; 
+//             s.players[_playerId].health = _format.health; 
+//             s.players[_playerId].magic = _format.magic; 
+//             s.players[_playerId].maxMana = _format.maxMana; 
+//             s.players[_playerId].agility = _format.agility; 
+//         } else { //have not been here before
+//             _birdgeMint(_format);
+//         }   
 //     }
 
-//     /// @notice Mints a new player
-//     /// @param _name The name of the player
-//     /// @param _isMale The gender of the player
-//     function _mint(string memory _name, bool _isMale, uint256 _class) internal {
+//     function _birdgeMint(BridgeFormat memory _format) internal {
 //         PlayerStorage storage s = diamondStorage();
-//         //require(s.playerCount <= 500);
+//         s.playerCount++; //increment playerCount
+//         string memory _name = string(
+//             abi.encodePacked(_format.name, Strings.toString(s.playerCountr))
+//         );
+
 //         require(!s.usedNames[_name], "name is taken");
-//         require(_class <= 2);
-//         require(bytes(_name).length <= 10);
-//         require(bytes(_name).length >= 3);
-//         s.playerCount++;
+
 //         string memory uri;
 //         if (_class == 0) {
 //             //warrior
@@ -252,7 +258,7 @@
 
 // contract BridgeFacet is ERC721FacetInternal {
 
-//     event BridgeCreated(uint256 indexed _chainId, uint256 indexed _portal, uint256 indexed _diamond);
+//     event BridgeCreated(uint256 indexed _chainId, address indexed _portal, address indexed _diamond);
 //     event BridgePlayer(uint256 indexed _playerId, BridgeFormat _format);
 //     event ReMintPlayer(BridgeFormat _format);
 
@@ -264,10 +270,10 @@
 
 
 //     function bridgePlayer(uint256 _playerId, uint256 _chainId) public {
-//         ChainData storage chainData = getChainData(_chainId);
+//         ChainData memory chainData = getChainData(_chainId);
 //         //omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
 //         omni = IOmniPortal(chainData.portal);
-//         BridgeFormat storage bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId, _chainId);
+//         BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
 //         omni.sendXChainTx(
 //             chainData.name, // destination rollup
 //             chainData.diamond, // contract on destination rollup
@@ -277,7 +283,6 @@
 //         );
 //         emit BridgePlayer(_playerId, bridgeFormat);
 //     }
-
 
 //     function createBridge(uint256 _chainId, string memory _name, address _portal, address _diamond) public {
 //         BridgeStorageLib._createBridge(_chainId, _name, _portal, _diamond);
