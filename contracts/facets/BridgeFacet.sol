@@ -122,7 +122,7 @@ library BridgeStorageLib {
         BridgeStorage storage br = diamondStorageBridge();
         uint256 _playerId;
         if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
-            _playerId = br.chainToPlayerId[_format.baseChain][_format.baseId];
+            _playerId = br.chainToPlayerId[_format.baseChain][_format.baseId]; //set the local id
             s.players[_playerId].status = 0; //unfreeze player
             s.players[_playerId].level = _format.level; 
             s.players[_playerId].xp = _format.xp; 
@@ -140,7 +140,7 @@ library BridgeStorageLib {
         PlayerStorage storage s = diamondStorage();
         BridgeStorage storage br = diamondStorageBridge();
         s.playerCount++; //increment playerCount
-
+        br.chainToPlayerId[_format.baseChain][_format.baseId] = s.playerCount;
         string memory _name = string(
             abi.encodePacked(_format.name, Strings.toString(s.playerCount))
         );

@@ -52,7 +52,8 @@ library StorageLib {
 
 contract ScriptFacet {
 
-    event LevelUpPatch(uint256 indexed id, PlayerSlotLib.Player _player);
+    //event LevelUpPatch(uint256 indexed id, PlayerSlotLib.Player _player);
+    event LevelUpPatch(uint256 indexed id);
 
     function levelUpScript() public {
         uint256 count = StorageLib._playerCount();
@@ -64,7 +65,8 @@ contract ScriptFacet {
     }
 
     function emitLevel(uint256 _id) public {
-        emit LevelUpPatch(_id, StorageLib._getPlayer(_id));
+        //emit LevelUpPatch(_id, StorageLib._getPlayer(_id));
+        emit LevelUpPatch(_id);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
