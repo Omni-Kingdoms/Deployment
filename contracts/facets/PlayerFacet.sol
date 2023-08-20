@@ -244,7 +244,7 @@ library PlayerStorageLib {
                 1,
                 1,
                 1,
-                10, //defense
+                11, //defense
                 _name,
                 uri,
                 _isMale,

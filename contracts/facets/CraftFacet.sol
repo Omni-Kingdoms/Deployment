@@ -237,14 +237,26 @@ library StorageLib {
         return e.basicEquipmentSchema[_basicEquipmentSchemaId];
     }
 
+    function _getBasicCraftCount() internal view returns (uint256) {
+        EquipmentStorage storage e = diamondStorageItem();
+        return e.basicCraftCount;
+    }
+
+    function _getBasicCraft(uint256 _basicCraftId) internal view returns (BasicCraft memory) {
+        EquipmentStorage storage e = diamondStorageItem();
+        return e.basicCraft[_basicCraftId];
+    }
+
 
 }
 
 contract CraftFacet {
     event BasicEquipmentSchemaCreated(uint256 indexed _basicEquipmentSchemaId, uint256 indexed _value, string _uri, BasicEquipmentSchema _basicEQuipmentSchema);
     event PurchaseBasicEquipment(uint256 indexed _playerId, uint256 _equipmentSchemaId);
+    event CreateBasicCraft(uint256 indexed id, BasicCraft _basicCraft);
+    event BasicCraftEvent(uint256 indexed _playerId, uint256 _equipmentId, uint256 _craftId);
 
-    function _createBasicEquipment(
+    function createBasicEquipment(
         uint256 _slot,
         uint256 _value,
         uint256 _stat,
@@ -280,6 +292,24 @@ contract CraftFacet {
         return StorageLib._getBasicEquipmentScehma(_basicEquipmentSchemaId);
     }
 
+    function createBasicCraft(uint256 _equipmenSchematId, uint256 _value, uint256 _cost, string memory _newName, string memory _uri) public {
+        StorageLib._createBasicCraft(_equipmenSchematId, _value, _cost, _newName, _uri);
+        uint256 id = getBasicCraftCount();
+        emit CreateBasicCraft(id, getBasicCraft(id));
+    }
+
+    function basicCraft(uint256 _playerId, uint256 _equipmentId, uint256 _craftId) public {
+        StorageLib._basicCraft(_playerId, _equipmentId, _craftId);
+        emit BasicCraftEvent(_playerId, _equipmentId, _craftId);
+    }
+
+    function getBasicCraftCount() public view returns (uint256) {
+        return StorageLib._getBasicCraftCount();
+    }
+
+    function getBasicCraft(uint256 _basicCraftId) public view returns (BasicCraft memory) {
+        return StorageLib._getBasicCraft(_basicCraftId);
+    }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 }
