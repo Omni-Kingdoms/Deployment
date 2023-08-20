@@ -140,23 +140,20 @@
 //         string memory _name = string(
 //             abi.encodePacked(_format.name, Strings.toString(s.playerCountr))
 //         );
-
-//         require(!s.usedNames[_name], "name is taken");
-
 //         string memory uri;
-//         if (_class == 0) {
+//         if (_format.class == 0) {
 //             //warrior
-//             _isMale
+//             _format.isMale
 //                 ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH"
 //                 : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
 //             s.players[s.playerCount] = PlayerSlotLib.Player(
-//                 1, //level
-//                 0, //xp 
+//                 _format.level, //level
+//                 _format.xp, //xp 
 //                 0, //status
-//                 11, //strength
-//                 12, //health
-//                 12, //currentHealth
-//                 10, //magic
+//                 _format.strength, //strength
+//                 _format.health, //health
+//                 _format.health, //currentHealth
+//                 _format.magic, //magic
 //                 10, //mana
 //                 10, //maxMana
 //                 10, //agility
@@ -227,7 +224,6 @@
 //             );
 //         }
 //         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
-//         s.usedNames[_name] = true;
 //         s.owners[s.playerCount] = msg.sender;
 //         s.addressToPlayers[msg.sender].push(s.playerCount);
 //         s.balances[msg.sender]++;
