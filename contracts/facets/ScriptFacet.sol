@@ -52,13 +52,13 @@ library StorageLib {
 
 contract ScriptFacet {
 
-    event LevelUpPatch(PlayerSlotLib.Player _player);
+    event LevelUpPatch(uint256 indexed id, PlayerSlotLib.Player _player);
 
     function levelUpScript() public {
         uint256 count = StorageLib._playerCount();
         for (uint256 i = 1; i < count; i++) {
             if (StorageLib._getPlayer(i).level > 1) {
-                emit LevelUpPatch(StorageLib._getPlayer(i));
+                emit LevelUpPatch(i, StorageLib._getPlayer(i));
             }
         }
     }

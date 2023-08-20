@@ -142,10 +142,24 @@
 //         );
 //         string memory uri;
 //         if (_format.class == 0) {
-//             //warrior
 //             _format.isMale
 //                 ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH"
 //                 : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
+//         } else if (_format.class == 1) {
+//             _format.isMale
+//                 ? uri = "https://ipfs.io/ipfs/QmQXeYe9rxRkkqfEB7DrZRSG2S1yrNgj64V8m6v7KetzQd"
+//                 : uri = "https://ipfs.io/ipfs/QmUqZKRudnang1GXbD2nHHwmJfNNBFQVdmoH8WAneaii5h";
+//         } else if (_format.class == 2) {
+//             _format.isMale
+//                 ? uri = "https://ipfs.io/ipfs/QmUbWxUd8sX4MZojKERUPmPu9YtAYfYroBS4Te1HJEKucy"
+//                 : uri = "https://ipfs.io/ipfs/QmbVABt9sKpNUa8DgMJde3DBCQyorSCT9V1Dzd6cJ8ZUmP";
+//         }
+
+
+
+
+//         if (_format.class == 0) {
+//             //warrior
 //             s.players[s.playerCount] = PlayerSlotLib.Player(
 //                 _format.level, //level
 //                 _format.xp, //xp 

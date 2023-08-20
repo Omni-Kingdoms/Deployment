@@ -4771,6 +4771,12 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
           "components": [
             {
               "internalType": "uint256",
