@@ -58,9 +58,13 @@ contract ScriptFacet {
         uint256 count = StorageLib._playerCount();
         for (uint256 i = 1; i < count; i++) {
             if (StorageLib._getPlayer(i).level > 1) {
-                emit LevelUpPatch(i, StorageLib._getPlayer(i));
+                emitLevel(i);
             }
         }
+    }
+
+    function emitLevel(uint256 _id) public {
+        emit LevelUpPatch(_id, StorageLib._getPlayer(_id));
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
