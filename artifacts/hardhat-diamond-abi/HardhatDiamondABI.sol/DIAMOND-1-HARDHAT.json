@@ -1954,36 +1954,6 @@
     {
       "inputs": [
         {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "one",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "two",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "three",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct Test",
-          "name": "_test",
-          "type": "tuple"
-        }
-      ],
-      "name": "catchTest",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "uint256",
           "name": "_chainId",
           "type": "uint256"
@@ -2045,32 +2015,6 @@
           "internalType": "struct ChainData",
           "name": "",
           "type": "tuple"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getValueTest",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "omni",
-      "outputs": [
-        {
-          "internalType": "contract IOmniPortal",
-          "name": "",
-          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -2159,19 +2103,6 @@
       "name": "reMintPlayer",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "value",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
       "type": "function"
     },
     {

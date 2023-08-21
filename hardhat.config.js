@@ -133,7 +133,7 @@ module.exports = {
       chainId: 5,
       accounts: [keys],
     },
-    opgoerli: {
+    opg: {
       gas: 2100000,
       gasPrice: 8000000000,
       gasLimit: 50000000000000,
