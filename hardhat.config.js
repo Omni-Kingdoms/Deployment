@@ -112,7 +112,10 @@ module.exports = {
       url: scrollUrl,
       accounts: [keys],
     },
-    scroll_sepolia: {
+    scroll: {
+      gas: 2100000,
+      gasPrice: 8000000000,
+      gasLimit: 50000000000000,
       url: "https://sepolia-rpc.scroll.io/",
       accounts: [keys],
     },
