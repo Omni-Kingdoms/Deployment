@@ -66,6 +66,7 @@ contract ScriptFacet {
 
     function emitLevel(uint256 _id) public {
         //emit LevelUpPatch(_id, StorageLib._getPlayer(_id));
+        uint256 test = 9;
         emit LevelUpPatch(_id);
     }
 

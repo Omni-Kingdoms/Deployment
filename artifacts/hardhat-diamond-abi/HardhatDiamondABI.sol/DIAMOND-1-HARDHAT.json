@@ -1760,6 +1760,11 @@
               "internalType": "bool",
               "name": "isMale",
               "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
             }
           ],
           "indexed": false,
@@ -1840,6 +1845,11 @@
               "internalType": "bool",
               "name": "isMale",
               "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
             }
           ],
           "indexed": false,
@@ -2044,6 +2054,11 @@
               "internalType": "bool",
               "name": "isMale",
               "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
             }
           ],
           "internalType": "struct BridgeFormat",

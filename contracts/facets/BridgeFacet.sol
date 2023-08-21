@@ -26,6 +26,7 @@ struct BridgeFormat {
     uint256 baseId;
     string name;
     bool isMale;
+    address sender;
 }
 
 struct ChainData {
@@ -111,7 +112,8 @@ library BridgeStorageLib {
             baseChain, 
             baseId,
             player.name, 
-            player.male
+            player.male,
+            msg.sender
         );
         return bridgeFormat;
     }
@@ -128,8 +130,10 @@ library BridgeStorageLib {
             s.players[_playerId].xp = _format.xp; 
             s.players[_playerId].strength = _format.strength; 
             s.players[_playerId].health = _format.health; 
+            s.players[_playerId].currentHealth = _format.health; 
             s.players[_playerId].magic = _format.magic; 
             s.players[_playerId].maxMana = _format.maxMana; 
+            s.players[_playerId].mana = _format.maxMana; 
             s.players[_playerId].agility = _format.agility; 
         } else { //have not been here before
             _birdgeMint(_format);
@@ -141,6 +145,8 @@ library BridgeStorageLib {
         BridgeStorage storage br = diamondStorageBridge();
         s.playerCount++; //increment playerCount
         br.chainToPlayerId[_format.baseChain][_format.baseId] = s.playerCount;
+        br.origin[s.playerCount] = false;
+        br.playerToBaseChain[s.playerCount] = _format.baseChain;
         string memory _name = string(
             abi.encodePacked(_format.name, Strings.toString(s.playerCount))
         );
@@ -181,18 +187,10 @@ library BridgeStorageLib {
             _format.class
         );
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
-        s.owners[s.playerCount] = msg.sender;
-        s.addressToPlayers[msg.sender].push(s.playerCount);
-        s.balances[msg.sender]++;
+        s.owners[s.playerCount] = _format.sender;
+        s.addressToPlayers[_format.sender].push(s.playerCount);
+        s.balances[_format.sender]++;
     }
-
-
-
-
-
-
-
-
 
 
     function _createBridge(uint256 _chainId, string memory _name, address _portal, address _diamond) internal {
@@ -218,7 +216,9 @@ contract BridgeFacet is ERC721FacetInternal {
     IOmniPortal public omni;
 
     function reMintPlayer(BridgeFormat memory _format) public {
-        
+        BridgeStorageLib._remintPlayer(_format);
+
+        //finish this logic kyle
     }
 
 
@@ -232,7 +232,7 @@ contract BridgeFacet is ERC721FacetInternal {
             chainData.diamond, // contract on destination rollup
             0, // msg.value
             100_000, // gas limit
-            abi.encodeWithSignature("reMintPlayer((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool))", bridgeFormat)
+            abi.encodeWithSignature("reMintPlayer((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool,address))", bridgeFormat)
         );
         emit BridgePlayer(_playerId, bridgeFormat);
     }
