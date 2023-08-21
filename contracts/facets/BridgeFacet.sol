@@ -36,6 +36,12 @@ struct ChainData {
     address diamond;
 }
 
+struct Test {
+    uint256 one;
+    uint256 two;
+    bool three;
+}
+
 /// @title Player Storage Library
 /// @dev Library for managing storage of player data
 library BridgeStorageLib {
@@ -203,6 +209,11 @@ library BridgeStorageLib {
         return br.chainData[_chainId];
     }
 
+    function _playerCount() internal view returns (uint256) {
+        PlayerStorage storage s = diamondStorage();
+        return s.playerCount;
+    }
+
 }
 
 
@@ -211,16 +222,17 @@ contract BridgeFacet is ERC721FacetInternal {
 
     event BridgeCreated(uint256 indexed _chainId, address indexed _portal, address indexed _diamond);
     event BridgePlayer(uint256 indexed _playerId, BridgeFormat _format);
-    event ReMintPlayer(BridgeFormat _format);
+    event ReMintPlayer(uint256 indexed _playerId, BridgeFormat _format);
 
     IOmniPortal public omni;
+    uint256 public value;
 
     function reMintPlayer(BridgeFormat memory _format) public {
         BridgeStorageLib._remintPlayer(_format);
-
-        //finish this logic kyle
+        uint256 count = BridgeStorageLib._playerCount();
+        emit ReMintPlayer(count, _format);
+        _safeMint(_format.sender, count);
     }
-
 
     function bridgePlayer(uint256 _playerId, uint256 _chainId) public {
         ChainData memory chainData = getChainData(_chainId);
@@ -235,6 +247,45 @@ contract BridgeFacet is ERC721FacetInternal {
             abi.encodeWithSignature("reMintPlayer((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool,address))", bridgeFormat)
         );
         emit BridgePlayer(_playerId, bridgeFormat);
+    }
+
+    function bridgePlayerTest(uint256 _playerId, string memory _chain, address _contract) public {
+        //ChainData memory chainData = getChainData(_chainId);
+        omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
+        //omni = IOmniPortal(chainData.portal);
+        BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
+        omni.sendXChainTx(
+            _chain, // destination rollup
+            _contract, // contract on destination rollup
+            0, // msg.value
+            100_000, // gas limit
+            abi.encodeWithSignature("reMintPlayer((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool,address))", bridgeFormat)
+        );
+        emit BridgePlayer(_playerId, bridgeFormat);
+    }
+
+    function bridgeTest(string memory _chain, address _contract) public {
+        //ChainData memory chainData = getChainData(_chainId);
+        omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
+        //omni = IOmniPortal(chainData.portal);
+        //BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
+        Test memory test = Test(1,2,true);
+        omni.sendXChainTx(
+            _chain, // destination rollup
+            _contract, // contract on destination rollup
+            0, // msg.value
+            100_000, // gas limit
+            abi.encodeWithSignature("catchTest((uint256,uint256,bool))", test)
+        );
+        //emit BridgePlayer(_playerId, bridgeFormat);
+    }
+
+    function catchTest(Test memory _test) public {
+        value = _test.one;
+    }
+
+    function getValueTest() public view returns (uint256) {
+        return value;
     }
 
     function createBridge(uint256 _chainId, string memory _name, address _portal, address _diamond) public {
