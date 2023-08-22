@@ -55,12 +55,6 @@ struct ManaCraft {
 //     6: luck;
 // }
 
-struct Treasure {
-    uint256 id;
-    uint256 rank;
-    uint256 pointer;
-    string name;
-}
 
 library StorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
@@ -106,12 +100,6 @@ library StorageLib {
         mapping(address => uint256) diamondBalance;
     }
 
-    struct TreasureStorage {
-        uint256 treasureCount;
-        mapping(uint256 => address) owners;
-        mapping(uint256 => Treasure) treasures;
-        mapping(uint256 => uint256[]) playerToTreasure;
-    }
 
     function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
         bytes32 position = PLAYER_STORAGE_POSITION;
@@ -129,13 +117,6 @@ library StorageLib {
 
     function diamondStorageCoin() internal pure returns (CoinStorage storage ds) {
         bytes32 position = COIN_STORAGE_POSITION;
-        assembly {
-            ds.slot := position
-        }
-    }
-
-    function diamondStorageTreasure() internal pure returns (TreasureStorage storage ds) {
-        bytes32 position = TREASURE_STORAGE_POSITION;
         assembly {
             ds.slot := position
         }

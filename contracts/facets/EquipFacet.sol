@@ -409,8 +409,6 @@ library StorageLib {
     }
 
 
-
-
 }
 
 contract EquipFacet {
