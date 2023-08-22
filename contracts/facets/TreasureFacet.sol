@@ -21,7 +21,7 @@ struct Treasure {
     string uri;
 }
 
-library StorageLib {
+library TreasureStorageLib {
     bytes32 constant PLAYER_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant POTION_STORAGE_POSITION = keccak256("potion.test.storage.a");
     bytes32 constant TREASURE_STORAGE_POSITION = keccak256("treasure.test.storage.a");
@@ -75,6 +75,15 @@ library StorageLib {
         );
     }
 
+    function _mintTreasure(uint256 _treasureId) internal {
+        TreasureStorage storage tr = diamondStorageTreasure();
+        
+    }
+
+    function _deleteTreasure(uint256 _treasureId) internal {
+        
+    }
+
     function _getTreasureSchemaCounter() internal view returns (uint256) {
         TreasureStorage storage tr = diamondStorageTreasure();
         return (tr.treasureScehmaCount);
@@ -94,23 +103,23 @@ library StorageLib {
 
 contract TreasureFacet {
     event TreasureSchemaCreation(uint256 indexed _treasureSchemaId);
+    event MintTreasure(TreasureSchema _treasureSchemaId);
 
     function createTreasureSchema(uint256 _rank, string memory _name, string memory _uri) public {
-        StorageLib._createTreasureSchema(_rank, _name, _uri);
-        emit TreasureSchemaCreation(StorageLib._getTreasureSchemaCounter());
+        TreasureStorageLib._createTreasureSchema(_rank, _name, _uri);
+        emit TreasureSchemaCreation(TreasureStorageLib._getTreasureSchemaCounter());
     }
 
     function getTreasureSchemaCounter() public view returns (uint256) {
-        return (StorageLib._getTreasureSchemaCounter());
+        return (TreasureStorageLib._getTreasureSchemaCounter());
     }
 
     function getTreasure(uint256 _treasureId) public view returns (Treasure memory) {
-        return (StorageLib._getTreasure(_treasureId));
-
+        return (TreasureStorageLib._getTreasure(_treasureId));
     }
 
     function getTreasureSchema(uint256 _treasureSchemaId) public view returns (TreasureSchema memory) {
-        return (StorageLib._getTreasureSchema(_treasureSchemaId));
+        return (TreasureStorageLib._getTreasureSchema(_treasureSchemaId));
     }
     
     

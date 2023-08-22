@@ -134,9 +134,9 @@ module.exports = {
       accounts: [keys],
     },
     opg: {
-      gas: 2100000,
-      gasPrice: 8000000000,
-      gasLimit: 50000000000000,
+      gas: 1100000,
+      gasPrice: 2000000000,
+      gasLimit: 20000000000000,
       url: "https://goerli.optimism.io",
       accounts: [keys],
     },

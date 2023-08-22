@@ -36,10 +36,9 @@ struct ChainData {
     address diamond;
 }
 
-struct Test {
-    uint256 one;
-    uint256 two;
-    bool three;
+struct BridgegeCoinFormat {
+    address sender;
+    uint256 amount;
 }
 
 /// @title Player Storage Library
@@ -47,6 +46,7 @@ struct Test {
 library BridgeStorageLib {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant BRIDGE_STORAGE_POSITION = keccak256("bridge.test.storage.a");
+    bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
     using PlayerSlotLib for PlayerSlotLib.Slot;
@@ -68,8 +68,16 @@ library BridgeStorageLib {
     struct BridgeStorage {
         mapping(uint256 => ChainData) chainData;
         mapping(uint256 => mapping(uint256 => uint256)) chainToPlayerId;
-        mapping(uint256 => bool) origin;
+        mapping(uint256 => mapping(uint256 => string)) chainToPlayerName;
+        mapping(uint256 => bool) bridged;
         mapping(uint256 => uint256) playerToBaseChain;
+    }
+
+    struct CoinStorage {
+        mapping(address => uint256) goldBalance;
+        mapping(address => uint256) gemBalance;
+        mapping(address => uint256) totemBalance;
+        mapping(address => uint256) diamondBalance;
     }
 
 
@@ -88,6 +96,13 @@ library BridgeStorageLib {
         }
     }
 
+    function diamondStorageCoin() internal pure returns (CoinStorage storage ds) {
+        bytes32 position = COIN_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
+
     function _bridgePlayer(uint256 _playerId) internal returns (BridgeFormat memory) {
         PlayerStorage storage s = diamondStorage();
         BridgeStorage storage br = diamondStorageBridge(); 
@@ -97,10 +112,12 @@ library BridgeStorageLib {
         PlayerSlotLib.Player storage player = s.players[_playerId];
         uint256 baseChain;
         uint256 baseId;
-        if (!br.origin[_playerId]) { //have not bridged before
+        if (!br.bridged[_playerId]) { //have not bridged before
             baseChain = block.chainid; // set origin chain to this chain
             baseId = _playerId;
-            br.origin[_playerId] = true;
+            br.bridged[_playerId] = true;
+            br.chainToPlayerId[baseChain][_playerId] = _playerId;
+            br.chainToPlayerName[baseChain][_playerId] = s.players[_playerId].name;
         } else { //have bridged before
             baseChain = br.playerToBaseChain[_playerId];
             baseId = br.chainToPlayerId[baseChain][_playerId];
@@ -117,7 +134,7 @@ library BridgeStorageLib {
             player.defense,
             baseChain, 
             baseId,
-            player.name, 
+            br.chainToPlayerName[baseChain][_playerId], 
             player.male,
             msg.sender
         );
@@ -151,10 +168,11 @@ library BridgeStorageLib {
         BridgeStorage storage br = diamondStorageBridge();
         s.playerCount++; //increment playerCount
         br.chainToPlayerId[_format.baseChain][_format.baseId] = s.playerCount;
-        br.origin[s.playerCount] = false;
+        br.chainToPlayerName[_format.baseChain][_format.baseId] = _format.name;
+        br.bridged[s.playerCount] = true;
         br.playerToBaseChain[s.playerCount] = _format.baseChain;
         string memory _name = string(
-            abi.encodePacked(_format.name, Strings.toString(s.playerCount))
+            abi.encodePacked(_format.name,"-", Strings.toString(s.playerCount))
         );
         string memory uri;
         if (_format.class == 0) {
@@ -214,6 +232,22 @@ library BridgeStorageLib {
         return s.playerCount;
     }
 
+    function _firstBridge(uint256 _baseChain, uint256 _baseId) internal view returns (bool firstBridged) {
+        BridgeStorage storage br = diamondStorageBridge();
+        br.chainToPlayerId[_baseChain][_baseId] > 0 ? firstBridged = false : firstBridged = true;
+    }
+
+    function _sendGold(address _sender, uint256 _amount) internal {
+        CoinStorage storage c = diamondStorageCoin();
+        require(c.goldBalance[_sender] >= _amount);
+        c.goldBalance[_sender] -= _amount;
+    } 
+
+    function _receiveGold(address _sender, uint256 _amount) internal {
+        CoinStorage storage c = diamondStorageCoin();
+        c.goldBalance[_sender] += _amount;
+    }
+
 }
 
 
@@ -223,12 +257,16 @@ contract BridgeFacet is ERC721FacetInternal {
     event BridgeCreated(uint256 indexed _chainId, address indexed _portal, address indexed _diamond);
     event BridgePlayer(uint256 indexed _playerId, BridgeFormat _format);
     event ReMintPlayer(uint256 indexed _playerId, BridgeFormat _format);
+    event SendGold(address indexed _sender, uint256 indexed _amount);
+    event ReceiveGold(address indexed _sender, uint256 indexed _amount);
 
     function reMintPlayer(BridgeFormat memory _format) public {
         BridgeStorageLib._remintPlayer(_format);
         uint256 count = BridgeStorageLib._playerCount();
-        emit ReMintPlayer(count, _format);
-        _safeMint(_format.sender, count);
+        if (BridgeStorageLib._firstBridge(_format.baseChain, _format.baseId)) {
+            emit ReMintPlayer(count, _format);
+            _safeMint(_format.sender, count);
+        }
     }
 
     function bridgePlayer(uint256 _playerId, uint256 _chainId) public {
@@ -263,21 +301,26 @@ contract BridgeFacet is ERC721FacetInternal {
         emit BridgePlayer(_playerId, bridgeFormat);
     }
 
-    function bridgeTest(string memory _chain, address _contract) public {
+    function bridgeGold(string memory _chain, address _contract, uint256 _amount) public {
         //ChainData memory chainData = getChainData(_chainId);
         IOmniPortal omni;
         omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
         //omni = IOmniPortal(chainData.portal);
-        //BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
-        Test memory test = Test(42,2,true);
+        BridgegeCoinFormat memory bridgegeCoinFormat = BridgegeCoinFormat(msg.sender, _amount);
         omni.sendXChainTx(
             _chain, // destination rollup
             _contract, // contract on destination rollup
             0, // msg.value
             100_000, // gas limit
-            abi.encodeWithSignature("catchTest((uint256,uint256,bool))", test)
+            abi.encodeWithSignature("catchTest((address,uint256))", bridgegeCoinFormat)
         );
-        //emit BridgePlayer(_playerId, bridgeFormat);
+        BridgeStorageLib._sendGold(msg.sender, _amount);
+        emit SendGold(msg.sender, _amount);
+    }
+
+    function receiveGold(BridgegeCoinFormat memory _format) public {
+        BridgeStorageLib._receiveGold(_format.sender, _format.amount);
+        emit ReceiveGold(_format.sender, _format.amount);
     }
 
 

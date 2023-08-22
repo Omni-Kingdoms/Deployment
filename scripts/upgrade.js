@@ -16,8 +16,8 @@ const upgradeExample = async () => {
     //const diamondAddress = "0xE62a60247D0b9c1D09193b0F60875bc49878f5DF"; //current v3 scroll sepolia
     //const diamondAddress = "0xba88AA97A4D6ca616677F74cc5d065135865896A"; //current v3 taiko_testnet
     //const diamondAddress = "0x1b0210C5876202de3f41B1931efafd39AEd269Bb"; //current v3 opbnb
-    //const diamondAddress = "0xDeAa6c4d193831e8830A43306a8b9938beF2d3ab"; //current v3 opg
-    const diamondAddress = "0x7B43a507c0914e82CDa24F2c9A597580c23CfC29"; //current v3 arbg
+    const diamondAddress = "0xDeAa6c4d193831e8830A43306a8b9938beF2d3ab"; //current v3 opg
+    //const diamondAddress = "0x7B43a507c0914e82CDa24F2c9A597580c23CfC29"; //current v3 arbg
 
 
     const newFacetAddress = facet.address;
