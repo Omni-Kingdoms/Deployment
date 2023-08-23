@@ -38,8 +38,20 @@ struct BasicCraft {
 }
 
 struct ManaCraft {
+    uint256 manaCraftId;
     uint256 slot;
     uint256 cost;
+    string oldName;
+    string newName;
+    string uri;
+}
+
+struct AdvancedCraft {
+    uint256 advancedCraftId;
+    uint256 slot;
+    uint256 value;
+    uint256 stat;
+    uint256 treasureSchemaId;
     string oldName;
     string newName;
     string uri;
@@ -65,7 +77,7 @@ library StorageLib {
 
 
     using PlayerSlotLib for PlayerSlotLib.Player;
-    using PlayerSlotLib for PlayerSlotLib.Slot;
+    using PlayerSlotLib for PlayerSlotLib.Slot; 
 
     struct PlayerStorage {
         uint256 totalSupply;
@@ -86,6 +98,8 @@ library StorageLib {
         uint256 basicCraftCount;
         mapping(uint256 => BasicCraft) basicCraft;
         mapping(uint256 => uint256[]) playerToEquipment;
+        uint256 advancedCraftCount;
+        mapping(uint256 => AdvancedCraft) advancedCraft;
     }
 
     struct PotionStorage {
@@ -175,6 +189,29 @@ library StorageLib {
         );
     }
 
+    function _createAdvancedCraft( 
+        uint256 _treasureSchemaId,
+        uint256 _slot,
+        uint256 _value,
+        uint256 _stat,
+        string memory _oldName,
+        string memory _newName,
+        string memory _uri
+    ) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        e.advancedCraftCount++;
+        e.advancedCraft[e.advancedCraftCount] = AdvancedCraft(
+            e.advancedCraftCount,
+            _slot,
+            _value,
+            _stat,
+            _treasureSchemaId,
+            _oldName,
+            _newName,
+            _uri
+        );
+    }
+
     function _basicCraft(uint256 _playerId, uint256 _equipmentId, uint256 _craftId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         EquipmentStorage storage e = diamondStorageItem();
@@ -195,6 +232,31 @@ library StorageLib {
         e.equipment[_equipmentId].value = basicCraft.value;
         e.equipment[_equipmentId].name = basicCraft.newName;
         e.equipment[_equipmentId].uri = basicCraft.uri;
+    }
+
+    function _advancedCraft(uint256 _playerId, uint256 _advancedCraftId, uint256 _equipmentId, uint256 _treasureId) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        EquipmentStorage storage e = diamondStorageItem();
+        TreasureStorageLib.TreasureStorage storage tr = TreasureStorageLib.diamondStorageTreasure();
+        
+    }
+
+    function _updateBasicEquipmentScehma(
+        uint256 basicEquipmentSchemaId,
+        uint256 _slot,
+        uint256 _value,
+        uint256 _stat,
+        uint256 _cost,
+        string memory _name,
+        string memory _uri
+    ) internal {
+        EquipmentStorage storage e = diamondStorageItem();
+        e.basicEquipmentSchema[basicEquipmentSchemaId].slot = _slot;
+        e.basicEquipmentSchema[basicEquipmentSchemaId].value = _value;
+        e.basicEquipmentSchema[basicEquipmentSchemaId].stat = _stat;
+        e.basicEquipmentSchema[basicEquipmentSchemaId].cost = _cost;
+        e.basicEquipmentSchema[basicEquipmentSchemaId].name = _name;
+        e.basicEquipmentSchema[basicEquipmentSchemaId].uri = _uri;
     }
 
 
@@ -233,6 +295,7 @@ library StorageLib {
 
 contract CraftFacet {
     event BasicEquipmentSchemaCreated(uint256 indexed _basicEquipmentSchemaId, uint256 indexed _value, string _uri, BasicEquipmentSchema _basicEQuipmentSchema);
+    event BasicEquipmentSchemaUpdate(uint256 indexed _basicEquipmentSchemaId, uint256 indexed _value, string _uri, BasicEquipmentSchema _basicEQuipmentSchema);   
     event PurchaseBasicEquipment(uint256 indexed _playerId, uint256 _equipmentSchemaId);
     event CreateBasicCraft(uint256 indexed id, BasicCraft _basicCraft);
     event BasicCraftEvent(uint256 indexed _playerId, uint256 _equipmentId, uint256 _craftId);
@@ -255,6 +318,21 @@ contract CraftFacet {
     function purchaseBasicEquipment(uint256 _playerId, uint256 _equipmentSchemaId) public {
         StorageLib._purchaseBasicEquipment(_playerId, _equipmentSchemaId);
         emit PurchaseBasicEquipment(_playerId, _equipmentSchemaId);
+    }
+
+    function updateBasicEquipmentScehma(
+        uint256 _basicEquipmentSchemaId,
+        uint256 _slot,
+        uint256 _value,
+        uint256 _stat,
+        uint256 _cost,
+        string memory _name,
+        string memory _uri
+    ) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
+        StorageLib._updateBasicEquipmentScehma(_basicEquipmentSchemaId, _slot, _value, _stat, _cost, _name, _uri);
+        emit BasicEquipmentSchemaCreated(_basicEquipmentSchemaId, _value, _uri, getBasicEquipmentSchema(_basicEquipmentSchemaId));
     }
 
     function getPlayerToEquipment(uint256 _playerId) public view returns (uint256[] memory) {

@@ -76,20 +76,30 @@ library TreasureStorageLib {
         );
     }
 
-    function _mintTreasure(uint256 _playerId, uint256 _treasureScehmaId) internal {
+    function _mintTreasure(uint256 _playerId, uint256 _treasureSchemaId) internal {
         TreasureStorage storage tr = diamondStorageTreasure();
-        tr.treasureCount++; //increment equipment count
-        TreasureSchema storage treasureSchema = tr.treasureSchema[_treasureScehmaId];
+        tr.treasureCount++;
+        TreasureSchema memory treasureSchema = tr.treasureSchema[_treasureSchemaId];
         tr.treasures[tr.treasureCount] = Treasure(
             tr.treasureCount,
-            treasureSchema.treasureSchemaId,
+            _treasureSchemaId,
             _playerId,
             treasureSchema.rank,
             tr.playerToTreasure[_playerId].length,
             treasureSchema.name,
             treasureSchema.uri
         );
-        tr.playerToTreasure[_playerId].push(tr.treasureCount); //push treasure id into array
+        tr.playerToTreasure[_playerId].push(tr.treasureCount);
+    }
+
+    function _deleteTreasure(uint256 _playerId, uint256 _treasureId) internal {
+        TreasureStorage storage tr = diamondStorageTreasure();
+        require(tr.treasures[_treasureId].owner == _playerId);
+        uint256 rowToDelete = tr.treasures[_treasureId].pointer;
+        uint256 keyToMove = tr.playerToTreasure[_playerId].length -1;
+        tr.playerToTreasure[_playerId][rowToDelete] = keyToMove;
+        tr.treasures[keyToMove].pointer = rowToDelete;
+        tr.playerToTreasure[_playerId].pop();
     }
 
 }

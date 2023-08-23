@@ -2272,6 +2272,74 @@
         {
           "indexed": true,
           "internalType": "uint256",
+          "name": "_basicEquipmentSchemaId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_uri",
+          "type": "string"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "basicEquipmentSchemaId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "slot",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stat",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "cost",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct BasicEquipmentSchema",
+          "name": "_basicEQuipmentSchema",
+          "type": "tuple"
+        }
+      ],
+      "name": "BasicEquipmentSchemaUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "id",
           "type": "uint256"
         },
@@ -2677,6 +2745,49 @@
         }
       ],
       "name": "purchaseBasicEquipment",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_basicEquipmentSchemaId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_slot",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_stat",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_cost",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_uri",
+          "type": "string"
+        }
+      ],
+      "name": "updateBasicEquipmentScehma",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -6265,7 +6376,7 @@
             },
             {
               "internalType": "uint256",
-              "name": "treasureId",
+              "name": "treasureSchemaId",
               "type": "uint256"
             },
             {
