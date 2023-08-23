@@ -77,10 +77,13 @@ library TreasureStorageLib {
 
     function _mintTreasure(uint256 _treasureId) internal {
         TreasureStorage storage tr = diamondStorageTreasure();
-        
+        PlayerStorage storage s = diamondStoragePlayer();
+
     }
 
     function _deleteTreasure(uint256 _treasureId) internal {
+        TreasureStorage storage tr = diamondStorageTreasure();
+        PlayerStorage storage s = diamondStoragePlayer();
         
     }
 

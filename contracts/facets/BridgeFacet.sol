@@ -263,10 +263,10 @@ contract BridgeFacet is ERC721FacetInternal {
     function reMintPlayer(BridgeFormat memory _format) public {
         BridgeStorageLib._remintPlayer(_format);
         uint256 count = BridgeStorageLib._playerCount();
-        if (BridgeStorageLib._firstBridge(_format.baseChain, _format.baseId)) {
-            emit ReMintPlayer(count, _format);
-            _safeMint(_format.sender, count);
-        }
+        // if (BridgeStorageLib._firstBridge(_format.baseChain, _format.baseId)) {
+        //     emit ReMintPlayer(count, _format);
+        // }
+        _safeMint(_format.sender, count);
     }
 
     function bridgePlayer(uint256 _playerId, uint256 _chainId) public {
@@ -288,7 +288,7 @@ contract BridgeFacet is ERC721FacetInternal {
     function bridgePlayerTest(uint256 _playerId, string memory _chain, address _contract) public {
         //ChainData memory chainData = getChainData(_chainId);
         IOmniPortal omni;
-        omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
+        omni = IOmniPortal(0x1B2c14b235e928B42EDE9D83c8143fC9ec309742);
         //omni = IOmniPortal(chainData.portal);
         BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
         omni.sendXChainTx(
@@ -304,7 +304,7 @@ contract BridgeFacet is ERC721FacetInternal {
     function bridgeGold(string memory _chain, address _contract, uint256 _amount) public {
         //ChainData memory chainData = getChainData(_chainId);
         IOmniPortal omni;
-        omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
+        omni = IOmniPortal(0x1B2c14b235e928B42EDE9D83c8143fC9ec309742);
         //omni = IOmniPortal(chainData.portal);
         BridgegeCoinFormat memory bridgegeCoinFormat = BridgegeCoinFormat(msg.sender, _amount);
         omni.sendXChainTx(
@@ -312,7 +312,7 @@ contract BridgeFacet is ERC721FacetInternal {
             _contract, // contract on destination rollup
             0, // msg.value
             100_000, // gas limit
-            abi.encodeWithSignature("catchTest((address,uint256))", bridgegeCoinFormat)
+            abi.encodeWithSignature("receiveGold((address,uint256))", bridgegeCoinFormat)
         );
         BridgeStorageLib._sendGold(msg.sender, _amount);
         emit SendGold(msg.sender, _amount);
