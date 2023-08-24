@@ -251,7 +251,7 @@ library BridgeStorageLib {
     function _sanityCheck(uint256 _playerId) internal view returns(
         uint256, //chain Id
         uint256, // br.chainToPlayerId[block.chaindId][_playerId]
-        uint256, //
+        uint256, //br.playerToBaseChain[_playerId]
         bool
     )  {
         BridgeStorage storage br = diamondStorageBridge();

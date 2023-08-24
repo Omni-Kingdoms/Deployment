@@ -3,7 +3,7 @@ const hre = require('hardhat');
 
 const upgradeExample = async () => {
 
-  const FacetName = "BridgeFacet"
+  const FacetName = "CraftFacet"
     const Facet = await ethers.getContractFactory(FacetName)
     const facet = await Facet.deploy()
     await facet.deployed()
@@ -11,13 +11,14 @@ const upgradeExample = async () => {
 
     //await verifyContract(facet, FacetName);
 
+    const diamondAddress = "0xE62a60247D0b9c1D09193b0F60875bc49878f5DF"; //current v3 scroll sepolia alex test
     //const diamondAddress = "0x55Fd95F322ED24705441806b73dD969558f5E9E5"; //current v3 mantletest
     //const diamondAddress = "0xC54561B8D106A9801a19c60473E50359F5fc2cd3"; //current v3 omni
     //const diamondAddress = "0xE62a60247D0b9c1D09193b0F60875bc49878f5DF"; //current v3 scroll sepolia
     //const diamondAddress = "0xba88AA97A4D6ca616677F74cc5d065135865896A"; //current v3 taiko_testnet
     //const diamondAddress = "0x1b0210C5876202de3f41B1931efafd39AEd269Bb"; //current v3 opbnb
     //const diamondAddress = "0x0A31e14967aA2CFD76DB8eF599e4eb032544e8AB"; //current v3 opg
-    const diamondAddress = "0x9d23A355a99BCe2926DcF698e1A7C9Bb4f1Bba43"; //current v3 arbg
+    //const diamondAddress = "0x9d23A355a99BCe2926DcF698e1A7C9Bb4f1Bba43"; //current v3 arbg
 
 
     const newFacetAddress = facet.address;

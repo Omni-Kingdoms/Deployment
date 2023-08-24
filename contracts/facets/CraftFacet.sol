@@ -307,6 +307,16 @@ library StorageLib {
         return e.basicCraft[_basicCraftId];
     }
 
+    function _getAdvancedCraftCount() internal view returns (uint256) {
+        EquipmentStorage storage e = diamondStorageItem();
+        return e.advancedCraftCount;
+    }
+
+    function _getAdvancedCraft(uint256 _advancedCraftId) internal view returns (AdvancedCraft memory) {
+        EquipmentStorage storage e = diamondStorageItem();
+        return e.advancedCraft[_advancedCraftId];
+    }
+
 
 }
 
@@ -315,7 +325,9 @@ contract CraftFacet {
     event BasicEquipmentSchemaUpdate(uint256 indexed _basicEquipmentSchemaId, uint256 indexed _value, string _uri, BasicEquipmentSchema _basicEQuipmentSchema);   
     event PurchaseBasicEquipment(uint256 indexed _playerId, uint256 _equipmentSchemaId);
     event CreateBasicCraft(uint256 indexed id, BasicCraft _basicCraft);
+    event CreateAdvancedCraft(uint256 indexed id, AdvancedCraft _advancedCraft);
     event BasicCraftEvent(uint256 indexed _playerId, uint256 _equipmentId, uint256 _craftId);
+    event AdvancedCraftEvent(uint256 indexed _playerId, uint256 _equipmentId, uint256 _advancedCraftId, uint256 _treasureId);
 
     function createBasicEquipment(
         uint256 _slot,
@@ -386,6 +398,28 @@ contract CraftFacet {
     function getBasicCraft(uint256 _basicCraftId) public view returns (BasicCraft memory) {
         return StorageLib._getBasicCraft(_basicCraftId);
     }
+
+
+
+    function createAdvancedCraft(uint256 _treasureSchemaId,uint256 _slot,uint256 _value,uint256 _stat,string memory _oldName,string memory _newName,string memory _uri) public {
+        StorageLib._createAdvancedCraft(_treasureSchemaId, _slot, _value, _stat, _oldName, _newName, _uri);
+        uint256 id = getAdvancedCraftCount();
+        emit CreateAdvancedCraft(id, getAdvancedCraft(id));
+    }
+
+    function advancedCraft(uint256 _playerId, uint256 _advancedCraftId, uint256 _equipmentId, uint256 _treasureId) public {
+        StorageLib._advancedCraft(_playerId, _advancedCraftId, _equipmentId, _treasureId);
+        emit AdvancedCraftEvent(_playerId, _equipmentId, _advancedCraftId, _treasureId);
+    }
+
+    function getAdvancedCraftCount() public view returns (uint256) {
+        return StorageLib._getAdvancedCraftCount();
+    }
+
+    function getAdvancedCraft(uint256 _advancedCraftId) public view returns (AdvancedCraft memory) {
+        return StorageLib._getAdvancedCraft(_advancedCraftId);
+    }
+
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 }

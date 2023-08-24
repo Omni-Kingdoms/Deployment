@@ -2225,6 +2225,37 @@
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "_advancedCraftId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_treasureId",
+          "type": "uint256"
+        }
+      ],
+      "name": "AdvancedCraftEvent",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_equipmentId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "_craftId",
           "type": "uint256"
         }
@@ -2381,6 +2412,67 @@
           "components": [
             {
               "internalType": "uint256",
+              "name": "advancedCraftId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "slot",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stat",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "treasureSchemaId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "oldName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "newName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct AdvancedCraft",
+          "name": "_advancedCraft",
+          "type": "tuple"
+        }
+      ],
+      "name": "CreateAdvancedCraft",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
               "name": "id",
               "type": "uint256"
             },
@@ -2452,6 +2544,34 @@
         },
         {
           "internalType": "uint256",
+          "name": "_advancedCraftId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_equipmentId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_treasureId",
+          "type": "uint256"
+        }
+      ],
+      "name": "advancedCraft",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "_equipmentId",
           "type": "uint256"
         },
@@ -2462,6 +2582,49 @@
         }
       ],
       "name": "basicCraft",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_treasureSchemaId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_slot",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_stat",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_oldName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_newName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_uri",
+          "type": "string"
+        }
+      ],
+      "name": "createAdvancedCraft",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -2535,6 +2698,80 @@
       "name": "createBasicEquipment",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_advancedCraftId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getAdvancedCraft",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "advancedCraftId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "slot",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "stat",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "treasureSchemaId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "oldName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "newName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct AdvancedCraft",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAdvancedCraftCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
