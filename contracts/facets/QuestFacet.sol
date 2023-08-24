@@ -37,13 +37,6 @@ struct Equipment {
 //     5: luck;
 // }
 
-struct Treasure {
-    uint256 id;
-    uint256 rank;
-    uint256 pointer;
-    string name;
-    string uri;
-}
 
 
 
@@ -52,7 +45,6 @@ library StorageLib {
     bytes32 constant QUEST_STORAGE_POSITION = keccak256("quest.test.storage.a");
     bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
     bytes32 constant EQUIPMENT_STORAGE_POSITION = keccak256("equipment.test.storage.a");
-    bytes32 constant TREASURE_STORAGE_POSITION = keccak256("treasure.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
     using PlayerSlotLib for PlayerSlotLib.Slot;
@@ -92,13 +84,6 @@ library StorageLib {
         mapping(uint256 => uint256) cooldown;
     }
 
-    struct TreasureStorage {
-        uint256 treasureCount;
-        mapping(uint256 => address) owners;
-        mapping(uint256 => Treasure) treasures;
-        mapping(uint256 => uint256[]) playerToTreasure;
-    }
-
     function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
         bytes32 position = PLAYER_STORAGE_POSITION;
         assembly {
@@ -127,12 +112,6 @@ library StorageLib {
         }
     }
 
-    function diamondStorageTreasure() internal pure returns (TreasureStorage storage ds) {
-        bytes32 position = TREASURE_STORAGE_POSITION;
-        assembly {
-            ds.slot := position
-        }
-    }
 
     function _startQuestGold(uint256 _tokenId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
@@ -212,15 +191,6 @@ library StorageLib {
         return q.cooldowns[_playerId];
     }
 
-    function _getTreasures(uint256 _playerId) internal view returns (uint256[] memory) {
-        TreasureStorage storage t = diamondStorageTreasure();
-        return t.playerToTreasure[_playerId];
-    }
-
-    function _getTreasure(uint256 _treasureId) internal view returns (Treasure memory) {
-        TreasureStorage storage t = diamondStorageTreasure();
-        return t.treasures[_treasureId];
-    }
 
     function getGold() internal {
         CoinStorage storage c = diamondStorageCoin();
@@ -271,14 +241,6 @@ contract QuestFacet {
 
     function getCooldown(uint256 _playerId) external view returns (uint256) {
         return StorageLib._getCooldown(_playerId);
-    }
-
-    function getTreasures(uint256 _playerId) external view returns (uint256[] memory) {
-        return StorageLib._getTreasures(_playerId);
-    }
-
-    function getTreasure(uint256 _treasureId) external view returns (Treasure memory) {
-        return StorageLib._getTreasure(_treasureId);
     }
 
     function getGold() public {

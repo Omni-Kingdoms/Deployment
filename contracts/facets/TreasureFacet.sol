@@ -82,6 +82,11 @@ library TreasureStorageLib {
         return (tr.treasureScehmaCount);
     }
 
+    function _getTreasureCount() internal view returns(uint256) {
+        TreasureStorage storage tr = diamondStorageTreasure();
+        return (tr.treasureCount);
+    }
+
     function _getTreasure(uint256 _treasureId) internal view returns (Treasure memory) {
         TreasureStorage storage tr = diamondStorageTreasure();
         return tr.treasures[_treasureId];
@@ -92,15 +97,29 @@ library TreasureStorageLib {
         return tr.treasureSchema[_treasureSchemaId];
     }
 
+    function _getTreasures(uint256 _playerId) internal view returns (uint256[] memory) {
+        TreasureStorage storage tr = diamondStorageTreasure();
+        return tr.playerToTreasure[_playerId];
+    }
+
 }
 
 contract TreasureFacet {
-    event TreasureSchemaCreation(uint256 indexed _treasureSchemaId);
-    event MintTreasure(TreasureSchema _treasureSchemaId);
+    event TreasureSchemaCreation(TreasureSchema _treasureSchemaId);
+    event MintTreasure(Treasure _treasureSchemaId);
 
     function createTreasureSchema(uint256 _rank, string memory _name, string memory _uri) public {
         TreasureStorageLib._createTreasureSchema(_rank, _name, _uri);
-        emit TreasureSchemaCreation(TreasureStorageLib._getTreasureSchemaCounter());
+        emit TreasureSchemaCreation(getTreasureSchema(getTreasureSchemaCounter()));
+    }
+
+    function mintTreasure(uint256 _playerId, uint256 _treasureSchemaId) public {
+        TreasureStorageLib._mintTreasure(_playerId, _treasureSchemaId);
+        emit MintTreasure(getTreasure(getTreasureCount()));
+    }
+
+    function getTreasureCount() public view returns (uint256) {
+        return TreasureStorageLib._getTreasureCount();
     }
 
     function getTreasureSchemaCounter() public view returns (uint256) {
@@ -113,6 +132,10 @@ contract TreasureFacet {
 
     function getTreasureSchema(uint256 _treasureSchemaId) public view returns (TreasureSchema memory) {
         return (TreasureStorageLib._getTreasureSchema(_treasureSchemaId));
+    }
+
+    function getTreasures(uint256 _playerId) external view returns (uint256[] memory) {
+        return TreasureStorageLib._getTreasures(_playerId);
     }
     
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}

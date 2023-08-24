@@ -5815,71 +5815,6 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_treasureId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getTreasure",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "id",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "rank",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "pointer",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "uri",
-              "type": "string"
-            }
-          ],
-          "internalType": "struct Treasure",
-          "name": "",
-          "type": "tuple"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getTreasures",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
           "name": "_tokenId",
           "type": "uint256"
         }
@@ -6574,6 +6509,56 @@
           "components": [
             {
               "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "treasureSchemaId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "owner",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "rank",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "pointer",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "uri",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct Treasure",
+          "name": "_treasureSchemaId",
+          "type": "tuple"
+        }
+      ],
+      "name": "MintTreasure",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
               "name": "basicTreasureId",
               "type": "uint256"
             },
@@ -6597,19 +6582,6 @@
           "internalType": "struct TreasureSchema",
           "name": "_treasureSchemaId",
           "type": "tuple"
-        }
-      ],
-      "name": "MintTreasure",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "_treasureSchemaId",
-          "type": "uint256"
         }
       ],
       "name": "TreasureSchemaCreation",
@@ -6695,6 +6667,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "getTreasureCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -6746,6 +6731,43 @@
         }
       ],
       "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTreasures",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_treasureSchemaId",
+          "type": "uint256"
+        }
+      ],
+      "name": "mintTreasure",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {

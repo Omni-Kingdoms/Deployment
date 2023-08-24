@@ -3,7 +3,7 @@ const hre = require('hardhat');
 
 const upgradeExample = async () => {
 
-  const FacetName = "BridgeFacet"
+  const FacetName = "TreasureFacet"
     const Facet = await ethers.getContractFactory(FacetName)
     const facet = await Facet.deploy()
     await facet.deployed()
@@ -18,7 +18,9 @@ const upgradeExample = async () => {
     //const diamondAddress = "0xba88AA97A4D6ca616677F74cc5d065135865896A"; //current v3 taiko_testnet
     //const diamondAddress = "0x1b0210C5876202de3f41B1931efafd39AEd269Bb"; //current v3 opbnb
     //const diamondAddress = "0x0A31e14967aA2CFD76DB8eF599e4eb032544e8AB"; //current v3 opg
-    const diamondAddress = "0x9d23A355a99BCe2926DcF698e1A7C9Bb4f1Bba43"; //current v3 arbg
+    //const diamondAddress = "0x9d23A355a99BCe2926DcF698e1A7C9Bb4f1Bba43"; //current v3 arbg
+    const diamondAddress = "0xB153Dcab4e158AABE084b6E6A9f3068DE5945612"; //current v3 arbg FOR ALEX
+
 
 
     const newFacetAddress = facet.address;

@@ -400,7 +400,6 @@ contract CraftFacet {
     }
 
 
-
     function createAdvancedCraft(uint256 _treasureSchemaId,uint256 _slot,uint256 _value,uint256 _stat,string memory _oldName,string memory _newName,string memory _uri) public {
         StorageLib._createAdvancedCraft(_treasureSchemaId, _slot, _value, _stat, _oldName, _newName, _uri);
         uint256 id = getAdvancedCraftCount();
