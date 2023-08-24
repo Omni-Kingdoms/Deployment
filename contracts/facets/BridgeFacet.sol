@@ -251,12 +251,20 @@ library BridgeStorageLib {
     function _sanityCheck(uint256 _playerId) internal view returns(
         uint256, //chain Id
         uint256, // br.chainToPlayerId[block.chaindId][_playerId]
+        uint256, // br.chainToPlayerId[br.playerToBaseChain[_playerId]][_playerId]
         uint256, //br.playerToBaseChain[_playerId]
+        uint256, //playercount
         bool
     )  {
         BridgeStorage storage br = diamondStorageBridge();
+        PlayerStorage storage s = diamondStorage();
         return (
-            block.chainid, br.chainToPlayerId[block.chainid][_playerId], br.playerToBaseChain[_playerId], br.bridged[_playerId]
+            block.chainid,
+            br.chainToPlayerId[block.chainid][_playerId], 
+            br.chainToPlayerId[br.playerToBaseChain[_playerId]][_playerId], 
+            br.playerToBaseChain[_playerId],
+            s.playerCount,
+            br.bridged[_playerId]
         );
     }
 
@@ -348,7 +356,9 @@ contract BridgeFacet is ERC721FacetInternal {
     function sanityCheck(uint256 _playerId) public view returns(
         uint256, //chain Id
         uint256, // br.chainToPlayerId[block.chaindId][_playerId]
-        uint256, //
+        uint256, // br.chainToPlayerId[br.playerToBaseChain[_playerId]][_playerId]
+        uint256, //br.playerToBaseChain[_playerId]
+        uint256, //playercount
         bool
     ) {
         return BridgeStorageLib._sanityCheck(_playerId);
