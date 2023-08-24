@@ -167,7 +167,7 @@ library BridgeStorageLib {
         PlayerStorage storage s = diamondStorage();
         BridgeStorage storage br = diamondStorageBridge();
         s.playerCount++; //increment playerCount
-        br.chainToPlayerId[_format.baseChain][_format.baseId] = s.playerCount;
+        br.chainToPlayerId[_format.baseChain][s.playerCount] = _format.baseId;
         br.chainToPlayerName[_format.baseChain][_format.baseId] = _format.name;
         br.bridged[s.playerCount] = true;
         br.playerToBaseChain[s.playerCount] = _format.baseChain;
@@ -246,6 +246,18 @@ library BridgeStorageLib {
     function _receiveGold(address _sender, uint256 _amount) internal {
         CoinStorage storage c = diamondStorageCoin();
         c.goldBalance[_sender] += _amount;
+    }
+
+    function _sanityCheck(uint256 _playerId) internal view returns(
+        uint256, //chain Id
+        uint256, // br.chainToPlayerId[block.chaindId][_playerId]
+        uint256, //
+        bool
+    )  {
+        BridgeStorage storage br = diamondStorageBridge();
+        return (
+            block.chainid, br.chainToPlayerId[block.chainid][_playerId], br.playerToBaseChain[_playerId], br.bridged[_playerId]
+        );
     }
 
 }
@@ -331,6 +343,15 @@ contract BridgeFacet is ERC721FacetInternal {
 
     function getChainData(uint256 _chainId) public view returns(ChainData memory) {
         return BridgeStorageLib._getChainData(_chainId);
+    }
+
+    function sanityCheck(uint256 _playerId) public view returns(
+        uint256, //chain Id
+        uint256, // br.chainToPlayerId[block.chaindId][_playerId]
+        uint256, //
+        bool
+    ) {
+        return BridgeStorageLib._sanityCheck(_playerId);
     }
 
 }

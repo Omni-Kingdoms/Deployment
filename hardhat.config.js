@@ -163,7 +163,7 @@ module.exports = {
       url: "https://testnet.omni.network/",
       accounts: [keys], // Uses the private key from the .env file
     },
-    arbitrumGoerli: {
+    arbg: {
       url: "https://arbitrum-goerli.blockpi.network/v1/rpc/public",
       accounts: [keys],
     },
