@@ -149,10 +149,13 @@ library BridgeStorageLib {
         PlayerStorage storage s = diamondStorage();
         BridgeStorage storage br = diamondStorageBridge();
         uint256 _playerId;
-        if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
-            _playerId = br.chainToPlayerId[_format.baseChain][_format.baseId]; //set the local id
+        //if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
+        if (s.playerCount > 0) { //if they have been here before
+            //_playerId = br.chainToPlayerId[_format.baseChain][_format.baseId]; //set the local id
+            _playerId = 1;
             s.players[_playerId].status = 0; //unfreeze player
-            s.players[_playerId].level = _format.level; 
+            //s.players[_playerId].level = _format.level; 
+            s.players[_playerId].level = 55; 
             s.players[_playerId].xp = _format.xp; 
             s.players[_playerId].strength = _format.strength; 
             s.players[_playerId].health = _format.health; 
