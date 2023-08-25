@@ -71,6 +71,7 @@ library BridgeStorageLib {
         mapping(uint256 => mapping(uint256 => string)) chainToPlayerName;
         mapping(uint256 => bool) bridged;
         mapping(uint256 => uint256) playerToBaseChain;
+        mapping(uint256 => BridgeFormat) formats;
     }
 
     struct CoinStorage {
@@ -118,6 +119,7 @@ library BridgeStorageLib {
             br.bridged[_playerId] = true;
             br.chainToPlayerId[baseChain][_playerId] = _playerId;
             br.chainToPlayerName[baseChain][_playerId] = s.players[_playerId].name;
+            br.playerToBaseChain[_playerId] = baseChain;
         } else { //have bridged before
             baseChain = br.playerToBaseChain[_playerId];
             baseId = br.chainToPlayerId[baseChain][_playerId];
@@ -138,6 +140,7 @@ library BridgeStorageLib {
             player.male,
             msg.sender
         );
+        br.formats[_playerId] = bridgeFormat;
         return bridgeFormat;
     }
 
@@ -268,6 +271,12 @@ library BridgeStorageLib {
         );
     }
 
+    function _getFormat(uint256 _id) internal view returns(BridgeFormat memory) {
+        BridgeStorage storage br = diamondStorageBridge();
+        return br.formats[_id];
+    }
+
+
 }
 
 
@@ -362,6 +371,10 @@ contract BridgeFacet is ERC721FacetInternal {
         bool
     ) {
         return BridgeStorageLib._sanityCheck(_playerId);
+    }
+
+    function getFormat(uint256 _id) public view returns(BridgeFormat memory) {
+        return BridgeStorageLib._getFormat(_id);
     }
 
 }

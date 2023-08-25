@@ -2066,6 +2066,97 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getFormat",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "class",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "level",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "xp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "strength",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "health",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "magic",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxMana",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "agility",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "defense",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "baseChain",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "baseId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "bool",
+              "name": "isMale",
+              "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct BridgeFormat",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "components": [
             {
               "internalType": "uint256",
