@@ -153,9 +153,9 @@ library BridgeStorageLib {
         if (s.playerCount > 0) { //if they have been here before
             //_playerId = br.chainToPlayerId[_format.baseChain][_format.baseId]; //set the local id
             _playerId = 1;
-            s.players[1].status = 0; //unfreeze player
+            s.players[s.playerCount].status = 0; //unfreeze player
             //s.players[_playerId].level = _format.level; 
-            s.players[1].level = 55; 
+            s.players[s.playerCount].level = 57; 
             s.players[_playerId].xp = _format.xp; 
             s.players[_playerId].strength = _format.strength; 
             s.players[_playerId].health = _format.health; 
@@ -168,7 +168,7 @@ library BridgeStorageLib {
             _birdgeMint(_format);
         }   
         s.players[s.playerCount].status = 0;
-        s.players[s.playerCount].level = 55;
+        s.players[s.playerCount].level = 57;
     }
 
     function _birdgeMint(BridgeFormat memory _format) internal {

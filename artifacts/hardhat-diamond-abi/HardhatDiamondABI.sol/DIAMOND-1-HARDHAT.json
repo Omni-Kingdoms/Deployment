@@ -6597,30 +6597,21 @@
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
           "components": [
             {
               "internalType": "uint256",
-              "name": "id",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "treasureSchemaId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "owner",
+              "name": "basicTreasureId",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
               "name": "rank",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "pointer",
               "type": "uint256"
             },
             {
@@ -6635,7 +6626,7 @@
             }
           ],
           "indexed": false,
-          "internalType": "struct Treasure",
+          "internalType": "struct TreasureSchema",
           "name": "_treasureSchemaId",
           "type": "tuple"
         }
@@ -6702,64 +6693,32 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_treasureId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getTreasure",
+      "inputs": [],
+      "name": "getTreasureCount",
       "outputs": [
         {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "id",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "treasureSchemaId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "owner",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "rank",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "pointer",
-              "type": "uint256"
-            },
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "uri",
-              "type": "string"
-            }
-          ],
-          "internalType": "struct Treasure",
+          "internalType": "uint256",
           "name": "",
-          "type": "tuple"
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "getTreasureCount",
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_treasureId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTreasurePlayer",
       "outputs": [
         {
           "internalType": "uint256",

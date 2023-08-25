@@ -114,6 +114,14 @@ library StorageLib {
         mapping(address => uint256) diamondBalance;
     }
 
+    struct TreasureStorage {
+        uint256 treasureCount;
+        uint256 treasureScehmaCount;
+        mapping(uint256 => TreasureSchema) treasureSchema;
+        mapping(uint256 => mapping(uint256 => uint256)) treasures;
+        mapping(uint256 => uint256[]) playerToTreasure;
+    }
+
 
     function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
         bytes32 position = PLAYER_STORAGE_POSITION;
@@ -131,6 +139,13 @@ library StorageLib {
 
     function diamondStorageCoin() internal pure returns (CoinStorage storage ds) {
         bytes32 position = COIN_STORAGE_POSITION;
+        assembly {
+            ds.slot := position
+        }
+    }
+
+    function diamondStorageTreasure() internal pure returns (TreasureStorage storage ds) {
+        bytes32 position = TREASURE_STORAGE_POSITION;
         assembly {
             ds.slot := position
         }
@@ -234,16 +249,16 @@ library StorageLib {
         e.equipment[_equipmentId].uri = basicCraft.uri;
     }
 
-    function _advancedCraft(uint256 _playerId, uint256 _advancedCraftId, uint256 _equipmentId, uint256 _treasureId) internal {
+    function _advancedCraft(uint256 _playerId, uint256 _advancedCraftId, uint256 _equipmentId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         EquipmentStorage storage e = diamondStorageItem();
-        TreasureStorageLib.TreasureStorage storage tr = TreasureStorageLib.diamondStorageTreasure();
+        TreasureStorage storage tr = diamondStorageTreasure();
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender, "you do not own this player"); //ownerOf player
         require(!e.equipment[_equipmentId].isEquiped, "must not be equipped"); //check that the hammer is not equipped
         AdvancedCraft storage advancedCraft = e.advancedCraft[_advancedCraftId];
-        require(tr.treasures[_treasureId].owner == _playerId); //player is owner of treasure;
-        require(tr.treasures[_treasureId].treasureSchemaId == advancedCraft.treasureSchemaId); //check treasure
+        require(tr.treasures[advancedCraft.treasureSchemaId][_playerId] >= 1); //player is owner of treasure;
+        require(advancedCraft.treasureSchemaId == advancedCraft.treasureSchemaId); //check treasure
         require(
             keccak256(abi.encodePacked(e.equipment[_equipmentId].name))
                 == keccak256(abi.encodePacked(advancedCraft.oldName)),
@@ -255,7 +270,7 @@ library StorageLib {
         e.equipment[_equipmentId].stat = advancedCraft.stat;
         e.equipment[_equipmentId].name = advancedCraft.newName;
         e.equipment[_equipmentId].uri = advancedCraft.uri;
-        TreasureStorageLib._deleteTreasure(_playerId, _treasureId);
+        TreasureStorageLib._deleteTreasure(_playerId, advancedCraft.treasureSchemaId);
     }
 
     function _updateBasicEquipmentScehma(
@@ -407,7 +422,7 @@ contract CraftFacet {
     }
 
     function advancedCraft(uint256 _playerId, uint256 _advancedCraftId, uint256 _equipmentId, uint256 _treasureId) public {
-        StorageLib._advancedCraft(_playerId, _advancedCraftId, _equipmentId, _treasureId);
+        StorageLib._advancedCraft(_playerId, _advancedCraftId, _equipmentId);
         emit AdvancedCraftEvent(_playerId, _equipmentId, _advancedCraftId, _treasureId);
     }
 

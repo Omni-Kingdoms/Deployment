@@ -27,8 +27,7 @@ library TreasureStorageLib {
         uint256 treasureCount;
         uint256 treasureScehmaCount;
         mapping(uint256 => TreasureSchema) treasureSchema;
-        //mapping(uint256 => address) owners;
-        mapping(uint256 => Treasure) treasures;
+        mapping(uint256 => mapping(uint256 => uint256)) treasures;
         mapping(uint256 => uint256[]) playerToTreasure;
     }
 
@@ -54,27 +53,29 @@ library TreasureStorageLib {
     function _mintTreasure(uint256 _playerId, uint256 _treasureSchemaId) internal {
         TreasureStorage storage tr = diamondStorageTreasure();
         tr.treasureCount++;
-        TreasureSchema memory treasureSchema = tr.treasureSchema[_treasureSchemaId];
-        tr.treasures[tr.treasureCount] = Treasure(
-            tr.treasureCount,
-            _treasureSchemaId,
-            _playerId,
-            treasureSchema.rank,
-            tr.playerToTreasure[_playerId].length,
-            treasureSchema.name,
-            treasureSchema.uri
-        );
-        tr.playerToTreasure[_playerId].push(tr.treasureCount);
+        //TreasureSchema memory treasureSchema = tr.treasureSchema[_treasureSchemaId];
+        tr.treasures[_treasureSchemaId][_playerId]++;
+        // tr.treasures[tr.treasureCount] = Treasure(
+        //     tr.treasureCount,
+        //     _treasureSchemaId,
+        //     _playerId,
+        //     treasureSchema.rank,
+        //     tr.playerToTreasure[_playerId].length,
+        //     treasureSchema.name,
+        //     treasureSchema.uri
+        // );
+        //tr.playerToTreasure[_playerId].push(tr.treasureCount);
     }
 
-    function _deleteTreasure(uint256 _playerId, uint256 _treasureId) internal {
+    function _deleteTreasure(uint256 _playerId, uint256 _treasureScehmaId) internal {
         TreasureStorage storage tr = diamondStorageTreasure();
-        require(tr.treasures[_treasureId].owner == _playerId);
-        uint256 rowToDelete = tr.treasures[_treasureId].pointer;
-        uint256 keyToMove = tr.playerToTreasure[_playerId].length -1;
-        tr.playerToTreasure[_playerId][rowToDelete] = keyToMove;
-        tr.treasures[keyToMove].pointer = rowToDelete;
-        tr.playerToTreasure[_playerId].pop();
+        require(tr.treasures[_treasureScehmaId][_playerId] >= 1);
+        tr.treasures[_treasureScehmaId][_playerId] -= 1;
+        // uint256 rowToDelete = tr.treasures[_treasureId].pointer;
+        // uint256 keyToMove = tr.playerToTreasure[_playerId].length -1;
+        // tr.playerToTreasure[_playerId][rowToDelete] = keyToMove;
+        // tr.treasures[keyToMove].pointer = rowToDelete;
+        // tr.playerToTreasure[_playerId].pop();
     }
 
     function _getTreasureSchemaCounter() internal view returns (uint256) {
@@ -87,9 +88,9 @@ library TreasureStorageLib {
         return (tr.treasureCount);
     }
 
-    function _getTreasure(uint256 _treasureId) internal view returns (Treasure memory) {
+    function _getTreasurePlayer(uint256 _playerId, uint256 _treasureSchemaId) internal view returns (uint256) {
         TreasureStorage storage tr = diamondStorageTreasure();
-        return tr.treasures[_treasureId];
+        return tr.treasures[_treasureSchemaId][_playerId];
     }
 
     function _getTreasureSchema(uint256 _treasureSchemaId) internal view returns (TreasureSchema memory) {
@@ -106,7 +107,7 @@ library TreasureStorageLib {
 
 contract TreasureFacet {
     event TreasureSchemaCreation(TreasureSchema _treasureSchemaId);
-    event MintTreasure(Treasure _treasureSchemaId);
+    event MintTreasure(uint256 _playerId, TreasureSchema _treasureSchemaId);
 
     function createTreasureSchema(uint256 _rank, string memory _name, string memory _uri) public {
         TreasureStorageLib._createTreasureSchema(_rank, _name, _uri);
@@ -115,7 +116,7 @@ contract TreasureFacet {
 
     function mintTreasure(uint256 _playerId, uint256 _treasureSchemaId) public {
         TreasureStorageLib._mintTreasure(_playerId, _treasureSchemaId);
-        emit MintTreasure(getTreasure(getTreasureCount()));
+        emit MintTreasure(_playerId, getTreasureSchema(_treasureSchemaId));
     }
 
     function getTreasureCount() public view returns (uint256) {
@@ -126,8 +127,8 @@ contract TreasureFacet {
         return (TreasureStorageLib._getTreasureSchemaCounter());
     }
 
-    function getTreasure(uint256 _treasureId) public view returns (Treasure memory) {
-        return (TreasureStorageLib._getTreasure(_treasureId));
+    function getTreasurePlayer(uint256 _playerId, uint256 _treasureId) public view returns (uint256) {
+        return (TreasureStorageLib._getTreasurePlayer(_playerId, _treasureId));
     }
 
     function getTreasureSchema(uint256 _treasureSchemaId) public view returns (TreasureSchema memory) {
