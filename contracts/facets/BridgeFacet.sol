@@ -155,7 +155,7 @@ library BridgeStorageLib {
             _playerId = 1;
             s.players[s.playerCount].status = 0; //unfreeze player
             //s.players[_playerId].level = _format.level; 
-            s.players[s.playerCount].level = 57; 
+            s.players[s.playerCount].level = 58; 
             s.players[_playerId].xp = _format.xp; 
             s.players[_playerId].strength = _format.strength; 
             s.players[_playerId].health = _format.health; 
@@ -168,7 +168,7 @@ library BridgeStorageLib {
             _birdgeMint(_format);
         }   
         s.players[s.playerCount].status = 0;
-        s.players[s.playerCount].level = 57;
+        s.players[s.playerCount].level = 58;
     }
 
     function _birdgeMint(BridgeFormat memory _format) internal {
@@ -281,6 +281,10 @@ library BridgeStorageLib {
         return br.formats[_id];
     }
 
+    function _freeGold() internal {
+        CoinStorage storage c = diamondStorageCoin();
+        c.goldBalance[msg.sender]++;
+    }
 
 }
 
@@ -296,11 +300,11 @@ contract BridgeFacet is ERC721FacetInternal {
 
     function reMintPlayer(BridgeFormat memory _format) public {
         BridgeStorageLib._remintPlayer(_format);
-        uint256 count = BridgeStorageLib._playerCount();
+        //uint256 count = BridgeStorageLib._playerCount();
         // if (BridgeStorageLib._firstBridge(_format.baseChain, _format.baseId)) {
         //     emit ReMintPlayer(count, _format);
         // }
-        _safeMint(_format.sender, count);
+        //_safeMint(_format.sender, count);
     }
 
     function bridgePlayer(uint256 _playerId, uint256 _chainId) public {
@@ -312,8 +316,6 @@ contract BridgeFacet is ERC721FacetInternal {
         omni.sendXChainTx(
             chainData.name, // destination rollup
             chainData.diamond, // contract on destination rollup
-            0, // msg.value
-            100_000, // gas limit
             abi.encodeWithSignature("reMintPlayer((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool,address))", bridgeFormat)
         );
         emit BridgePlayer(_playerId, bridgeFormat);
@@ -322,14 +324,12 @@ contract BridgeFacet is ERC721FacetInternal {
     function bridgePlayerTest(uint256 _playerId, string memory _chain, address _contract) public {
         //ChainData memory chainData = getChainData(_chainId);
         IOmniPortal omni;
-        omni = IOmniPortal(0x1B2c14b235e928B42EDE9D83c8143fC9ec309742);
+        omni = IOmniPortal(0xcbbc5Da52ea2728279560Dca8f4ec08d5F829985);
         //omni = IOmniPortal(chainData.portal);
         BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
         omni.sendXChainTx(
             _chain, // destination rollup
             _contract, // contract on destination rollup
-            0, // msg.value
-            100_000, // gas limit
             abi.encodeWithSignature("reMintPlayer((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,bool,address))", bridgeFormat)
         );
         emit BridgePlayer(_playerId, bridgeFormat);
@@ -338,14 +338,12 @@ contract BridgeFacet is ERC721FacetInternal {
     function bridgeGold(string memory _chain, address _contract, uint256 _amount) public {
         //ChainData memory chainData = getChainData(_chainId);
         IOmniPortal omni;
-        omni = IOmniPortal(0x1B2c14b235e928B42EDE9D83c8143fC9ec309742);
+        omni = IOmniPortal(0xcbbc5Da52ea2728279560Dca8f4ec08d5F829985);
         //omni = IOmniPortal(chainData.portal);
         BridgegeCoinFormat memory bridgegeCoinFormat = BridgegeCoinFormat(msg.sender, _amount);
         omni.sendXChainTx(
             _chain, // destination rollup
             _contract, // contract on destination rollup
-            0, // msg.value
-            100_000, // gas limit
             abi.encodeWithSignature("receiveGold((address,uint256))", bridgegeCoinFormat)
         );
         BridgeStorageLib._sendGold(msg.sender, _amount);
@@ -380,6 +378,10 @@ contract BridgeFacet is ERC721FacetInternal {
 
     function getFormat(uint256 _id) public view returns(BridgeFormat memory) {
         return BridgeStorageLib._getFormat(_id);
+    }
+
+    function freeGold() public {
+        BridgeStorageLib._freeGold();
     }
 
 }

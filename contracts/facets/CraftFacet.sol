@@ -258,7 +258,7 @@ library StorageLib {
         require(!e.equipment[_equipmentId].isEquiped, "must not be equipped"); //check that the hammer is not equipped
         AdvancedCraft storage advancedCraft = e.advancedCraft[_advancedCraftId];
         require(tr.treasures[advancedCraft.treasureSchemaId][_playerId] >= 1); //player is owner of treasure;
-        require(advancedCraft.treasureSchemaId == advancedCraft.treasureSchemaId); //check treasure
+        //require(advancedCraft.treasureSchemaId == advancedCraft.treasureSchemaId); //check treasure
         require(
             keccak256(abi.encodePacked(e.equipment[_equipmentId].name))
                 == keccak256(abi.encodePacked(advancedCraft.oldName)),
@@ -342,7 +342,7 @@ contract CraftFacet {
     event CreateBasicCraft(uint256 indexed id, BasicCraft _basicCraft);
     event CreateAdvancedCraft(uint256 indexed id, AdvancedCraft _advancedCraft);
     event BasicCraftEvent(uint256 indexed _playerId, uint256 _equipmentId, uint256 _craftId);
-    event AdvancedCraftEvent(uint256 indexed _playerId, uint256 _equipmentId, uint256 _advancedCraftId, uint256 _treasureId);
+    event AdvancedCraftEvent(uint256 indexed _playerId, uint256 _equipmentId, uint256 _advancedCraftId);
 
     function createBasicEquipment(
         uint256 _slot,
@@ -421,9 +421,9 @@ contract CraftFacet {
         emit CreateAdvancedCraft(id, getAdvancedCraft(id));
     }
 
-    function advancedCraft(uint256 _playerId, uint256 _advancedCraftId, uint256 _equipmentId, uint256 _treasureId) public {
+    function advancedCraft(uint256 _playerId, uint256 _advancedCraftId, uint256 _equipmentId) public {
         StorageLib._advancedCraft(_playerId, _advancedCraftId, _equipmentId);
-        emit AdvancedCraftEvent(_playerId, _equipmentId, _advancedCraftId, _treasureId);
+        emit AdvancedCraftEvent(_playerId, _equipmentId, _advancedCraftId);
     }
 
     function getAdvancedCraftCount() public view returns (uint256) {
