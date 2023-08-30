@@ -148,14 +148,12 @@ library BridgeStorageLib {
     function _remintPlayer(BridgeFormat memory _format) internal {
         PlayerStorage storage s = diamondStorage();
         BridgeStorage storage br = diamondStorageBridge();
-        uint256 _playerId;
-        //if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
-        if (s.playerCount > 0) { //if they have been here before
-            //_playerId = br.chainToPlayerId[_format.baseChain][_format.baseId]; //set the local id
-            _playerId = 1;
+        if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
+            uint256 _playerId = _format.baseId;
             s.players[s.playerCount].status = 0; //unfreeze player
+            s.players[_format.baseId].status = 0;
             //s.players[_playerId].level = _format.level; 
-            s.players[s.playerCount].level = 58; 
+            s.players[_format.baseId].level = 59; 
             s.players[_playerId].xp = _format.xp; 
             s.players[_playerId].strength = _format.strength; 
             s.players[_playerId].health = _format.health; 
@@ -166,9 +164,8 @@ library BridgeStorageLib {
             s.players[_playerId].agility = _format.agility; 
         } else { //have not been here before
             _birdgeMint(_format);
+            s.players[s.playerCount].level = 54;
         }   
-        s.players[s.playerCount].status = 0;
-        s.players[s.playerCount].level = 58;
     }
 
     function _birdgeMint(BridgeFormat memory _format) internal {
@@ -286,6 +283,11 @@ library BridgeStorageLib {
         c.goldBalance[msg.sender]++;
     }
 
+    function _unfreezePlayer() internal {
+        PlayerStorage storage s = diamondStorage();
+        s.players[1].status = 0;
+    }
+
 }
 
 
@@ -354,6 +356,11 @@ contract BridgeFacet is ERC721FacetInternal {
         BridgeStorageLib._receiveGold(_format.sender, _format.amount);
         emit ReceiveGold(_format.sender, _format.amount);
     }
+
+    // function unfreezePlayerSend(string memory _chain, address _contract,) public {
+
+    // }
+
 
 
     function createBridge(uint256 _chainId, string memory _name, address _portal, address _diamond) public {

@@ -2527,6 +2527,11 @@
             },
             {
               "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
               "name": "treasureSchemaId",
               "type": "uint256"
             },
@@ -2699,6 +2704,11 @@
           "type": "uint256"
         },
         {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
           "internalType": "string",
           "name": "_oldName",
           "type": "string"
@@ -2820,6 +2830,11 @@
             {
               "internalType": "uint256",
               "name": "stat",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
               "type": "uint256"
             },
             {
@@ -6682,19 +6697,6 @@
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "getTreasureCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -6767,25 +6769,6 @@
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getTreasures",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
         }
       ],
       "stateMutability": "view",

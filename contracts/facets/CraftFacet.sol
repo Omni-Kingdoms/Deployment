@@ -51,6 +51,7 @@ struct AdvancedCraft {
     uint256 slot;
     uint256 value;
     uint256 stat;
+    uint256 amount;
     uint256 treasureSchemaId;
     string oldName;
     string newName;
@@ -115,11 +116,9 @@ library StorageLib {
     }
 
     struct TreasureStorage {
-        uint256 treasureCount;
         uint256 treasureScehmaCount;
         mapping(uint256 => TreasureSchema) treasureSchema;
         mapping(uint256 => mapping(uint256 => uint256)) treasures;
-        mapping(uint256 => uint256[]) playerToTreasure;
     }
 
 
@@ -209,6 +208,7 @@ library StorageLib {
         uint256 _slot,
         uint256 _value,
         uint256 _stat,
+        uint256 _amount,
         string memory _oldName,
         string memory _newName,
         string memory _uri
@@ -220,6 +220,7 @@ library StorageLib {
             _slot,
             _value,
             _stat,
+            _amount,
             _treasureSchemaId,
             _oldName,
             _newName,
@@ -257,8 +258,7 @@ library StorageLib {
         require(s.owners[_playerId] == msg.sender, "you do not own this player"); //ownerOf player
         require(!e.equipment[_equipmentId].isEquiped, "must not be equipped"); //check that the hammer is not equipped
         AdvancedCraft storage advancedCraft = e.advancedCraft[_advancedCraftId];
-        require(tr.treasures[advancedCraft.treasureSchemaId][_playerId] >= 1); //player is owner of treasure;
-        //require(advancedCraft.treasureSchemaId == advancedCraft.treasureSchemaId); //check treasure
+        require(tr.treasures[advancedCraft.treasureSchemaId][_playerId] >= advancedCraft.amount); //player is owner of treasure;
         require(
             keccak256(abi.encodePacked(e.equipment[_equipmentId].name))
                 == keccak256(abi.encodePacked(advancedCraft.oldName)),
@@ -270,7 +270,7 @@ library StorageLib {
         e.equipment[_equipmentId].stat = advancedCraft.stat;
         e.equipment[_equipmentId].name = advancedCraft.newName;
         e.equipment[_equipmentId].uri = advancedCraft.uri;
-        TreasureStorageLib._deleteTreasure(_playerId, advancedCraft.treasureSchemaId);
+        tr.treasures[advancedCraft.treasureSchemaId][_playerId] -= advancedCraft.amount;
     }
 
     function _updateBasicEquipmentScehma(
@@ -415,8 +415,8 @@ contract CraftFacet {
     }
 
 
-    function createAdvancedCraft(uint256 _treasureSchemaId,uint256 _slot,uint256 _value,uint256 _stat,string memory _oldName,string memory _newName,string memory _uri) public {
-        StorageLib._createAdvancedCraft(_treasureSchemaId, _slot, _value, _stat, _oldName, _newName, _uri);
+    function createAdvancedCraft(uint256 _treasureSchemaId,uint256 _slot,uint256 _value,uint256 _stat,uint256 _amount,string memory _oldName,string memory _newName,string memory _uri) public {
+        StorageLib._createAdvancedCraft(_treasureSchemaId, _slot, _value, _stat, _amount, _oldName, _newName, _uri);
         uint256 id = getAdvancedCraftCount();
         emit CreateAdvancedCraft(id, getAdvancedCraft(id));
     }
