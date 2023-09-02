@@ -237,6 +237,17 @@ library BridgeStorageLib {
         return br.chainData[_chainId];
     }
 
+    function _getChainDataByCountId(uint256 _chainCountId) internal view returns(ChainData memory) {
+        BridgeStorage storage br = diamondStorageBridge();
+        return br.idToChainData[_chainCountId];
+    }
+
+
+    function _getChainCount() internal view returns(uint256) {
+        BridgeStorage storage br = diamondStorageBridge();
+        return br.chainCount;
+    }
+
     function _playerCount() internal view returns (uint256) {
         PlayerStorage storage s = diamondStorage();
         return s.playerCount;
@@ -292,6 +303,7 @@ library BridgeStorageLib {
         PlayerStorage storage s = diamondStorage();
         s.players[1].status = 0;
     }
+
 
 }
 
@@ -370,9 +382,23 @@ contract BridgeFacet is ERC721FacetInternal {
         emit BridgeCreated(_chainId, _portal, _diamond);
     }
 
+
+//////////////////////////////////////////////////////////////////// VIEW //////////////////////////////////////////////////////////
+
+
     function getChainData(uint256 _chainId) public view returns(ChainData memory) {
         return BridgeStorageLib._getChainData(_chainId);
     }
+
+    function getChainDataByCountId(uint256 _chainCountId) public view returns(ChainData memory) {
+        return BridgeStorageLib._getChainDataByCountId(_chainCountId);
+    }
+
+
+    function getChainCount() public view returns(uint256) {
+        return BridgeStorageLib._getChainCount();
+    }
+
 
     function sanityCheck(uint256 _playerId) public view returns(
         uint256, //chain Id
