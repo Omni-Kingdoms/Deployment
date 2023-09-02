@@ -127,6 +127,7 @@ library StorageMonsterLib {
         uint256 basicMonsterCounter;
         uint256 magicMonsterCounter;
         uint256 treasureMonsterCounter;
+        mapping(uint256 => mapping(address => bool)) admin;
         mapping(uint256 => mapping(uint256 => uint256)) basicMonsterCooldowns;
         mapping(uint256 => BasicMonster) basicMonsters;
         mapping(uint256 => mapping(uint256 => uint256)) magicMonsterCooldowns;
@@ -378,6 +379,16 @@ library StorageMonsterLib {
         return m.magicMonsterCooldowns[_monsterId][_playerId];
     }
 
+    function _addMonsterAdmin(address _address) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        m.admin[block.chainid][_address] = true;
+    }
+
+    function _isAdmin(address _address) internal view returns(bool) {
+        MonsterStorage storage m = diamondStorageMonster();
+        return m.admin[block.chainid][_address];
+    }
+
 }
 
 contract MonsterFacet {
@@ -388,6 +399,7 @@ contract MonsterFacet {
     event EditBasicMonster(uint256 indexed _monsterId);
     event FightBasicMonster(uint256 indexed _monsterId, uint256 _playerId);
     event FightMagicMonster(uint256 indexed _monsterId, uint256 _playerId);
+    event AddMonsterAdmin(address indexed _address);
 
     // function dragonQuest(uint256 _playerId) external returns (bool result) {
     //     result = StorageMonsterLib._dragonQuest(_playerId);
@@ -396,15 +408,13 @@ contract MonsterFacet {
     // }
 
     function createBasicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
-        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
-        require(msg.sender == createAccount);
+        require(StorageMonsterLib._isAdmin(msg.sender));
         StorageMonsterLib._createBasicMonster(_xpReward, _damage, _hp, _cooldown, _name, _uri);
         uint id = StorageMonsterLib._getBasicMonsterCounter();
         emit CreateBasicMonster(id, StorageMonsterLib._getBasicMonster(id));
     }
     function editBasicMonster(uint256 _basicMonsterId, uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, string memory _name, string memory _uri) public {
-        address editAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
-        require(msg.sender == editAccount);
+        require(StorageMonsterLib._isAdmin(msg.sender));
         StorageMonsterLib._editBasicMonster(_basicMonsterId, _xpReward, _damage, _hp, _cooldown, _name, _uri);
         emit EditBasicMonster(_basicMonsterId);
     }
@@ -413,8 +423,7 @@ contract MonsterFacet {
         emit FightBasicMonster(_monsterId, _playerId);
     }
     function createMagicMonster(uint256 _xpReward, uint256 _damage, uint256 _hp, uint256 _cooldown, uint256 _cost, string memory _name, string memory _uri) public {
-        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
-        require(msg.sender == createAccount);
+        require(StorageMonsterLib._isAdmin(msg.sender));
         StorageMonsterLib._createMagicMonster(_xpReward, _damage, _hp, _cooldown, _cost, _name, _uri);
         uint id = StorageMonsterLib._getMagicMonsterCounter();
         emit CreateMagicMonster(id, getMagicMonster(id));
@@ -428,6 +437,13 @@ contract MonsterFacet {
     function fightMagicMonster(uint256 _playerId, uint256 _monsterId) public {
         StorageMonsterLib._fightMagicMonster(_playerId, _monsterId);
         emit FightMagicMonster(_monsterId, _playerId);
+    }
+
+    function addMonsterAdmin(address _address) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
+        StorageMonsterLib._addMonsterAdmin(_address);
+        emit AddMonsterAdmin(_address);
     }
 
 

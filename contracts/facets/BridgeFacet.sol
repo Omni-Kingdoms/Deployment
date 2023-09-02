@@ -66,12 +66,15 @@ library BridgeStorageLib {
     }
 
     struct BridgeStorage {
+        uint256 chainCount;
+        mapping(uint256 => ChainData) idToChainData;
         mapping(uint256 => ChainData) chainData;
         mapping(uint256 => mapping(uint256 => uint256)) chainToPlayerId;
         mapping(uint256 => mapping(uint256 => string)) chainToPlayerName;
         mapping(uint256 => bool) bridged;
         mapping(uint256 => uint256) playerToBaseChain;
         mapping(uint256 => BridgeFormat) formats;
+        uint256 formatCount;
     }
 
     struct CoinStorage {
@@ -140,7 +143,7 @@ library BridgeStorageLib {
             player.male,
             msg.sender
         );
-        br.formats[_playerId] = bridgeFormat;
+        //br.formats[_playerId] = bridgeFormat;
         return bridgeFormat;
     }
 
@@ -148,11 +151,11 @@ library BridgeStorageLib {
     function _remintPlayer(BridgeFormat memory _format) internal {
         PlayerStorage storage s = diamondStorage();
         BridgeStorage storage br = diamondStorageBridge();
+        br.formatCount++;
+        br.formats[br.formatCount] = _format;
         if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
             uint256 _playerId = _format.baseId;
-            s.players[s.playerCount].status = 0; //unfreeze player
             s.players[_format.baseId].status = 0;
-            //s.players[_playerId].level = _format.level; 
             s.players[_format.baseId].level = 59; 
             s.players[_playerId].xp = _format.xp; 
             s.players[_playerId].strength = _format.strength; 
@@ -224,7 +227,9 @@ library BridgeStorageLib {
 
     function _createBridge(uint256 _chainId, string memory _name, address _portal, address _diamond) internal {
         BridgeStorage storage br = diamondStorageBridge();
+        br.chainCount++;
         br.chainData[_chainId] = ChainData(_chainId, _name, _portal, _diamond);
+        br.idToChainData[br.chainCount] = ChainData(_chainId, _name, _portal, _diamond);
     }
 
     function _getChainData(uint256 _chainId) internal view returns (ChainData memory) {
@@ -297,21 +302,23 @@ contract BridgeFacet is ERC721FacetInternal {
     event BridgeCreated(uint256 indexed _chainId, address indexed _portal, address indexed _diamond);
     event BridgePlayer(uint256 indexed _playerId, BridgeFormat _format);
     event ReMintPlayer(uint256 indexed _playerId, BridgeFormat _format);
+    event UnFreezePlayer(uint256 indexed _playerId, BridgeFormat _format);
     event SendGold(address indexed _sender, uint256 indexed _amount);
     event ReceiveGold(address indexed _sender, uint256 indexed _amount);
 
     function reMintPlayer(BridgeFormat memory _format) public {
         BridgeStorageLib._remintPlayer(_format);
-        //uint256 count = BridgeStorageLib._playerCount();
-        // if (BridgeStorageLib._firstBridge(_format.baseChain, _format.baseId)) {
-        //     emit ReMintPlayer(count, _format);
-        // }
-        //_safeMint(_format.sender, count);
+        if (BridgeStorageLib._firstBridge(_format.baseChain, _format.baseId)) {
+            uint256 count = BridgeStorageLib._playerCount();
+            _safeMint(_format.sender, count);
+            emit ReMintPlayer(count, _format);
+        } else {
+            emit UnFreezePlayer(_format.baseId, _format);
+        }
     }
 
     function bridgePlayer(uint256 _playerId, uint256 _chainId) public {
         ChainData memory chainData = getChainData(_chainId);
-        //omni = IOmniPortal(0xc0400275F85B45DFd2Cfc838dA8Ee4214B659e25);
         IOmniPortal omni;
         omni = IOmniPortal(chainData.portal);
         BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
@@ -356,11 +363,6 @@ contract BridgeFacet is ERC721FacetInternal {
         BridgeStorageLib._receiveGold(_format.sender, _format.amount);
         emit ReceiveGold(_format.sender, _format.amount);
     }
-
-    // function unfreezePlayerSend(string memory _chain, address _contract,) public {
-
-    // }
-
 
 
     function createBridge(uint256 _chainId, string memory _name, address _portal, address _diamond) public {
