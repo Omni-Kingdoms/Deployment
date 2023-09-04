@@ -329,8 +329,8 @@ contract BridgeFacet is ERC721FacetInternal {
         }
     }
 
-    function bridgePlayer(uint256 _playerId, uint256 _chainId) public {
-        ChainData memory chainData = getChainData(_chainId);
+    function bridgePlayer(uint256 _playerId, uint256 _chainCountId) public {
+        ChainData memory chainData = getChainDataByCountId(_chainCountId);
         IOmniPortal omni;
         omni = IOmniPortal(chainData.portal);
         BridgeFormat memory bridgeFormat = BridgeStorageLib._bridgePlayer(_playerId);
