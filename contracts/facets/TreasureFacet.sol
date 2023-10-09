@@ -17,6 +17,7 @@ library TreasureStorageLib {
         uint256 treasureScehmaCount;
         mapping(uint256 => TreasureSchema) treasureSchema;
         mapping(uint256 => mapping(uint256 => uint256)) treasures;
+        mapping(string => TreasureSchema) nameToTreasureSchema;
     }
 
     function diamondStorageTreasure() internal pure returns (TreasureStorage storage ds) {
@@ -34,6 +35,9 @@ library TreasureStorageLib {
         TreasureStorage storage tr = diamondStorageTreasure();
         tr.treasureScehmaCount++; //increment basicTreasureCount
         tr.treasureSchema[tr.treasureScehmaCount] = TreasureSchema(
+            tr.treasureScehmaCount, _rank, _name, _uri
+        );
+        tr.nameToTreasureSchema[_name] = TreasureSchema(
             tr.treasureScehmaCount, _rank, _name, _uri
         );
     }

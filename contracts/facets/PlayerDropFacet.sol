@@ -13,6 +13,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 struct PlayerDrop {
     uint256 id;
+    uint256 price;
     bytes32 merkleRoot;
     string name;
 }
@@ -162,18 +163,19 @@ library PlayerDropStorageLib {
         s.balances[msg.sender]++;
     }
 
-   function _claimPlayerDropMantle(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale, uint256 _class) internal {
+   function _claimPlayerDrop(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale, uint256 _class) internal {
         PlayerDropStorage storage pd = diamondStoragePlayerDrop();
         require(!pd.claimed[_playerDropId][msg.sender], "Address has already claimed the drop"); //check to see if they have already claimed;
         require(MerkleProof.verify(_proof, pd.playerDrops[_playerDropId].merkleRoot, keccak256(abi.encodePacked(msg.sender))), "Invalid Merkle proof"); //check to see if sender is whitelisted
+        require(msg.value >= pd.playerDrops[_playerDropId].price);
         pd.claimed[_playerDropId][msg.sender] = true; //set claim status to true
         _mint(_name, _isMale, _class);
     }
 
-    function _createPlayerDrop(bytes32 _merkleRoot, string memory _name) internal {
+    function _createPlayerDrop(bytes32 _merkleRoot, string memory _name, uint256 _price) internal {
         PlayerDropStorage storage pd = diamondStoragePlayerDrop();
         pd.playerDropCount++; //increment the drop counter
-        pd.playerDrops[pd.playerDropCount] = PlayerDrop(pd.playerDropCount, _merkleRoot, _name); //create drop struct
+        pd.playerDrops[pd.playerDropCount] = PlayerDrop(pd.playerDropCount, _price, _merkleRoot, _name); //create drop struct
     }
 
     function _verifyPlayerDropWhitelist(bytes32[] calldata _proof, uint256 _playerDropId, address _address) internal view returns (bool) {
@@ -190,6 +192,11 @@ library PlayerDropStorageLib {
     function _getPlayerDropMerkleRoot(uint256 _playerDropId) internal view returns (bytes32) {
         PlayerDropStorage storage pd = diamondStoragePlayerDrop();
         return pd.playerDrops[_playerDropId].merkleRoot;
+    }
+
+    function _getPlayerDrop(uint256 _playerDropId) internal view returns (PlayerDrop memory) {
+        PlayerDropStorage storage pd = diamondStoragePlayerDrop();
+        return pd.playerDrops[_playerDropId];
     }
 
 
@@ -230,16 +237,19 @@ contract PlayerDropFacet {
 
     event Mint(uint256 indexed id, address indexed owner, string name, uint256 _class);
     event NameChange(address indexed owner, uint256 indexed id, string indexed newName);
-    event ClaimPlayer(uint256 indexed _playerId, uint256 indexed _treasureDropId);
+    event ClaimPlayer(uint256 indexed _playerDropId);
 
 
-    function createPlayerDrop(bytes32 _merkleRoot, string memory _name) external {
-        PlayerDropStorageLib._createPlayerDrop(_merkleRoot, _name);
+    function createPlayerDrop(bytes32 _merkleRoot, string memory _name, uint256 _price) external {
+        PlayerDropStorageLib._createPlayerDrop(_merkleRoot, _name, _price);
     }
 
-    function claimPlayerDropMantle(uint256 _treasureDropId, bytes32[] calldata _proof, string memory _name, bool _isMale, uint256 _class) external {
-        PlayerDropStorageLib._claimPlayerDropMantle(_treasureDropId, _proof, _name, _isMale, _class);
-        //emit ClaimTreasure(_playerId, _treasureDropId);
+    function claimPlayerDrop(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale, uint256 _class) external payable {
+        require(msg.value >= getPlayerDrop(_playerDropId).price);
+        address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+        feeAccount.call{value: getPlayerDrop(_playerDropId).price};
+        PlayerDropStorageLib._claimPlayerDrop(_playerDropId, _proof, _name, _isMale, _class);
+        emit ClaimPlayer(_playerDropId);
     }
 
     function verifyPlayerDropWhitelist(bytes32[] calldata _proof, uint256 _playerDropId, address _address) public view returns(bool) {
@@ -254,11 +264,14 @@ contract PlayerDropFacet {
         return PlayerDropStorageLib._getPlayerDropMerkleRoot(_playerDropId);
     }
 
-
     function changeNameFee(uint256 _id, string memory _newName) external payable {
         PlayerDropStorageLib._changeName(_id, _newName);
         require(msg.value >= 10);
         emit NameChange(msg.sender, _id, _newName);
+    }
+
+    function getPlayerDrop(uint256 _playerDropId) public view returns (PlayerDrop memory) {
+        return PlayerDropStorageLib._getPlayerDrop(_playerDropId);
     }
 
 

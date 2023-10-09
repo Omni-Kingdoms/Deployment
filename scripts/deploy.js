@@ -34,8 +34,9 @@ async function deployDiamond() {
     // 'ExchangeFacet',
     // 'MonsterFacet',
     // 'TreasureFacet',
+    'PlayerDropFacet',
     //'ScriptFacet',
-    'BridgeFacet',
+    //'BridgeFacet',
     //'OmniFacet',
     //'TreasureDropFacet'
   ];

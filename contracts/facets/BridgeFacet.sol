@@ -41,12 +41,21 @@ struct BridgegeCoinFormat {
     uint256 amount;
 }
 
+struct TreasureSchema {
+    uint256 basicTreasureId;
+    uint256 rank;
+    string name;
+    string uri;
+}
+
+
 /// @title Player Storage Library
 /// @dev Library for managing storage of player data
 library BridgeStorageLib {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("player.test.storage.a");
     bytes32 constant BRIDGE_STORAGE_POSITION = keccak256("bridge.test.storage.a");
     bytes32 constant COIN_STORAGE_POSITION = keccak256("coin.test.storage.a");
+    bytes32 constant TREASURE_STORAGE_POSITION = keccak256("treasure.test.storage.a");
 
     using PlayerSlotLib for PlayerSlotLib.Player;
     using PlayerSlotLib for PlayerSlotLib.Slot;
@@ -73,6 +82,7 @@ library BridgeStorageLib {
         mapping(uint256 => mapping(uint256 => string)) chainToPlayerName;
         mapping(uint256 => bool) bridged;
         mapping(uint256 => uint256) playerToBaseChain;
+        mapping(uint256 => mapping(string => bool)) chainToTreasureName;
         mapping(uint256 => BridgeFormat) formats;
         uint256 formatCount;
     }
@@ -82,6 +92,13 @@ library BridgeStorageLib {
         mapping(address => uint256) gemBalance;
         mapping(address => uint256) totemBalance;
         mapping(address => uint256) diamondBalance;
+    }
+
+    struct TreasureStorage {
+        uint256 treasureScehmaCount;
+        mapping(uint256 => TreasureSchema) treasureSchema;
+        mapping(uint256 => mapping(uint256 => uint256)) treasures;
+        mapping(string => TreasureSchema) nameToTreasureSchema;
     }
 
 
@@ -156,7 +173,7 @@ library BridgeStorageLib {
         if (br.chainToPlayerId[_format.baseChain][_format.baseId] > 0) { //if they have been here before
             uint256 _playerId = _format.baseId;
             s.players[_format.baseId].status = 0;
-            s.players[_format.baseId].level = 59; 
+            s.players[_format.baseId].level = _format.level; 
             s.players[_playerId].xp = _format.xp; 
             s.players[_playerId].strength = _format.strength; 
             s.players[_playerId].health = _format.health; 
@@ -167,7 +184,6 @@ library BridgeStorageLib {
             s.players[_playerId].agility = _format.agility; 
         } else { //have not been here before
             _birdgeMint(_format);
-            s.players[s.playerCount].level = 54;
         }   
     }
 
@@ -394,11 +410,9 @@ contract BridgeFacet is ERC721FacetInternal {
         return BridgeStorageLib._getChainDataByCountId(_chainCountId);
     }
 
-
     function getChainCount() public view returns(uint256) {
         return BridgeStorageLib._getChainCount();
     }
-
 
     function sanityCheck(uint256 _playerId) public view returns(
         uint256, //chain Id

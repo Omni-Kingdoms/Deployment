@@ -133,6 +133,13 @@ module.exports = {
       chainId: 5,
       accounts: [keys],
     },
+    linea: {
+      gas: 1100000,
+      gasPrice: 2000000000,
+      gasLimit: 20000000000000,
+      url: "https://rpc.goerli.linea.build",
+      accounts: [keys],
+    },
     opg: {
       gas: 1100000,
       gasPrice: 2000000000,

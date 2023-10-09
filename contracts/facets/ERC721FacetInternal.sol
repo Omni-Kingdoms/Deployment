@@ -49,6 +49,7 @@ library PlayerStorageLib {
     /// @param _id ID of the player to transfer
     function _transfer(address _from, address _to, uint256 _id) internal {
         PlayerStorage storage s = diamondStorage();
+        //require(s.players[_id].status == 0); 
         require(s.owners[_id] == _from);
         require(_to != address(0), "_to cannot be zero address");
         s.owners[_id] = _to;
