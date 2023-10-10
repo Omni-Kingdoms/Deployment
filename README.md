@@ -1,6 +1,6 @@
-# Diamond-1-Hardhat Implementation
+# OmniKingdoms Deployment 
 
-This is a reference implementation for [EIP-2535 Diamonds](https://github.com/ethereum/EIPs/issues/2535). To learn about other implementations go here: https://github.com/mudgen/diamond
+This is a reference implementation for [EIP-2535 Diamonds](https://github.com/ethereum/EIPs/issues/2535). 
 
 **Note:** The loupe functions in DiamondLoupeFacet.sol MUST be added to a diamond and are required by the EIP-2535 Diamonds standard.
 
@@ -16,7 +16,7 @@ git clone git@github.com:mudgen/diamond-1-hardhat.git
 
 2. Install NPM packages:
 ```console
-cd diamond-1-hardhat
+cd Deployment
 npm install
 ```
 
