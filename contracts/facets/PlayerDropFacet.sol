@@ -163,6 +163,46 @@ library PlayerDropStorageLib {
         s.balances[msg.sender]++;
     }
 
+   function _mintPaladin(string memory _name, bool _isMale) internal {
+           PlayerStorage storage s = diamondStorage();
+        require(!s.usedNames[_name], "name is taken");
+        require(bytes(_name).length <= 10);
+        require(bytes(_name).length >= 3);
+        s.playerCount++;
+        string memory uri;
+        _isMale
+            ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH"
+            : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
+        s.players[s.playerCount] = PlayerSlotLib.Player(
+            1, //level
+            0, //xp 
+            0, //status
+            13, //strength
+            13, //health
+            13, //currentHealth
+            13, //magic
+            13, //mana
+            13, //maxMana
+            13, //agility
+            1,
+            1,
+            1,
+            1,
+            13, //defense
+            _name,
+            uri,
+            _isMale,
+            PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0),
+            3
+        ); 
+        s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
+        s.usedNames[_name] = true;
+        s.owners[s.playerCount] = msg.sender;
+        s.addressToPlayers[msg.sender].push(s.playerCount);
+        s.balances[msg.sender]++; 
+   } 
+
+
    function _claimPlayerDrop(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale, uint256 _class) internal {
         PlayerDropStorage storage pd = diamondStoragePlayerDrop();
         require(!pd.claimed[_playerDropId][msg.sender], "Address has already claimed the drop"); //check to see if they have already claimed;
@@ -170,6 +210,16 @@ library PlayerDropStorageLib {
         require(msg.value >= pd.playerDrops[_playerDropId].price);
         pd.claimed[_playerDropId][msg.sender] = true; //set claim status to true
         _mint(_name, _isMale, _class);
+    }
+
+   function _claimPlayerDropPaladin(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale) internal {
+        PlayerDropStorage storage pd = diamondStoragePlayerDrop();
+        require(!pd.claimed[_playerDropId][msg.sender], "Address has already claimed the drop"); //check to see if they have already claimed;
+        require(MerkleProof.verify(_proof, pd.playerDrops[_playerDropId].merkleRoot, keccak256(abi.encodePacked(msg.sender))), "Invalid Merkle proof"); //check to see if sender is whitelisted
+        require(msg.value >= pd.playerDrops[_playerDropId].price);
+        require(keccak256(abi.encodePacked(pd.playerDrops[_playerDropId].name)) == keccak256(abi.encodePacked('Scroll')));
+        pd.claimed[_playerDropId][msg.sender] = true; //set claim status to true
+        _mintPaladin(_name, _isMale);
     }
 
     function _createPlayerDrop(bytes32 _merkleRoot, string memory _name, uint256 _price) internal {
@@ -272,6 +322,10 @@ contract PlayerDropFacet {
 
     function getPlayerDrop(uint256 _playerDropId) public view returns (PlayerDrop memory) {
         return PlayerDropStorageLib._getPlayerDrop(_playerDropId);
+    }
+
+    function claimPlayerDropPaladin(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale) public {
+        PlayerDropStorageLib._claimPlayerDropPaladin(_playerDropId, _proof, _name, _isMale);
     }
 
 
