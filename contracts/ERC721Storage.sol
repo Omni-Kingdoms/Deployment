@@ -40,6 +40,8 @@ library ERC721Storage {
         string _class1femaleImage;
         string _class2maleImage;
         string _class2femaleImage;
+        string _class3maleImage;
+        string _class3femaleImage;
     }
 
     bytes32 internal constant STORAGE_SLOT = keccak256("ERC721A.contracts.storage.ERC721A");

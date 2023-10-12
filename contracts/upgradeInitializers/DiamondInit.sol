@@ -43,6 +43,10 @@ contract DiamondInit {
             "https://infura-ipfs.io/ipfs/QmUbWxUd8sX4MZojKERUPmPu9YtAYfYroBS4Te1HJEKucy";
         ERC721Storage.layout()._class2femaleImage =
             "https://infura-ipfs.io/ipfs/QmbVABt9sKpNUa8DgMJde3DBCQyorSCT9V1Dzd6cJ8ZUmP";
+        ERC721Storage.layout()._class3maleImage =
+            "https://infura-ipfs.io/ipfs/QmWQQL6N9Afcq2pdbGvja1TViiCWk4k6vB5VMC9tcMKce9";
+        ERC721Storage.layout()._class3femaleImage =
+            "https://ipfs.io/ipfs/QmRidJfgfR6V9LBvYA6RKojDPykq5G2zLnNAxArLMUMnCd";
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;

@@ -171,8 +171,8 @@ library PlayerDropStorageLib {
         s.playerCount++;
         string memory uri;
         _isMale
-            ? uri = "https://ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH"
-            : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
+            ? uri = "https://ipfs.io/ipfs/QmWQQL6N9Afcq2pdbGvja1TViiCWk4k6vB5VMC9tcMKce9"
+            : uri = "https://ipfs.io/ipfs/QmRidJfgfR6V9LBvYA6RKojDPykq5G2zLnNAxArLMUMnCd";
         s.players[s.playerCount] = PlayerSlotLib.Player(
             1, //level
             0, //xp 

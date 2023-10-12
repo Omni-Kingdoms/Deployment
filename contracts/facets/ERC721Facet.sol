@@ -131,6 +131,12 @@ contract ERC721Facet is ERC721FacetInternal {
             } else {
                 image = ERC721Storage.layout()._class2femaleImage;
             }
+        } else if (player.playerClass == 3) {
+            if (player.male) {
+                image = ERC721Storage.layout()._class3maleImage;
+            } else {
+                image = ERC721Storage.layout()._class3femaleImage;
+            }
         }
         return image;
     }
