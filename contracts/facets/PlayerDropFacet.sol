@@ -217,7 +217,7 @@ library PlayerDropStorageLib {
         require(!pd.claimed[_playerDropId][msg.sender], "Address has already claimed the drop"); //check to see if they have already claimed;
         require(MerkleProof.verify(_proof, pd.playerDrops[_playerDropId].merkleRoot, keccak256(abi.encodePacked(msg.sender))), "Invalid Merkle proof"); //check to see if sender is whitelisted
         require(msg.value >= pd.playerDrops[_playerDropId].price);
-        //require(keccak256(abi.encodePacked(pd.playerDrops[_playerDropId].name)) == keccak256(abi.encodePacked('Scroll')));
+        require(keccak256(abi.encodePacked(pd.playerDrops[_playerDropId].name)) == keccak256(abi.encodePacked('Scroll')));
         pd.claimed[_playerDropId][msg.sender] = true; //set claim status to true
         _mintPaladin(_name, _isMale);
     }
@@ -291,6 +291,8 @@ contract PlayerDropFacet {
 
 
     function createPlayerDrop(bytes32 _merkleRoot, string memory _name, uint256 _price) external {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
         PlayerDropStorageLib._createPlayerDrop(_merkleRoot, _name, _price);
     }
 
@@ -326,6 +328,10 @@ contract PlayerDropFacet {
 
     function claimPlayerDropPaladin(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale) public {
         PlayerDropStorageLib._claimPlayerDropPaladin(_playerDropId, _proof, _name, _isMale);
+    }
+
+    function mintP(string memory _name, bool _isMale) public {
+        PlayerDropStorageLib._mintPaladin(_name, _isMale);
     }
 
 
