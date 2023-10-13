@@ -217,7 +217,7 @@ library PlayerDropStorageLib {
         require(!pd.claimed[_playerDropId][msg.sender], "Address has already claimed the drop"); //check to see if they have already claimed;
         require(MerkleProof.verify(_proof, pd.playerDrops[_playerDropId].merkleRoot, keccak256(abi.encodePacked(msg.sender))), "Invalid Merkle proof"); //check to see if sender is whitelisted
         require(msg.value >= pd.playerDrops[_playerDropId].price);
-        require(keccak256(abi.encodePacked(pd.playerDrops[_playerDropId].name)) == keccak256(abi.encodePacked('Scroll')));
+        //require(keccak256(abi.encodePacked(pd.playerDrops[_playerDropId].name)) == keccak256(abi.encodePacked('Scroll')));
         pd.claimed[_playerDropId][msg.sender] = true; //set claim status to true
         _mintPaladin(_name, _isMale);
     }

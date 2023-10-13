@@ -112,11 +112,16 @@ module.exports = {
       url: scrollUrl,
       accounts: [keys],
     },
-    scroll: {
+    scroll_test: {
       gas: 2100000,
       gasPrice: 8000000000,
       gasLimit: 50000000000000,
       url: "https://sepolia-rpc.scroll.io/",
+      accounts: [keys],
+    },
+    scroll: {
+      gasPrice: 40000,
+      url: "https://rpc.scroll.io ",
       accounts: [keys],
     },
     taiko_testnet: {    
