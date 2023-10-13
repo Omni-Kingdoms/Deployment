@@ -28,7 +28,7 @@ async function deployDiamond() {
     "QuestFacet",
     // "CraftFacet",
     // 'TrainFacet',
-    // 'EquipFacet',
+    'EquipFacet',
     // 'ShopFacet',
     //'ArenaFacet',
     // 'ExchangeFacet',
