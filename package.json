@@ -39,6 +39,7 @@
     "@redstone-finance/evm-connector": "^0.2.3",
     "@routerprotocol/evm-gateway-contracts": "^1.1.11",
     "@typechain/hardhat": "^6.1.5",
+    "@okg/erc20-diamond": "https://github.com/Omni-Kingdoms/ERC20-Diamond",
     "hardhat-diamond-abi": "^3.0.1",
     "import": "^0.0.6",
     "redstone-api": "^0.4.11"

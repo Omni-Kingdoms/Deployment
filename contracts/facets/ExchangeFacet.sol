@@ -6,7 +6,7 @@ import {ERC721Storage} from "../ERC721Storage.sol";
 import {ERC721FacetInternal} from "./ERC721FacetInternal.sol";
 import {ERC721Facet} from "./ERC721Facet.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
+import {ERC20Facet} from "@okg/erc20-diamond/contracts/facets/ERC20Facet.sol";
 
 struct PlayerListing {
     address payable seller;
@@ -140,6 +140,17 @@ library ExchangeStorageLib {
         assembly {
             ds.slot := position
         }
+    }
+
+    function _mintGoldERC20(uint256 _playerId, address facetAddress) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        CoinStorage storage c = diamondStorageCoin();
+        require(s.owners[_playerId] == msg.sender, "You do not own this player"); //require that sender owns the player
+        require(s.players[_playerId].status == 0, "Player staus is idle"); //require that player is idle
+
+        ERC20Facet tokenFacet = ERC20Facet(facetAddress); // Address of the diamond
+        uint256 tokensToMint = c.goldBalance[msg.sender];
+        tokenFacet.mint(msg.sender, tokensToMint);
     }
 
     function _createPlayerListing(uint256 _playerId, uint256 _price) internal {

@@ -41,7 +41,6 @@ module.exports = {
     apiKey: {
       polygonMumbai: process.env.MUMBAI_KEY,
       scroll: process.env.ETHERSCAN,
-      //scroll_sepolia: process.env.ETHERSCAN,
       scroll_sepolia: 'abc',
       arbitrumGoerli: process.env.ARBISCAN,
       fuji: process.env.SNOWTRACE,
@@ -59,8 +58,8 @@ module.exports = {
         network: "scroll_sepolia",
         chainId: 534351,
         urls: {
-          apiURL: "https://sepolia-blockscout.scroll.io/api",
-          browserURL: "https://sepolia-blockscout.scroll.io/",
+          apiURL: 'https://sepolia-blockscout.scroll.io/api',
+          browserURL: 'https://sepolia-blockscout.scroll.io/',
         },
       },
       {
@@ -112,6 +111,11 @@ module.exports = {
       url: scrollUrl,
       accounts: [keys],
     },
+    scroll_sepolia: {
+      url: "https://sepolia-rpc.scroll.io",
+      accounts: [keys],
+    },
+
     scroll_test: {
       gas: 2100000,
       gasPrice: 8000000000,
