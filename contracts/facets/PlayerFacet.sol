@@ -80,7 +80,7 @@ library PlayerStorageLib {
     /// @param _isMale The gender of the player
     function _mint(string memory _name, bool _isMale, uint256 _class) internal {
         PlayerStorage storage s = diamondStorage();
-        require(s.playerCount <= 5000);
+        require(s.playerCount <= 6000);
         require(!s.usedNames[_name], "name is taken");
         require(_class <= 2);
         require(bytes(_name).length <= 10);
@@ -292,7 +292,7 @@ contract PlayerFacet is ERC721FacetInternal {
     /// @param _name The name of the player
     /// @param _isMale The gender of the player
     function mint(string memory _name, bool _isMale, uint256 _class) external payable {
-        uint256 cost = 100000000;
+        uint256 cost = 16000000000000000;
         require(msg.value >= cost);
         address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         feeAccount.call{value: cost};
