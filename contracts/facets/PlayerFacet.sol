@@ -32,28 +32,6 @@ library PlayerStorageLib {
         mapping(uint256 => PlayerSlotLib.Slot) slots;
     }
 
-    // transfer params struct where we specify which NFTs should be transferred to
-    // the destination chain and to which address
-    struct TransferParams {
-        uint256 nftId;
-        uint256 playerId;
-        PlayerSlotLib.Player playerData;
-        address recipient;
-    }
-
-    struct TransferRemote {
-        string _destination;
-        address _recipientAsAddress;
-        string _recipientAsString;
-        uint256 _playerId;
-    }
-
-    struct TransferStorage {
-        mapping(string => string) ourContractOnChains;
-        IGateway gatewayContract;
-        uint256 test;
-    }
-
     /// @dev Function to retrieve diamond storage slot for player data. Returns a reference.
     function diamondStorage() internal pure returns (PlayerStorage storage ds) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
@@ -62,155 +40,40 @@ library PlayerStorageLib {
         }
     }
 
-    function diamondStorageTransfer() internal pure returns (TransferStorage storage ds) {
-        bytes32 position = TRANSFER_STORAGE_POSITION;
-        assembly {
-            ds.slot := position
-        }
-    }
+    // function _deletePlayer(address _sender, uint256 _playerId) internal {
+    //     PlayerStorage storage s = diamondStorage();
+    //     require(s.owners[_playerId] == _sender);
+    //     require(_playerId <= s.playerCount, "Player does not exist");
 
-    function _setContractOnChain(string calldata _chainId, string calldata _contractAddress) internal {
-        TransferStorage storage s = diamondStorageTransfer();
-        s.ourContractOnChains[_chainId] = _contractAddress;
-        s.test++;
-    }
+    //     // Reset Player data - TODO
+    //     // PlayerSlotLib.Player storage playerToDelete = s.players[_playerId];
+    //     // playerToDelete = PlayerSlotLib.Player({/*...initialize with default values...*/});
 
-    function _setGateway(address _gateway, string calldata _feePayer) internal {
-        TransferStorage storage s = diamondStorageTransfer();
-        s.gatewayContract = IGateway(_gateway);
+    //     // Reset owner data
+    //     s.owners[_playerId] = address(0);
 
-        s.gatewayContract.setDappMetadata(_feePayer);
-    }
+    //     // Reduce the balance of the player's owner
+    //     s.balances[s.owners[_playerId]] = 0;
 
-    function _getTransferParams(string calldata _chainId)
-        internal
-        view
-        returns (address gateway, string storage contractOnChain, uint256 test)
-    {
-        TransferStorage storage s = diamondStorageTransfer();
+    //     // Clear allowances
+    //     s.allowances[s.owners[_playerId]][address(this)] = 0;
 
-        gateway = address(s.gatewayContract);
-        contractOnChain = s.ourContractOnChains[_chainId];
-        test = s.test;
-    }
+    //     // Decrement playerCount
+    //     s.playerCount--;
 
-    function _deletePlayer(address _sender, uint256 _playerId) internal {
-        PlayerStorage storage s = diamondStorage();
-        require(s.owners[_playerId] == _sender);
-        require(_playerId <= s.playerCount, "Player does not exist");
+    //     // Remove player from the addressToPlayers mapping
+    //     uint256[] storage playerIds = s.addressToPlayers[s.owners[_playerId]];
+    //     for (uint256 i = 0; i < playerIds.length; i++) {
+    //         if (playerIds[i] == _playerId) {
+    //             playerIds[i] = playerIds[playerIds.length - 1];
+    //             playerIds.pop();
+    //             break;
+    //         }
+    //     }
 
-        // Reset Player data - TODO
-        // PlayerSlotLib.Player storage playerToDelete = s.players[_playerId];
-        // playerToDelete = PlayerSlotLib.Player({/*...initialize with default values...*/});
-
-        // Reset owner data
-        s.owners[_playerId] = address(0);
-
-        // Reduce the balance of the player's owner
-        s.balances[s.owners[_playerId]] = 0;
-
-        // Clear allowances
-        s.allowances[s.owners[_playerId]][address(this)] = 0;
-
-        // Decrement playerCount
-        s.playerCount--;
-
-        // Remove player from the addressToPlayers mapping
-        uint256[] storage playerIds = s.addressToPlayers[s.owners[_playerId]];
-        for (uint256 i = 0; i < playerIds.length; i++) {
-            if (playerIds[i] == _playerId) {
-                playerIds[i] = playerIds[playerIds.length - 1];
-                playerIds.pop();
-                break;
-            }
-        }
-
-        // Delete player's slot
-        delete s.slots[_playerId];
-    }
-
-    function _transferRemote(TransferRemote memory params)
-        internal
-        returns (address gatewayContractAddress, bytes memory requestPacket)
-    {
-        TransferStorage storage t = diamondStorageTransfer();
-        require(
-            keccak256(abi.encodePacked(t.ourContractOnChains[params._destination])) != keccak256(abi.encodePacked("")),
-            "contract on dest not set"
-        );
-
-        PlayerStorage storage s = diamondStorage();
-        PlayerSlotLib.Player memory player = s.players[params._playerId];
-
-        TransferParams memory transferParams = TransferParams({
-            nftId: params._playerId,
-            playerId: params._playerId,
-            playerData: player,
-            recipient: params._recipientAsAddress
-        });
-
-        // sending the transfer params struct to the destination chain as payload.
-        bytes memory packet = abi.encode(transferParams);
-        requestPacket = abi.encode(t.ourContractOnChains[params._destination], packet);
-        gatewayContractAddress = address(t.gatewayContract);
-
-        _deletePlayer(msg.sender, params._playerId);
-        t.test++;
-    }
-
-    /// @notice function to handle the cross-chain request received from some other chain.
-    /// @param packet the payload sent by the source chain contract when the request was created.
-    /// @param srcChainId chain ID of the source chain in string.
-    function _iReceive(bytes memory packet, string memory srcChainId)
-        internal
-        returns (address recipient, uint256 nftId, bytes memory chainId)
-    {
-        TransferStorage storage t = diamondStorageTransfer();
-        require(msg.sender == address(t.gatewayContract), "only gateway");
-        // decoding our payload
-        TransferParams memory transferParams = abi.decode(packet, (TransferParams));
-        recipient = transferParams.recipient;
-        nftId = transferParams.nftId;
-        _mintCrossChainPlayer(transferParams.playerData, recipient);
-        t.test++;
-        chainId = abi.encode(srcChainId);
-    }
-
-    function _mintCrossChainPlayer(PlayerSlotLib.Player memory _player, address _recipient) internal {
-        PlayerStorage storage s = diamondStorage();
-        require(!s.usedNames[_player.name], "name is taken");
-        require(bytes(_player.name).length <= 10);
-        require(bytes(_player.name).length >= 3);
-        // require(_playerId > s.playerCount);
-        s.playerCount++;
-        s.players[s.playerCount] = PlayerSlotLib.Player(
-            _player.level,
-            _player.xp,
-            _player.status,
-            _player.strength,
-            _player.health,
-            _player.currentHealth,
-            _player.magic,
-            _player.mana,
-            _player.maxMana,
-            _player.agility,
-            _player.luck,
-            _player.wisdom,
-            _player.haki,
-            _player.perception,
-            _player.defense,
-            _player.name,
-            _player.uri,
-            _player.male,
-            PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0),
-            _player.playerClass
-        );
-        s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
-        s.usedNames[_player.name] = true;
-        s.owners[s.playerCount] = _recipient;
-        s.addressToPlayers[_recipient].push(s.playerCount);
-        s.balances[_recipient]++;
-    }
+    //     // Delete player's slot
+    //     delete s.slots[_playerId];
+    // }
 
     /// @notice Mints a new player
     /// @param _name The name of the player
@@ -231,7 +94,7 @@ library PlayerStorageLib {
                 : uri = "https://ipfs.io/ipfs/QmfBNHpxpwUNgtw6iXBxKXLbVxom8mpdBsgqZZy59pRM5C";
             s.players[s.playerCount] = PlayerSlotLib.Player(
                 1, //level
-                0, //xp 
+                0, //xp
                 0, //status
                 11, //strength
                 12, //health
@@ -419,109 +282,8 @@ contract PlayerFacet is ERC721FacetInternal {
     event NameChange(address indexed owner, uint256 indexed id, string indexed newName);
     event LevelUp(uint256 indexed _playerId, uint256 indexed _stat);
 
-    /**
-     * @dev Emitted on `transferRemote` when a transfer message is dispatched.
-     * @param destination The identifier of the destination chain.
-     * @param recipient The address of the recipient on the destination chain.
-     * @param playerId The amount of tokens burnt on the origin chain.
-     */
-    event SentTransferRemote(string destination, address indexed recipient, uint256 playerId);
-
     function playerCount() public view returns (uint256) {
         return PlayerStorageLib._playerCount();
-    }
-
-    // Through this function, set the address of the corresponding contract on the destination chain
-    function setContractOnChain(string calldata _chainId, string calldata _contractAddress) external {
-        PlayerStorageLib._setContractOnChain(_chainId, _contractAddress);
-    }
-
-    // Set the gateway contract address from https://docs.routerprotocol.com/develop/message-transfer-via-crosstalk/evm-guides/your-first-crosschain-nft-contract/deploying-your-nft-contract
-    function setGateway(address gateway, string calldata feePayer) external {
-        PlayerStorageLib._setGateway(gateway, feePayer);
-    }
-
-    function getTransferParams(string calldata _chainId)
-        external
-        view
-        returns (address gateway, string memory contractOnChain, uint256 test)
-    {
-        (gateway, contractOnChain, test) = PlayerStorageLib._getTransferParams(_chainId);
-    }
-
-    /// @notice function to get the request metadata to be used while initiating cross-chain request
-    /// @return requestMetadata abi-encoded metadata according to source and destination chains
-    function getRequestMetadata(
-        uint64 _destGasLimit,
-        uint64 _destGasPrice,
-        uint64 _ackGasLimit,
-        uint64 _ackGasPrice,
-        uint128 _relayerFees,
-        uint8 _ackType,
-        bool _isReadCall,
-        bytes memory _asmAddress
-    ) public pure returns (bytes memory) {
-        bytes memory requestMetadata = abi.encodePacked(
-            _destGasLimit, _destGasPrice, _ackGasLimit, _ackGasPrice, _relayerFees, _ackType, _isReadCall, _asmAddress
-        );
-        return requestMetadata;
-    }
-
-    /**
-     * @dev Transfers a player to a remote chain using the Router Gateway.
-     * @param _destination The name of the destination chain.
-     * @param _recipientAsAddress The address of the recipient on the destination chain.
-     * @param _recipientAsString The string representation of the recipient on the destination chain.
-     * @param _playerId The ID of the player to transfer.
-     * @param _requestMetadata Additional metadata to include in the request packet.
-     * Requirements:
-     * - The player must exist in the local storage.
-     * - The player must be burned after the transfer.
-     * Emits a {SentTransferRemote} event.
-     */
-    function transferRemote(
-        string calldata _destination,
-        address _recipientAsAddress,
-        string calldata _recipientAsString,
-        uint256 _playerId,
-        bytes memory _requestMetadata
-    ) public payable {
-        // Call the _transferRemote function in the PlayerStorageLib library to get the gateway contract address and request packet.
-        (address gatewayContractAddress, bytes memory requestPacket) = PlayerStorageLib._transferRemote(
-            PlayerStorageLib.TransferRemote({
-                _destination: _destination,
-                _recipientAsAddress: _recipientAsAddress,
-                _recipientAsString: _recipientAsString,
-                _playerId: _playerId
-            })
-        );
-
-        // Get the Router Gateway contract instance.
-        IGateway gatewayContract = IGateway(gatewayContractAddress);
-
-        // Call the iSend function on the Router Gateway contract to send the request packet to the destination chain.
-        gatewayContract.iSend{value: msg.value}(1, 0, string(""), _destination, _requestMetadata, requestPacket);
-
-        // Burn the player after the transfer.
-        _burn(_playerId);
-
-        // Emit a SentTransferRemote event.
-        emit SentTransferRemote(_destination, _recipientAsAddress, _playerId);
-    }
-
-    /// @notice function to handle the cross-chain request received from some other chain.
-    /// @param packet the payload sent by the source chain contract when the request was created.
-    /// @param srcChainId chain ID of the source chain in string.
-    function iReceive(
-        string memory, // requestSender,
-        bytes memory packet,
-        string memory srcChainId
-    ) internal returns (bytes memory) {
-        // decoding our payload
-        (address recipient, uint256 nftId, bytes memory toChainId) = PlayerStorageLib._iReceive(packet, srcChainId);
-        _safeMint(recipient, nftId);
-
-        return abi.encode(toChainId);
     }
 
     /// @notice Mints a new player
