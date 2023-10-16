@@ -26,12 +26,12 @@ async function deployDiamond() {
     "ERC721Facet",
     "PlayerFacet",
     "QuestFacet",
-    // "CraftFacet",
+    //"CraftFacet",
     // 'TrainFacet',
-    'EquipFacet',
+    //'EquipFacet',
     // 'ShopFacet',
     //'ArenaFacet',
-    // 'ExchangeFacet',
+    //'ExchangeFacet',
     // 'MonsterFacet',
     // 'TreasureFacet',
     'PlayerDropFacet',
@@ -53,7 +53,7 @@ async function deployDiamond() {
       functionSelectors: getSelectors(facet),
     });
 
-    //await verifyContract(facet, FacetName);
+    await verifyContract(facet, FacetName);
   }
   //console.log("Facet Cuts = ", facetCuts);
 
@@ -105,6 +105,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
     "mumbai",
     "scroll",
     "scroll_sepolia",
+    "scroll_test",
     "arbitrumGoerli",
     "fuji",
     "mantle"

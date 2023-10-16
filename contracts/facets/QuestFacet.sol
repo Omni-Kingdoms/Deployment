@@ -70,6 +70,7 @@ library StorageLib {
     }
 
     struct CoinStorage {
+        uint256 goldCount;
         mapping(address => uint256) goldBalance;
         mapping(address => uint256) gemBalance;
         mapping(address => uint256) totemBalance;
@@ -116,8 +117,11 @@ library StorageLib {
     function _startQuestGold(uint256 _tokenId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         QuestStorage storage q = diamondStorageQuest();
+        CoinStorage storage c = diamondStorageCoin();
         require(s.players[_tokenId].status == 0); //make sure player is idle
         require(s.owners[_tokenId] == msg.sender); //ownerOf
+        require(c.goldCount <= 10000000); // less than one 10M
+        c.goldCount++;
         s.players[_tokenId].status = 2; //set quest status
         q.goldQuest[_tokenId] = block.timestamp; //set start time
     }
@@ -129,11 +133,11 @@ library StorageLib {
         require(s.owners[_playerId] == msg.sender, "you are not the owner"); //onlyOwner
         require(s.players[_playerId].status == 2, "Dog, you are not gold questing"); //currently gold questing
         uint256 timer;
-        s.players[_playerId].agility >= 60 ? timer = 60 : timer = 130 - s.players[_playerId].agility;
+        s.players[_playerId].agility >= 600 ? timer = 600 : timer = 610 - s.players[_playerId].agility;
         require(block.timestamp >= q.goldQuest[_playerId] + timer, "it's too early to pull out");
         s.players[_playerId].status = 0; //set back to idle
         delete q.goldQuest[_playerId]; //remove the start time
-        c.goldBalance[msg.sender]++; //mint one gold
+        c.goldBalance[msg.sender] += 10; //mint 10 gold
     }
 
     function _startQuestGem(uint256 _playerId) internal {

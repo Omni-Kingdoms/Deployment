@@ -68,7 +68,7 @@ library StorageLib {
         PlayerStorage storage s = diamondStoragePlayer();
         TrainStorage storage t = diamondStorageTrain();
         require(s.owners[_playerId] == msg.sender);
-        require(tx.origin == msg.sender);
+        //require(tx.origin == msg.sender);
         require(s.players[_playerId].status == 1); //check that they are doing basic health
         uint256 timer;
         s.players[_playerId].agility >= 20 ? timer = 10 : timer = 30 - s.players[_playerId].agility;
