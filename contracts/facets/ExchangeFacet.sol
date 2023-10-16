@@ -142,15 +142,19 @@ library ExchangeStorageLib {
         }
     }
 
-    function _mintGoldERC20(uint256 _playerId, address facetAddress) internal {
+    function _mintGoldERC20(uint256 _playerId, address _facetAddress) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
         require(s.owners[_playerId] == msg.sender, "You do not own this player"); //require that sender owns the player
         require(s.players[_playerId].status == 0, "Player staus is idle"); //require that player is idle
 
-        ERC20Facet tokenFacet = ERC20Facet(facetAddress); // Address of the diamond
-        uint256 tokensToMint = c.goldBalance[msg.sender];
-        tokenFacet.mint(msg.sender, tokensToMint);
+        ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
+        uint256 tokenBalance = tokenFacet.balanceOf(msg.sender);
+        uint256 tokensToMint = c.goldBalance[msg.sender] - tokenBalance;
+        if (tokensToMint > 0) {
+            uint256 tokensFormatted = tokensToMint * 1 ether;
+            tokenFacet.mint(msg.sender, tokensFormatted);
+        }
     }
 
     function _createPlayerListing(uint256 _playerId, uint256 _price) internal {
@@ -250,6 +254,7 @@ contract ExchangeFacet is ERC721FacetInternal, ReentrancyGuard {
     event CreatePlayerListing(address indexed _from, uint256 indexed _playerId, uint256 _price);
     event PurchasePlayerListing(address indexed _to, uint256 _id);
     event DelistPlayer(address indexed _from, uint256 indexed _playerId);
+    event GoldERC20Minted(address indexed _from, uint256 indexed _playerId);
 
     function transferPlayer(address _to, uint256 _playerId) public nonReentrant {
         _transfer(msg.sender, _to, _playerId);
@@ -258,6 +263,11 @@ contract ExchangeFacet is ERC721FacetInternal, ReentrancyGuard {
     function createPlayerListing(uint256 _playerId, uint256 _price) public nonReentrant {
         ExchangeStorageLib._createPlayerListing(_playerId, _price);
         emit CreatePlayerListing(msg.sender, _playerId, _price);
+    }
+
+    function mintGoldERC20(uint256 _playerId, address _facetAddress) public nonReentrant {
+        ExchangeStorageLib._mintGoldERC20(_playerId, _facetAddress);
+        emit GoldERC20Minted(msg.sender, _playerId);
     }
 
     function purchasePlayer(uint256 _playerId) public payable nonReentrant {
