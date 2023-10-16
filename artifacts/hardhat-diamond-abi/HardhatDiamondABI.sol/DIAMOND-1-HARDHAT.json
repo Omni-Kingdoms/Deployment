@@ -5499,31 +5499,6 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
-          "internalType": "string",
-          "name": "destination",
-          "type": "string"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "recipient",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "playerId",
-          "type": "uint256"
-        }
-      ],
-      "name": "SentTransferRemote",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
           "indexed": true,
           "internalType": "address",
           "name": "from",
@@ -5756,89 +5731,6 @@
     {
       "inputs": [
         {
-          "internalType": "uint64",
-          "name": "_destGasLimit",
-          "type": "uint64"
-        },
-        {
-          "internalType": "uint64",
-          "name": "_destGasPrice",
-          "type": "uint64"
-        },
-        {
-          "internalType": "uint64",
-          "name": "_ackGasLimit",
-          "type": "uint64"
-        },
-        {
-          "internalType": "uint64",
-          "name": "_ackGasPrice",
-          "type": "uint64"
-        },
-        {
-          "internalType": "uint128",
-          "name": "_relayerFees",
-          "type": "uint128"
-        },
-        {
-          "internalType": "uint8",
-          "name": "_ackType",
-          "type": "uint8"
-        },
-        {
-          "internalType": "bool",
-          "name": "_isReadCall",
-          "type": "bool"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_asmAddress",
-          "type": "bytes"
-        }
-      ],
-      "name": "getRequestMetadata",
-      "outputs": [
-        {
-          "internalType": "bytes",
-          "name": "",
-          "type": "bytes"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_chainId",
-          "type": "string"
-        }
-      ],
-      "name": "getTransferParams",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "gateway",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "contractOnChain",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "test",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "uint256",
           "name": "_playerId",
           "type": "uint256"
@@ -5874,7 +5766,7 @@
       ],
       "name": "mint",
       "outputs": [],
-      "stateMutability": "nonpayable",
+      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -5926,75 +5818,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_chainId",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_contractAddress",
-          "type": "string"
-        }
-      ],
-      "name": "setContractOnChain",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "gateway",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "feePayer",
-          "type": "string"
-        }
-      ],
-      "name": "setGateway",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_destination",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "_recipientAsAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "_recipientAsString",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_playerId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_requestMetadata",
-          "type": "bytes"
-        }
-      ],
-      "name": "transferRemote",
-      "outputs": [],
-      "stateMutability": "payable",
       "type": "function"
     },
     {
