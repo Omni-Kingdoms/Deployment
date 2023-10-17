@@ -299,7 +299,9 @@ contract PlayerDropFacet {
     function claimPlayerDrop(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale, uint256 _class) external payable {
         require(msg.value >= getPlayerDrop(_playerDropId).price);
         address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
-        feeAccount.call{value: getPlayerDrop(_playerDropId).price};
+        //feeAccount.call{value: getPlayerDrop(_playerDropId).price};
+        (bool sent, bytes memory data) = feeAccount.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
         PlayerDropStorageLib._claimPlayerDrop(_playerDropId, _proof, _name, _isMale, _class);
         emit ClaimPlayer(_playerDropId);
     }
