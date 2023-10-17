@@ -295,7 +295,9 @@ contract PlayerFacet is ERC721FacetInternal {
         uint256 cost = 16000000000000000;
         require(msg.value >= cost);
         address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
-        feeAccount.call{value: cost};
+        //feeAccount.call{value: cost};
+        (bool sent, bytes memory data) = feeAccount.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
         PlayerStorageLib._mint(_name, _isMale, _class);
         uint256 count = playerCount();
         emit Mint(count, msg.sender, _name, _class);

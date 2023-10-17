@@ -31,7 +31,7 @@ async function deployDiamond() {
     //'EquipFacet',
     // 'ShopFacet',
     //'ArenaFacet',
-    //'ExchangeFacet',
+    'ExchangeFacet',
     // 'MonsterFacet',
     // 'TreasureFacet',
     'PlayerDropFacet',
@@ -107,6 +107,7 @@ async function verifyContract(diamond, FacetName, constructorArguments = []) {
     "scroll_sepolia",
     "scroll_test",
     "arbitrumGoerli",
+    "arbg",
     "fuji",
     "mantle"
   ];

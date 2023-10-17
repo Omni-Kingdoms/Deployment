@@ -45,6 +45,7 @@ module.exports = {
       scroll_sepolia: 'abc',
       scroll_test: process.env.ETHERSCAN,
       arbitrumGoerli: process.env.ARBISCAN,
+      arbg: process.env.ARBISCAN,
       fuji: process.env.SNOWTRACE,
     },
     customChains: [
