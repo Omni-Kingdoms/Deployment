@@ -5326,24 +5326,6 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "_name",
-          "type": "string"
-        },
-        {
-          "internalType": "bool",
-          "name": "_isMale",
-          "type": "bool"
-        }
-      ],
-      "name": "mintP",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "bytes32[]",
           "name": "_proof",
           "type": "bytes32[]"

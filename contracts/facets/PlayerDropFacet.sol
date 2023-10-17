@@ -329,14 +329,13 @@ contract PlayerDropFacet {
     function claimPlayerDropPaladin(uint256 _playerDropId, bytes32[] calldata _proof, string memory _name, bool _isMale) public payable {
         require(msg.value >= getPlayerDrop(_playerDropId).price);
         address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
-        feeAccount.call{value: getPlayerDrop(_playerDropId).price};
+        //feeAccount.call{value: getPlayerDrop(_playerDropId).price};
+        (bool sent, bytes memory data) = feeAccount.call{value: msg.value}("");
+        require(sent, "Failed to send Ether");
         PlayerDropStorageLib._claimPlayerDropPaladin(_playerDropId, _proof, _name, _isMale);
         emit ClaimPlayer(_playerDropId);
     }
 
-    function mintP(string memory _name, bool _isMale) public {
-        PlayerDropStorageLib._mintPaladin(_name, _isMale);
-    }
 
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
