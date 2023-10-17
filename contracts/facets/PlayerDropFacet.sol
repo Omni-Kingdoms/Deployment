@@ -277,11 +277,16 @@ library PlayerDropStorageLib {
         owner = s.owners[_id];
     }
 
+    function _playerCount() internal view returns (uint256) {
+        PlayerStorage storage s = diamondStorage();
+        return s.playerCount;
+    }
+
 }
 
 /// @title Player Facet
 /// @dev Contract managing interaction with player data
-contract PlayerDropFacet {
+contract PlayerDropFacet is ERC721FacetInternal {
     // contract PlayerFacet {
     using Strings for uint256;
 
@@ -304,6 +309,8 @@ contract PlayerDropFacet {
         require(sent, "Failed to send Ether");
         PlayerDropStorageLib._claimPlayerDrop(_playerDropId, _proof, _name, _isMale, _class);
         emit ClaimPlayer(_playerDropId);
+        uint256 count = PlayerDropStorageLib._playerCount();
+        _safeMint(msg.sender, count);
     }
 
     function verifyPlayerDropWhitelist(bytes32[] calldata _proof, uint256 _playerDropId, address _address) public view returns(bool) {
@@ -336,9 +343,9 @@ contract PlayerDropFacet {
         require(sent, "Failed to send Ether");
         PlayerDropStorageLib._claimPlayerDropPaladin(_playerDropId, _proof, _name, _isMale);
         emit ClaimPlayer(_playerDropId);
+        uint256 count = PlayerDropStorageLib._playerCount();
+        _safeMint(msg.sender, count);
     }
-
-
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 }
