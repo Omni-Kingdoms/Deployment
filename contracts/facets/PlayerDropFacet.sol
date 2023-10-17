@@ -164,7 +164,7 @@ library PlayerDropStorageLib {
     }
 
    function _mintPaladin(string memory _name, bool _isMale) internal {
-           PlayerStorage storage s = diamondStorage();
+        PlayerStorage storage s = diamondStorage();
         require(!s.usedNames[_name], "name is taken");
         require(bytes(_name).length <= 10);
         require(bytes(_name).length >= 3);

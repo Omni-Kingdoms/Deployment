@@ -29,9 +29,8 @@ contract DiamondInit {
     // data to set your own state variables
     function init() external {
         //TODO - Change the name based on discussions
-        //ERC721Storage.layout()._name = "OmniKingdoms Players";
-        ERC721Storage.layout()._name = "ScrollKing";
-        ERC721Storage.layout()._symbol = "SKP";
+        ERC721Storage.layout()._name = "OmniKingdoms Players";
+        ERC721Storage.layout()._symbol = "OKP";
         //ERC721Storage.layout()._symbol = "OKP";
         ERC721Storage.layout()._class0maleImage =
             "https://infura-ipfs.io/ipfs/QmV5pSsMGGMLW3Y9yQ8qSLSMDQakdnjhjS4k5he6mJyPeH";
