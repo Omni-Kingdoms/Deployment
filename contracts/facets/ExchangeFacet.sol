@@ -164,8 +164,8 @@ library ExchangeStorageLib {
         if (_amount > 0) {
             // Burn the tokens for the gold
             uint256 tokensToBurn = _amount * 1 ether;
-            c.goldBalance[msg.sender] += _amount;
             tokenFacet.burn(msg.sender, tokensToBurn);
+            c.goldBalance[msg.sender] += _amount;
         }
     }
 
