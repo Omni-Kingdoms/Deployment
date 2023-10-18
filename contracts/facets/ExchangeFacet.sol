@@ -142,17 +142,30 @@ library ExchangeStorageLib {
         }
     }
 
-    function _mintGoldERC20(address _facetAddress) internal {
+    function _mintGoldERC20(address _facetAddress, uint256 _amount) internal {
         CoinStorage storage c = diamondStorageCoin();
+        // TODO - remove this - only for testing
+        c.goldBalance[msg.sender] += 10;
+        require(_amount <= c.goldBalance[msg.sender], "ExchangeFacet: You do not have enough gold to mint");
 
         ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
-        uint256 tokenBalance = tokenFacet.balanceOf(msg.sender);
-        uint256 tokensToMint = c.goldBalance[msg.sender] * 1 ether - tokenBalance;
-        // uint256 tokensToMint = 2;
+        if (_amount > 0) {
+            uint256 tokensToMint = _amount * 1 ether;
+            tokenFacet.mint(msg.sender, tokensToMint);
+            c.goldBalance[msg.sender] -= _amount;
+        }
+    }
 
-        if (tokensToMint > 0) {
-            uint256 tokensFormatted = tokensToMint * 1 ether;
-            tokenFacet.mint(msg.sender, tokensFormatted);
+    function _claimGoldfromERC20(address _facetAddress, uint256 _amount) internal {
+        CoinStorage storage c = diamondStorageCoin();
+        ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
+        uint256 tokenBalance = tokenFacet.balanceOf(msg.sender);
+        require(tokenBalance / 1 ether >= _amount, "ExchangeFacet: You do not have enough tokens to claim");
+        if (_amount > 0) {
+            // Burn the tokens for the gold
+            uint256 tokensToBurn = _amount * 1 ether;
+            c.goldBalance[msg.sender] += _amount;
+            tokenFacet.burn(msg.sender, tokensToBurn);
         }
     }
 
@@ -263,8 +276,12 @@ contract ExchangeFacet is ERC721FacetInternal, ReentrancyGuard {
         emit CreatePlayerListing(msg.sender, _playerId, _price);
     }
 
-    function mintGoldERC20(address _facetAddress) public nonReentrant {
-        ExchangeStorageLib._mintGoldERC20(_facetAddress);
+    function mintGoldERC20(address _facetAddress, uint256 _amount) public nonReentrant {
+        ExchangeStorageLib._mintGoldERC20(_facetAddress, _amount);
+    }
+
+    function claimGoldfromERC20(address _facetAddress, uint256 _amount) public nonReentrant {
+        ExchangeStorageLib._claimGoldfromERC20(_facetAddress, _amount);
     }
 
     function purchasePlayer(uint256 _playerId) public payable nonReentrant {
