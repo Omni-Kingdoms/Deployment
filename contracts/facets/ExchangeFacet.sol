@@ -147,11 +147,15 @@ library ExchangeStorageLib {
         // TODO - remove this - only for testing
         c.goldBalance[msg.sender] += 10;
         require(_amount <= c.goldBalance[msg.sender], "ExchangeFacet: You do not have enough gold to mint");
+        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
 
         ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
         if (_amount > 0) {
-            uint256 tokensToMint = _amount * 1 ether;
-            tokenFacet.mint(msg.sender, tokensToMint);
+            uint256 tokenAmount = _amount * 1 ether;
+            uint256 tokenFee = tokenAmount * 1 / 100; // 1% fee
+            uint256 tokensToUser = tokenAmount - tokenFee;
+            tokenFacet.mint(msg.sender, tokensToUser);
+            tokenFacet.mint(feeRecipient, tokenFee); // 1% fee
             c.goldBalance[msg.sender] -= _amount;
         }
     }
@@ -161,10 +165,14 @@ library ExchangeStorageLib {
         ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
         uint256 tokenBalance = tokenFacet.balanceOf(msg.sender);
         require(tokenBalance / 1 ether >= _amount, "ExchangeFacet: You do not have enough tokens to claim");
+        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         if (_amount > 0) {
             // Burn the tokens for the gold
-            uint256 tokensToBurn = _amount * 1 ether;
+            uint256 tokenAmount = _amount * 1 ether;
+            uint256 tokenFee = tokenAmount * 1 / 100; // 1% fee
+            uint256 tokensToBurn = tokenAmount - tokenFee;
             tokenFacet.burn(msg.sender, tokensToBurn);
+            tokenFacet.transfer(feeRecipient, tokenFee);
             c.goldBalance[msg.sender] += _amount;
         }
     }
