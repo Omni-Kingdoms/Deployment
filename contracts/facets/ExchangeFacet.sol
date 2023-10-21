@@ -172,7 +172,7 @@ library ExchangeStorageLib {
             uint256 tokenFee = tokenAmount * 1 / 100; // 1% fee
             uint256 tokensToBurn = tokenAmount - tokenFee;
             tokenFacet.burn(msg.sender, tokensToBurn);
-            tokenFacet.transfer(feeRecipient, tokenFee);
+            tokenFacet.transferFrom(msg.sender, feeRecipient, tokenFee);
             c.goldBalance[msg.sender] += _amount;
         }
     }
