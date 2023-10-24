@@ -1245,6 +1245,10 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
+"@okg/erc20-diamond@https://github.com/Omni-Kingdoms/ERC20-Diamond":
+  version "1.0.0"
+  resolved "git+ssh://git@github.com/Omni-Kingdoms/ERC20-Diamond.git#4f7e71fc3cb4a91fd4bb0c0adac628294e5d6942"
+
 "@omni/contracts@https://github.com/omni-network/omni-std":
   version "0.0.1"
   resolved "git+ssh://git@github.com/omni-network/omni-std.git#5a06b9764a04e6da68dd13c89b440ead633e9242"

@@ -145,7 +145,6 @@ library ExchangeStorageLib {
     function _mintGoldERC20(address _facetAddress, uint256 _amount) internal {
         CoinStorage storage c = diamondStorageCoin();
         // TODO - remove this - only for testing
-        c.goldBalance[msg.sender] += 10;
         require(_amount <= c.goldBalance[msg.sender], "ExchangeFacet: You do not have enough gold to mint");
         address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
 
