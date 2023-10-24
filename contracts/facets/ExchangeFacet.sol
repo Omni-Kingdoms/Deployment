@@ -6,7 +6,7 @@ import {ERC721Storage} from "../ERC721Storage.sol";
 import {ERC721FacetInternal} from "./ERC721FacetInternal.sol";
 import {ERC721Facet} from "./ERC721Facet.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
+import {ERC20Facet} from "@okg/erc20-diamond/contracts/facets/ERC20Facet.sol";
 
 struct PlayerListing {
     address payable seller;
@@ -142,6 +142,41 @@ library ExchangeStorageLib {
         }
     }
 
+    function _mintGoldERC20(address _facetAddress, uint256 _amount) internal {
+        CoinStorage storage c = diamondStorageCoin();
+        // TODO - remove this - only for testing
+        c.goldBalance[msg.sender] += 10;
+        require(_amount <= c.goldBalance[msg.sender], "ExchangeFacet: You do not have enough gold to mint");
+        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+
+        ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
+        if (_amount > 0) {
+            uint256 tokenAmount = _amount * 1 ether;
+            uint256 tokenFee = tokenAmount * 1 / 100; // 1% fee
+            uint256 tokensToUser = tokenAmount - tokenFee;
+            tokenFacet.mint(msg.sender, tokensToUser);
+            tokenFacet.mint(feeRecipient, tokenFee); // 1% fee
+            c.goldBalance[msg.sender] -= _amount;
+        }
+    }
+
+    function _claimGoldfromERC20(address _facetAddress, uint256 _amount) internal {
+        CoinStorage storage c = diamondStorageCoin();
+        ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
+        uint256 tokenBalance = tokenFacet.balanceOf(msg.sender);
+        require(tokenBalance / 1 ether >= _amount, "ExchangeFacet: You do not have enough tokens to claim");
+        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+        if (_amount > 0) {
+            // Burn the tokens for the gold
+            uint256 tokenAmount = _amount * 1 ether;
+            uint256 tokenFee = tokenAmount * 1 / 100; // 1% fee
+            uint256 tokensToBurn = tokenAmount - tokenFee;
+            tokenFacet.burn(msg.sender, tokensToBurn);
+            tokenFacet.transferFrom(msg.sender, feeRecipient, tokenFee);
+            c.goldBalance[msg.sender] += _amount;
+        }
+    }
+
     function _createPlayerListing(uint256 _playerId, uint256 _price) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         ExchangeStorage storage ex = diamondStorageEx();
@@ -247,6 +282,14 @@ contract ExchangeFacet is ERC721FacetInternal, ReentrancyGuard {
     function createPlayerListing(uint256 _playerId, uint256 _price) public nonReentrant {
         ExchangeStorageLib._createPlayerListing(_playerId, _price);
         emit CreatePlayerListing(msg.sender, _playerId, _price);
+    }
+
+    function mintGoldERC20(address _facetAddress, uint256 _amount) public nonReentrant {
+        ExchangeStorageLib._mintGoldERC20(_facetAddress, _amount);
+    }
+
+    function claimGoldfromERC20(address _facetAddress, uint256 _amount) public nonReentrant {
+        ExchangeStorageLib._claimGoldfromERC20(_facetAddress, _amount);
     }
 
     function purchasePlayer(uint256 _playerId) public payable nonReentrant {
