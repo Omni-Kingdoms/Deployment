@@ -75,7 +75,11 @@ library StorageLib {
         require(block.timestamp >= t.basicHealth[_playerId] + timer, "it's too early to pull out");
         s.players[_playerId].status = 0; //reset status back to idle
         delete t.basicHealth[_playerId];
-        s.players[_playerId].currentHealth++;
+        if (s.players[_playerId].health - s.players[_playerId].currentHealth >= 3) {
+            s.players[_playerId].currentHealth += 3;
+        } else {
+            s.players[_playerId].health = s.players[_playerId].currentHealth;
+        }
     }
 
     function _startTrainingMana(uint256 _tokenId) internal {
