@@ -37,6 +37,13 @@ struct Equipment {
 //     5: luck;
 // }
 
+struct GoldQuestSchema {
+    uint256 GoldQuestSchema;
+    uint256 reward;
+    uint256 level;
+    uint256 damage;
+    uint256 cooldown;
+}
 
 
 
@@ -62,6 +69,7 @@ library StorageLib {
 
     struct QuestStorage {
         uint256 questCounter;
+        mapping(uint256 => mapping(uint256 => uint256)) goldQuestCooldowns;
         mapping(uint256 => uint256) goldQuest;
         mapping(uint256 => uint256) gemQuest;
         mapping(uint256 => uint256) totemQuest;
@@ -113,6 +121,11 @@ library StorageLib {
         }
     }
 
+
+    function createGoldQuest(uint256 reward, uint256 level, uint256 damage, uint256 cooldown) internal {
+        QuestStorage storage q = diamondStorageQuest();
+
+    }
 
     function _startQuestGold(uint256 _tokenId) internal {
         PlayerStorage storage s = diamondStoragePlayer();

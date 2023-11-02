@@ -10,6 +10,7 @@ struct BasicEquipmentSchema {
     uint256 value;
     uint256 stat;
     uint256 cost;
+    uint256 supply;
     string name;
     string uri;
 }
@@ -95,6 +96,7 @@ library StorageLib {
         uint256 equipmentCount;
         uint256 basicEquipmentCount;
         mapping(uint256 => BasicEquipmentSchema) basicEquipmentSchema;
+        mapping(uint256 => uint256) basicEquipmentSupply;
         mapping(uint256 => Equipment) equipment;
         uint256 basicCraftCount;
         mapping(uint256 => BasicCraft) basicCraft;
@@ -109,6 +111,7 @@ library StorageLib {
     }
 
     struct CoinStorage {
+        uint256 goldCount;
         mapping(address => uint256) goldBalance;
         mapping(address => uint256) gemBalance;
         mapping(address => uint256) totemBalance;
@@ -155,13 +158,14 @@ library StorageLib {
         uint256 _value,
         uint256 _stat,
         uint256 _cost,
+        uint256 _supply,
         string memory _name,
         string memory _uri
     ) internal {
         EquipmentStorage storage e = diamondStorageItem();
         e.basicEquipmentCount++;
         e.basicEquipmentSchema[e.basicEquipmentCount] = BasicEquipmentSchema(
-            e.basicEquipmentCount, _slot, _value, _stat, _cost, _name, _uri
+            e.basicEquipmentCount, _slot, _value, _stat, _cost, _supply, _name, _uri
         );
     }
 
@@ -172,7 +176,9 @@ library StorageLib {
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf
         require(c.goldBalance[msg.sender] >= e.basicEquipmentSchema[_equipmentSchemaId].cost); //check user has enough gold
+        require(e.basicEquipmentSupply[_equipmentSchemaId] < e.basicEquipmentSchema[_equipmentSchemaId].supply); //check bellow total supply
         e.equipmentCount++; //increment equipment count
+        e.basicEquipmentSupply[_equipmentSchemaId]++; //increment total supply
         e.equipment[e.equipmentCount] = Equipment(
             e.equipmentCount,
             e.playerToEquipment[_playerId].length,
@@ -187,6 +193,8 @@ library StorageLib {
         );
         e.playerToEquipment[_playerId].push(e.equipmentCount); //add to the player array
         c.goldBalance[msg.sender] -= e.basicEquipmentSchema[_equipmentSchemaId].cost;
+        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+        c.goldBalance[feeRecipient] += e.basicEquipmentSchema[_equipmentSchemaId].cost; //increment fee account gold
     }
 
     function _createBasicCraft(uint256 _equipmenSchematId, uint256 _value, uint256 _cost, string memory _newName, string memory _uri) internal {
@@ -349,12 +357,13 @@ contract CraftFacet {
         uint256 _value,
         uint256 _stat,
         uint256 _cost,
+        uint256 _supply,
         string memory _name,
         string memory _uri
     ) public {
         address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
         require(msg.sender == createAccount);
-        StorageLib._createBasicEquipment(_slot, _value, _stat, _cost, _name, _uri);
+        StorageLib._createBasicEquipment(_slot, _value, _stat, _cost, _supply, _name, _uri);
         uint256 id = StorageLib._getBasicEquipmentCount();
         emit BasicEquipmentSchemaCreated(id, _value, _uri, getBasicEquipmentSchema(id));
     }

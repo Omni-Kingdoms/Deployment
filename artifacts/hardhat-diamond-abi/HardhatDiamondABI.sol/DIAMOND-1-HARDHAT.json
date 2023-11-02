@@ -3378,6 +3378,11 @@
               "type": "uint256"
             },
             {
+              "internalType": "uint256",
+              "name": "supply",
+              "type": "uint256"
+            },
+            {
               "internalType": "string",
               "name": "name",
               "type": "string"
@@ -3443,6 +3448,11 @@
             {
               "internalType": "uint256",
               "name": "cost",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "supply",
               "type": "uint256"
             },
             {
@@ -3756,6 +3766,11 @@
           "type": "uint256"
         },
         {
+          "internalType": "uint256",
+          "name": "_supply",
+          "type": "uint256"
+        },
+        {
           "internalType": "string",
           "name": "_name",
           "type": "string"
@@ -3967,6 +3982,11 @@
             {
               "internalType": "uint256",
               "name": "cost",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "supply",
               "type": "uint256"
             },
             {

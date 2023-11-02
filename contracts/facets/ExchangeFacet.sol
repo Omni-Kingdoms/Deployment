@@ -95,7 +95,9 @@ library ExchangeStorageLib {
     }
 
     struct CoinStorage {
+        uint256 goldCount;
         mapping(address => uint256) goldBalance;
+        mapping(address => uint256) gemBalance;
         mapping(address => uint256) totemBalance;
         mapping(address => uint256) diamondBalance;
     }
@@ -151,10 +153,10 @@ library ExchangeStorageLib {
         ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
         if (_amount > 0) {
             uint256 tokenAmount = _amount * 1 ether;
-            uint256 tokenFee = tokenAmount * 1 / 100; // 1% fee
+            uint256 tokenFee = tokenAmount * 2 / 100; // 2% fee
             uint256 tokensToUser = tokenAmount - tokenFee;
             tokenFacet.mint(msg.sender, tokensToUser);
-            tokenFacet.mint(feeRecipient, tokenFee); // 1% fee
+            tokenFacet.mint(feeRecipient, tokenFee); // 2% fee
             c.goldBalance[msg.sender] -= _amount;
         }
     }
@@ -164,14 +166,10 @@ library ExchangeStorageLib {
         ERC20Facet tokenFacet = ERC20Facet(_facetAddress); // Address of the diamond
         uint256 tokenBalance = tokenFacet.balanceOf(msg.sender);
         require(tokenBalance / 1 ether >= _amount, "ExchangeFacet: You do not have enough tokens to claim");
-        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         if (_amount > 0) {
             // Burn the tokens for the gold
             uint256 tokenAmount = _amount * 1 ether;
-            uint256 tokenFee = tokenAmount * 1 / 100; // 1% fee
-            uint256 tokensToBurn = tokenAmount - tokenFee;
-            tokenFacet.burn(msg.sender, tokensToBurn);
-            tokenFacet.transferFrom(msg.sender, feeRecipient, tokenFee);
+            tokenFacet.burn(msg.sender, tokenAmount);
             c.goldBalance[msg.sender] += _amount;
         }
     }
@@ -190,6 +188,26 @@ library ExchangeStorageLib {
             ex.addressToPlayerListings[msg.sender].length
         ); //create the listing and map
         ex.playerListingsArray.push(_playerId); //push to the total equipment listing array
+        ex.addressToPlayerListings[msg.sender].push(_playerId); //push to the equipemnt array owned by the address
+    }
+
+    function _createEquipmentListing(uint256 _equipmentId, uint256 _playerId, uint256 _price) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        ExchangeStorage storage ex = diamondStorageEx();
+        EquipmentStorage storage e = diamondStorageEquipment();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
+        Equipment storage equipment = e.equipment[_equipmentId];
+        require(e.equipment[_equipmentId].owner == _playerId); //check that the player is the onwer of the equipment
+        require(!equipment.isEquiped); //require item isn't equiped
+        ex.equipmentListings[_equipmentId] = EquipmentListing(
+            payable(msg.sender),
+            _equipmentId,
+            _price, //in gold
+            ex.playerListingsArray.length,
+            ex.addressToPlayerListings[msg.sender].length
+        ); //create the listing and map
+        ex.playerListingsArray.push(_equipmentId); //push to the total equipment listing array
         ex.addressToPlayerListings[msg.sender].push(_playerId); //push to the equipemnt array owned by the address
     }
 
