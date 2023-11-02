@@ -340,6 +340,10 @@ library StorageLib {
         return e.advancedCraft[_advancedCraftId];
     }
 
+    function _getBasicEquipmentSupply(uint256 _basicEquipmentSchemaId) internal view returns (uint256) {
+        EquipmentStorage storage e = diamondStorageItem();
+        return e.basicEquipmentSupply[_basicEquipmentSchemaId];
+    }
 
 }
 
@@ -441,6 +445,10 @@ contract CraftFacet {
 
     function getAdvancedCraft(uint256 _advancedCraftId) public view returns (AdvancedCraft memory) {
         return StorageLib._getAdvancedCraft(_advancedCraftId);
+    }
+
+    function getBasicEquipmentSupply(uint256 _basicEquipmentSchemaId) public view returns (uint256) {
+        return StorageLib._getBasicEquipmentSupply(_basicEquipmentSchemaId);
     }
 
 
