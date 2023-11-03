@@ -187,25 +187,25 @@ library StorageLib {
         EquipmentStorage storage e = diamondStorageEquipment();
         PlayerStorage storage s = diamondStoragePlayer();
         uint256 slot = e.equipment[_equipmentId].slot;
-        // if (slot == 0) { //head
-        //     _equipHead(_playerId, _equipmentId);
-        // } else if (slot == 1) { //body
-        //     _equipBody(_playerId, _equipmentId);
-        // } else if (slot == 2 || slot == 3) { //Hand
-        //     if (s.players[_playerId].slot.leftHand == 0) {
-        //         _equipLeftHand(_playerId, _equipmentId);
-        //     } else  {
-        //         _equipRightHand(_playerId, _equipmentId);
-        //     }
-        // } else if (slot == 4) { //pants
-        //     _equipPants(_playerId, _equipmentId);
-        // } else if (slot == 5) { //pants
-        //     _equipFeet(_playerId, _equipmentId);
-        // } else if (slot == 6) {
-        //     _equipNeck(_playerId, _equipmentId);
-        // } else {
-        //     return;
-        // }
+        if (slot == 0) { //head
+            _equipHead(_playerId, _equipmentId);
+        } else if (slot == 1) { //body
+            _equipBody(_playerId, _equipmentId);
+        } else if (slot == 2 || slot == 3) { //Hand
+            if (s.players[_playerId].slot.leftHand == 0) {
+                _equipLeftHand(_playerId, _equipmentId);
+            } else  {
+                _equipRightHand(_playerId, _equipmentId);
+            }
+        } else if (slot == 4) { //pants
+            _equipPants(_playerId, _equipmentId);
+        } else if (slot == 5) { //pants
+            _equipFeet(_playerId, _equipmentId);
+        } else if (slot == 6) {
+            _equipNeck(_playerId, _equipmentId);
+        } else {
+            return;
+        }
     }
 
     function _unequip(uint256 _playerId, uint256 _equipmentId) internal {
