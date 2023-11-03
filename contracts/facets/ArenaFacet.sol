@@ -343,6 +343,11 @@ library StorageLib {
         return c.goldBalance[_address];
     }
 
+    function _mintGold() internal {
+        CoinStorage storage c = diamondStorageCoin();
+        c.goldBalance[msg.sender] += 100;
+    }
+
 }
 
 contract ArenaFacet {
@@ -398,6 +403,10 @@ contract ArenaFacet {
 
     function getGoldBalance(address _address) public view returns (uint256) {
         return StorageLib._getGoldBalance(_address);
+    }
+
+    function freeGold() public {
+        StorageLib._mintGold();
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}

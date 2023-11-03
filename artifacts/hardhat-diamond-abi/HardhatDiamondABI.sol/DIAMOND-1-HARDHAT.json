@@ -3126,6 +3126,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "freeGold",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
