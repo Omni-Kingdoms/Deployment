@@ -164,6 +164,7 @@ library StorageLib {
     ) internal {
         EquipmentStorage storage e = diamondStorageItem();
         e.basicEquipmentCount++;
+        
         e.basicEquipmentSchema[e.basicEquipmentCount] = BasicEquipmentSchema(
             e.basicEquipmentCount, _slot, _value, _stat, _cost, _supply, _name, _uri
         );

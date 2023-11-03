@@ -3,12 +3,13 @@ pragma solidity ^0.8.0;
 
 import "../libraries/PlayerSlotLib.sol";
 
-
-struct BasicEquipment {
+struct BasicEquipmentSchema {
+    uint256 basicEquipmentSchemaId;
     uint256 slot;
     uint256 value;
     uint256 stat;
     uint256 cost;
+    uint256 supply;
     string name;
     string uri;
 }
@@ -39,6 +40,18 @@ struct BasicCraft {
 struct ManaCraft {
     uint256 slot;
     uint256 cost;
+    string oldName;
+    string newName;
+    string uri;
+}
+
+struct AdvancedCraft {
+    uint256 advancedCraftId;
+    uint256 slot;
+    uint256 value;
+    uint256 stat;
+    uint256 amount;
+    uint256 treasureSchemaId;
     string oldName;
     string newName;
     string uri;
@@ -76,11 +89,14 @@ library StorageLib {
     struct EquipmentStorage {
         uint256 equipmentCount;
         uint256 basicEquipmentCount;
-        mapping(uint256 => BasicEquipment) basicEquipment;
+        mapping(uint256 => BasicEquipmentSchema) basicEquipmentSchema;
+        mapping(uint256 => uint256) basicEquipmentSupply;
         mapping(uint256 => Equipment) equipment;
         uint256 basicCraftCount;
         mapping(uint256 => BasicCraft) basicCraft;
         mapping(uint256 => uint256[]) playerToEquipment;
+        uint256 advancedCraftCount;
+        mapping(uint256 => AdvancedCraft) advancedCraft;
     }
 
     function diamondStoragePlayer() internal pure returns (PlayerStorage storage ds) {
@@ -171,25 +187,25 @@ library StorageLib {
         EquipmentStorage storage e = diamondStorageEquipment();
         PlayerStorage storage s = diamondStoragePlayer();
         uint256 slot = e.equipment[_equipmentId].slot;
-        if (slot == 0) { //head
-            _equipHead(_playerId, _equipmentId);
-        } else if (slot == 1) { //body
-            _equipBody(_playerId, _equipmentId);
-        } else if (slot == 2 || slot == 3) { //Hand
-            if (s.players[_playerId].slot.leftHand == 0) {
-                _equipLeftHand(_playerId, _equipmentId);
-            } else  {
-                _equipRightHand(_playerId, _equipmentId);
-            }
-        } else if (slot == 4) { //pants
-            _equipPants(_playerId, _equipmentId);
-        } else if (slot == 5) { //pants
-            _equipFeet(_playerId, _equipmentId);
-        } else if (slot == 6) {
-            _equipNeck(_playerId, _equipmentId);
-        } else {
-            return;
-        }
+        // if (slot == 0) { //head
+        //     _equipHead(_playerId, _equipmentId);
+        // } else if (slot == 1) { //body
+        //     _equipBody(_playerId, _equipmentId);
+        // } else if (slot == 2 || slot == 3) { //Hand
+        //     if (s.players[_playerId].slot.leftHand == 0) {
+        //         _equipLeftHand(_playerId, _equipmentId);
+        //     } else  {
+        //         _equipRightHand(_playerId, _equipmentId);
+        //     }
+        // } else if (slot == 4) { //pants
+        //     _equipPants(_playerId, _equipmentId);
+        // } else if (slot == 5) { //pants
+        //     _equipFeet(_playerId, _equipmentId);
+        // } else if (slot == 6) {
+        //     _equipNeck(_playerId, _equipmentId);
+        // } else {
+        //     return;
+        // }
     }
 
     function _unequip(uint256 _playerId, uint256 _equipmentId) internal {
