@@ -47,6 +47,8 @@ library StorageLib {
         uint256 BasicPotionSchemaCount;
         mapping(uint256 => BasicPotionSchema) basicPotionSchema;
         mapping(uint256 => mapping(uint256 => uint256)) basicPotionToPlayer;
+        mapping(uint256 => uint256) stakedPotionValue;
+        mapping(uint256 => uint256) stakedPotionTime;
     }
 
     struct CoinStorage {
@@ -126,6 +128,17 @@ library StorageLib {
         p.basicPotionToPlayer[_basicPotionSchemaId][_playerId]--;
     }
 
+    function _stakePotionBasic(uint256 _playerId) internal {
+        PotionStorage storage p = diamondStoragePotion();
+        CoinStorage storage c = diamondStorageCoin();
+        require(c.goldBalance[msg.sender] >= 1000); //check they have over 1000 gold
+        require(p.stakedPotionValue[_playerId] == 0); //require they have no stake
+        c.goldBalance[msg.sender] -= 1000; //decrement 
+        p.stakedPotionValue[_playerId] == 1;
+        p.stakedPotionTime[_playerId] == block.timestamp;
+    }
+
+
     function _getBaiscPotionCount(uint256 _playerId, uint256 _basicPotionSchemaId) internal view returns(uint256) {
         PotionStorage storage p = diamondStoragePotion();
         return p.basicPotionToPlayer[_basicPotionSchemaId][_playerId];
@@ -141,6 +154,8 @@ library StorageLib {
         return p.BasicPotionSchemaCount;
     }
 
+    
+
 
 }
 
@@ -152,6 +167,8 @@ contract ShopFacet {
     
 
     function createBasicPotion(uint256 _value, uint256 _cost, bool _isHealth, string memory _name, string memory _uri) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
         StorageLib._createBasicPotion(_value, _cost, _isHealth, _name, _uri);
         uint256 id = StorageLib._getBasicPotionSchemaCount();
         emit CreateBasicPotion(id, getBasicPotion(id));

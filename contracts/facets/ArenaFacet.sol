@@ -17,6 +17,7 @@ struct BasicArena {
 
 struct HillArena {
     uint256 hillArenaId;
+    uint256 cost;
     uint256 cooldown;
     uint256 hostId;
     uint256 wins;
@@ -59,13 +60,16 @@ library StorageLib {
         mapping(uint256 => mapping(uint256 => uint256)) basicArenaCooldowns;
         uint256 hillArenaCounter;
         mapping(uint256 => HillArena) hillArenas;
+        mapping(uint256 => uint256) hillArenaScores;
         mapping(uint256 => mapping(uint256 => uint256)) hillArenaCooldowns;
+        mapping(uint256 => mapping(uint256 => uint256)) hillArenaTime;
         mapping(uint256 => uint256) mainArenaWins;
         mapping(uint256 => uint256) mainArenaLosses;
         mapping(uint256 => uint256) totalArenaWins;
         mapping(uint256 => uint256) totalArenaLosses;
         mapping(uint256 => mapping(uint256 => uint256)) basicAreanaWins;
         mapping(uint256 => mapping(uint256 => uint256)) hillAreanaWins;
+
     }
 
 
@@ -107,11 +111,12 @@ library StorageLib {
         );
     }
 
-    function _createHillArena(uint256 _cooldown, string memory _name, string memory _uri) internal {
+    function _createHillArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) internal {
         ArenaStorage storage a = diamondStorageArena();
         a.hillArenaCounter++; // incmrement counter
         a.hillArenas[a.hillArenaCounter] = HillArena(
             a.hillArenaCounter,
+            _cost,
             _cooldown,
             0, //hostId starts at zero to show that there is no player
             0,
@@ -144,24 +149,24 @@ library StorageLib {
         a.basicArenas[_basicArenaId].hostAddress = payable(msg.sender);
     }
 
-    // function _enterHillArena(uint256 _playerId, uint256 _hillArenaId) internal {
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     ArenaStorage storage a = diamondStorageArena();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     require(s.players[_playerId].status == 0); //make sure player is idle
-    //     require(s.owners[_playerId] == msg.sender); //ownerOf
-    //     HillArena storage arena = a.hillArenas[_hillArenaId]; //save arena object
-    //     require(arena.open, "arena is not open"); //arena is open
-    //     require(c.goldBalance[msg.sender] >= arena.cost, "broke ass got no money"); //gold check
-    //     c.goldBalance[msg.sender] -= arena.cost; //deduct one gold from their balance
-    //     uint256 timer;
-    //     s.players[_playerId].agility >= arena.cooldown/2  ? timer = arena.cooldown/2 : timer = arena.cooldown/2 - s.players[_playerId].agility + 10;
-    //     require(block.timestamp >= a.hillArenaCooldowns[_hillArenaId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
-    //     s.players[_playerId].status = 4; //set the host's status to being in the arena
-    //     a.hillArenas[_hillArenaId].open = false; //close the arena
-    //     a.hillArenas[_hillArenaId].hostId = _playerId;
-    //     a.hillArenas[_hillArenaId].hostAddress = payable(msg.sender);
-    // }
+    function _enterHillArena(uint256 _playerId, uint256 _hillArenaId) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        ArenaStorage storage a = diamondStorageArena();
+        CoinStorage storage c = diamondStorageCoin();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        HillArena storage arena = a.hillArenas[_hillArenaId]; //save arena object
+        require(arena.open, "arena is not open"); //arena is open
+        require(c.goldBalance[msg.sender] >= arena.cost, "broke ass got no money"); //gold check
+        c.goldBalance[msg.sender] -= arena.cost; //deduct one gold from their balance
+        uint256 timer;
+        s.players[_playerId].agility >= arena.cooldown/2  ? timer = arena.cooldown/2 : timer = arena.cooldown/2 - s.players[_playerId].agility + 10;
+        require(block.timestamp >= a.hillArenaCooldowns[_hillArenaId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
+        s.players[_playerId].status = 4; //set the host's status to being in the arena
+        a.hillArenas[_hillArenaId].open = false; //close the arena
+        a.hillArenas[_hillArenaId].hostId = _playerId;
+        a.hillArenas[_hillArenaId].hostAddress = payable(msg.sender);
+    }
 
 
 ////////// Fight Arena Functions ///////////////////////////////////////////////////////////////////////////////////////    
@@ -203,44 +208,44 @@ library StorageLib {
         return (_winner, _loser);
     }
 
-    // function _fightHillArena(uint256 _playerId, uint256 _hillArenaId) internal returns (uint256, uint256) {
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     ArenaStorage storage a = diamondStorageArena();
-    //     require(s.players[_playerId].status == 0); //make sure player is idle
-    //     require(s.owners[_playerId] == msg.sender); //ownerOf
-    //     HillArena storage arena = a.hillArenas[_hillArenaId]; //save arena object
-    //     require(!arena.open, "arena is not open"); //arena is open
-    //     uint256 timer;
-    //     s.players[_playerId].agility >= arena.cooldown/2  ? timer = arena.cooldown/2 : timer = arena.cooldown/2 - s.players[_playerId].agility + 10;
-    //     require(block.timestamp >= a.hillArenaCooldowns[_hillArenaId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
-    //     require(c.goldBalance[msg.sender] >= arena.cost, "broke ass got no money"); //gold check
-    //     uint256 winner = _simulateBasicFight(arena.hostId, _playerId);
-    //     uint256 _winner;
-    //     uint256 _loser;
-    //     if (winner == _playerId) { //means the challenger won
-    //         _winner = _playerId;
-    //         _loser = arena.hostId;
-    //         a.totalArenaWins[_playerId]++; //add total wins
-    //         a.totalArenaLosses[arena.hostId]++; //add total losses
-    //         c.goldBalance[msg.sender] += arena.cost; //increase gold
-    //     } else { //means the host won
-    //         _winner = arena.hostId;
-    //         _loser = _playerId;
-    //         a.totalArenaWins[arena.hostId]++; //add total wins
-    //         a.totalArenaLosses[_playerId]++; //add total losses
-    //         c.goldBalance[arena.hostAddress] += arena.cost*2; //increase gold of the host
-    //         c.goldBalance[msg.sender] -= arena.cost; //decrease gold
-    //     }
-    //     a.hillArenaCooldowns[_hillArenaId][_playerId] = block.timestamp;
-    //     a.hillArenaCooldowns[_hillArenaId][arena.hostId] = block.timestamp;
-    //     //a.basicArenas[_basicArenaId].open = true; // open the areana
+    function _fightHillArena(uint256 _playerId, uint256 _hillArenaId) internal returns (uint256, uint256) {
+        PlayerStorage storage s = diamondStoragePlayer();
+        CoinStorage storage c = diamondStorageCoin();
+        ArenaStorage storage a = diamondStorageArena();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        HillArena storage arena = a.hillArenas[_hillArenaId]; //save arena object
+        require(!arena.open, "arena is not open"); //arena is open
+        uint256 timer;
+        s.players[_playerId].agility >= arena.cooldown/2  ? timer = arena.cooldown/2 : timer = arena.cooldown/2 - s.players[_playerId].agility + 10;
+        require(block.timestamp >= a.hillArenaCooldowns[_hillArenaId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
+        require(c.goldBalance[msg.sender] >= arena.cost, "broke ass got no money"); //gold check
+        uint256 winner = _simulateBasicFight(arena.hostId, _playerId);
+        uint256 _winner;
+        uint256 _loser;
+        if (winner == _playerId) { //means the challenger won
+            _winner = _playerId;
+            _loser = arena.hostId;
+            a.totalArenaWins[_playerId]++; //add total wins
+            a.totalArenaLosses[arena.hostId]++; //add total losses
+            c.goldBalance[msg.sender] += arena.cost; //increase gold
+        } else { //means the host won
+            _winner = arena.hostId;
+            _loser = _playerId;
+            a.totalArenaWins[arena.hostId]++; //add total wins
+            a.totalArenaLosses[_playerId]++; //add total losses
+            c.goldBalance[arena.hostAddress] += arena.cost*2; //increase gold of the host
+            c.goldBalance[msg.sender] -= arena.cost; //decrease gold
+        }
+        a.hillArenaCooldowns[_hillArenaId][_playerId] = block.timestamp;
+        a.hillArenaCooldowns[_hillArenaId][arena.hostId] = block.timestamp;
+        //a.basicArenas[_basicArenaId].open = true; // open the areana
 
-    //     //change the logic for Hill Arena
+        //change the logic for Hill Arena
 
-    //     s.players[arena.hostId].status = 0; // set the host to idle
-    //     return (_winner, _loser);
-    // }
+        s.players[arena.hostId].status = 0; // set the host to idle
+        return (_winner, _loser);
+    }
 
     function _simulateBasicFight(uint256 _hostId, uint256 _challengerId) internal returns(uint256) { //helper function
         PlayerStorage storage s = diamondStoragePlayer();
@@ -285,18 +290,19 @@ library StorageLib {
         c.goldBalance[msg.sender] += a.basicArenas[_basicArenaId].cost; //increase gold
     }
 
-    // function _leaveHillArena(uint256 _playerId, uint256 _hillArenaId) internal {
-    //     ArenaStorage storage a = diamondStorageArena();
-    //     PlayerStorage storage s = diamondStoragePlayer();
-    //     CoinStorage storage c = diamondStorageCoin();
-    //     require(a.hillArenas[_hillArenaId].hostId == _playerId, "you are not the host"); //plerys is the current host
-    //     require(s.players[_playerId].status == 4, "you are not in the arena"); //check if they are in arena
-    //     require(s.owners[_playerId] == msg.sender); //ownerOf
-    //     a.hillArenas[_basicArenaId].hostId = 0; //reset the id of arena
-    //     a.hillArenas[_basicArenaId].open = true; //reopen the arena
-    //     s.players[_playerId].status = 0; //set satus og host back to idle
-    //     c.goldBalance[msg.sender] += a.basicArenas[_basicArenaId].cost; //increase gold
-    // }
+    function _leaveHillArena(uint256 _playerId, uint256 _hillArenaId) internal {
+        ArenaStorage storage a = diamondStorageArena();
+        PlayerStorage storage s = diamondStoragePlayer();
+        CoinStorage storage c = diamondStorageCoin();
+        require(a.hillArenas[_hillArenaId].hostId == _playerId, "you are not the host"); //plerys is the current host
+        require(s.players[_playerId].status == 4, "you are not in the arena"); //check if they are in arena
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        a.hillArenas[_hillArenaId].hostId = 0; //reset the id of arena
+        a.hillArenas[_hillArenaId].open = true; //reopen the arena
+        s.players[_playerId].status = 0; //set satus og host back to idle
+        c.goldBalance[msg.sender] += a.basicArenas[_hillArenaId].cost; //increase gold
+
+    }
 
 
 ////////////////////////////////// Random Arena Functions /////////////////////////////////////////////////////////////////////////////////////// 
@@ -310,6 +316,10 @@ library StorageLib {
         uint256 random = (_random(_nonce, _value) % 9) + 100;
         return ((_value * random) / 100);
     }
+
+
+////////// Stake Functions ///////////////////////////////////////////////////////////////////////////////////////
+
 
     
 ////////// View Functions ///////////////////////////////////////////////////////////////////////////////////////
@@ -352,12 +362,23 @@ library StorageLib {
 
 contract ArenaFacet {
     event CreateBasicArena(uint256 _basicArenaId, BasicArena _basicArena);
+    event CreateHillArena(uint256 _hillArenaId, HillArena _hillArena);
     event BasicArenaWin(uint256 indexed _playerId, uint256 indexed _basicArenaId);
     event BasicArenaLoss(uint256 indexed _playerId, uint256 indexed _basicArenaId);
     event EnterBasicArena(uint256 indexed _playerId, uint256 indexed _basicArenaId);
     event LeaveBasicArena(uint256 indexed _playerId, uint256 indexed _basicArenaId);
 
     function creatBasicArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
+        StorageLib._createBasicArena(_cost, _cooldown, _name, _uri);
+        uint256 id = StorageLib._getBasicArenaCount();
+        emit CreateBasicArena(id, getBasicArena(id));
+    }
+
+    function creatHillArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
         StorageLib._createBasicArena(_cost, _cooldown, _name, _uri);
         uint256 id = StorageLib._getBasicArenaCount();
         emit CreateBasicArena(id, getBasicArena(id));

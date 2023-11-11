@@ -174,6 +174,8 @@ library ExchangeStorageLib {
         }
     }
 
+//////////////////////////////////////////////////////////////////////////// Create Listing //////////////////////////////////////////////////
+
     function _createPlayerListing(uint256 _playerId, uint256 _price) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         ExchangeStorage storage ex = diamondStorageEx();

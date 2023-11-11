@@ -127,6 +127,7 @@ library StorageMonsterLib {
         uint256 basicMonsterCounter;
         uint256 magicMonsterCounter;
         uint256 treasureMonsterCounter;
+        mapping(uint256 => uint256) monsterStake;
         mapping(uint256 => mapping(address => bool)) admin;
         mapping(uint256 => mapping(uint256 => uint256)) basicMonsterCooldowns;
         mapping(uint256 => BasicMonster) basicMonsters;
@@ -248,6 +249,7 @@ library StorageMonsterLib {
         s.players[_playerId].currentHealth -= damage; //deduct damage
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
     }
+
     function _fightMagicMonster(uint256 _playerId, uint256 _monsterId) internal {
         MonsterStorage storage m = diamondStorageMonster();
         PlayerStorage storage s = diamondStoragePlayer();
@@ -255,13 +257,13 @@ library StorageMonsterLib {
         require(s.owners[_playerId] == msg.sender); //ownerOf
         require(s.players[_playerId].mana >= m.magicMonsters[_monsterId].cost); //check player has enough mana
         uint256 damage;        
-        s.players[_playerId].defense >= m.basicMonsters[_monsterId].damage ? damage = 1 : damage = m.basicMonsters[_monsterId].damage - s.players[_playerId].defense;
+        s.players[_playerId].defense >= m.magicMonsters[_monsterId].damage ? damage = 1 : damage = m.magicMonsters[_monsterId].damage - s.players[_playerId].defense;
         require(s.players[_playerId].currentHealth > damage, "not enough hp"); //hp check
         uint256 timer;
-        s.players[_playerId].agility >= m.basicMonsters[_monsterId].cooldown/2  ? timer = m.basicMonsters[_monsterId].cooldown/2  : timer = m.basicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
-        require(block.timestamp >= m.basicMonsterCooldowns[_monsterId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
-        require(s.players[_playerId].magic >=  m.basicMonsters[_monsterId].hp, "not strong enough"); //require strong enough to kill monster
-        s.players[_playerId].xp += m.basicMonsters[_monsterId].xpReward; //give the player xp
+        s.players[_playerId].agility >= m.magicMonsters[_monsterId].cooldown/2  ? timer = m.magicMonsters[_monsterId].cooldown/2  : timer = m.magicMonsters[_monsterId].cooldown - s.players[_playerId].agility + 10;
+        require(block.timestamp >= m.magicMonsterCooldowns[_monsterId][_playerId] + timer); //make sure that they have waited 5 mins since last quest (600 seconds);
+        require(s.players[_playerId].magic >=  m.magicMonsters[_monsterId].hp, "not strong enough"); //require strong enough to kill monster
+        s.players[_playerId].xp += (m.magicMonsters[_monsterId].xpReward + m.monsterStake[_playerId]); //give the player xp
         s.players[_playerId].currentHealth -= damage; //deduct damage
         s.players[_playerId].mana -= m.magicMonsters[_monsterId].cost; //deduct mana
         m.basicMonsterCooldowns[_monsterId][_playerId] = block.timestamp; //reset timmmer
@@ -389,6 +391,28 @@ library StorageMonsterLib {
         return m.admin[block.chainid][_address];
     }
 
+
+/////////////////////////////////////////////////////////////// Staking Functions ////////////////////////////////////////
+
+    function _stakeMonsterGoldBasic(uint256 _playerId) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        CoinStorage storage c = diamondStorageCoin();
+        require(c.goldBalance[msg.sender] >= 1000); //check they have over 500 gold
+        //require(m.monsterStake[_playerId] == 0); //require they have no stake
+        c.goldBalance[msg.sender] -= 1000;
+        m.monsterStake[_playerId]++;
+    }
+    function _unstakeMonsterGoldBasic(uint256 _playerId) internal {
+        MonsterStorage storage m = diamondStorageMonster();
+        CoinStorage storage c = diamondStorageCoin();
+        require(c.goldBalance[msg.sender] >= 1000); //check they have over 500 gold
+        require(m.monsterStake[_playerId] > 0); //require they have no stake
+        c.goldBalance[msg.sender] -= 1000;
+        m.monsterStake[_playerId]--;
+    }
+
+    
+
 }
 
 contract MonsterFacet {
@@ -445,6 +469,16 @@ contract MonsterFacet {
         StorageMonsterLib._addMonsterAdmin(_address);
         emit AddMonsterAdmin(_address);
     }
+
+    /////////////////////////////////////////////////////////////// Staking Functions ////////////////////////////////////////
+
+    function stakeMonsterGoldBasic(uint256 _playerId) public {
+        StorageMonsterLib._stakeMonsterGoldBasic(_playerId);
+    }
+    function unstakeMonsterGoldBasic(uint256 _playerId) public {
+        StorageMonsterLib._unstakeMonsterGoldBasic(_playerId);
+    }
+
 
 
     ///////////////////////////////////////////////     view    ////////////////////////////////////
