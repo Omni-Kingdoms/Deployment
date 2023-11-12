@@ -8,6 +8,12 @@ struct TreasureSchema {
     string uri;
 }
 
+struct TreasureSwap {
+    uint256 basicTreasureOneId;
+    uint256 basicTreasureTwoId;
+    uint256 quantity;
+}
+
 library TreasureStorageLib {
     bytes32 constant POTION_STORAGE_POSITION = keccak256("potion.test.storage.a");
     bytes32 constant TREASURE_STORAGE_POSITION = keccak256("treasure.test.storage.a");
@@ -15,9 +21,11 @@ library TreasureStorageLib {
 
     struct TreasureStorage {
         uint256 treasureScehmaCount;
+        uint256 treasureScehmaSwapCount;
         mapping(uint256 => TreasureSchema) treasureSchema;
         mapping(uint256 => mapping(uint256 => uint256)) treasures;
         mapping(string => TreasureSchema) nameToTreasureSchema;
+        mapping(uint256 => TreasureSwap) treasureSwaps;
     }
 
     function diamondStorageTreasure() internal pure returns (TreasureStorage storage ds) {
@@ -45,7 +53,6 @@ library TreasureStorageLib {
     function _mintTreasure(uint256 _playerId, uint256 _treasureSchemaId) internal {
         TreasureStorage storage tr = diamondStorageTreasure();
         tr.treasures[_treasureSchemaId][_playerId]++;
-
     }
 
     function _deleteTreasure(uint256 _playerId, uint256 _treasureScehmaId) internal {

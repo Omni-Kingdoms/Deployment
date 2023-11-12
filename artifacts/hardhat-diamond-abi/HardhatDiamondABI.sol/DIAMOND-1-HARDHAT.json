@@ -3120,6 +3120,31 @@
         {
           "indexed": true,
           "internalType": "uint256",
+          "name": "_hillArenaId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "EnterHillArena",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
           "name": "_basicArenaId",
           "type": "uint256"
         }
@@ -3210,11 +3235,47 @@
         },
         {
           "internalType": "uint256",
+          "name": "_hillArenaId",
+          "type": "uint256"
+        }
+      ],
+      "name": "enterHillArena",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
           "name": "_basicArenaId",
           "type": "uint256"
         }
       ],
       "name": "fightBaiscArena",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_hillArenaId",
+          "type": "uint256"
+        }
+      ],
+      "name": "fightHillArena",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -3395,6 +3456,24 @@
         }
       ],
       "name": "leaveBasicArena",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_basicArenaId",
+          "type": "uint256"
+        }
+      ],
+      "name": "leaveHillArena",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

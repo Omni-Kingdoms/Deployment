@@ -166,6 +166,7 @@ library StorageLib {
         a.hillArenas[_hillArenaId].open = false; //close the arena
         a.hillArenas[_hillArenaId].hostId = _playerId;
         a.hillArenas[_hillArenaId].hostAddress = payable(msg.sender);
+        a.hillArenaTime[_hillArenaId][_playerId] = block.timestamp;
     }
 
 
@@ -229,6 +230,9 @@ library StorageLib {
             a.totalArenaWins[_playerId]++; //add total wins
             a.totalArenaLosses[arena.hostId]++; //add total losses
             c.goldBalance[msg.sender] += arena.cost; //increase gold
+            a.hillArenaTime[_hillArenaId][_playerId] = block.timestamp; //set the curernt time as the start point
+            a.hillArenaScores[arena.hostId] += (block.timestamp - a.hillArenaTime[_hillArenaId][arena.hostId]); //give host their points
+            s.players[arena.hostId].status = 0; // set the host to idle
         } else { //means the host won
             _winner = arena.hostId;
             _loser = _playerId;
@@ -239,11 +243,6 @@ library StorageLib {
         }
         a.hillArenaCooldowns[_hillArenaId][_playerId] = block.timestamp;
         a.hillArenaCooldowns[_hillArenaId][arena.hostId] = block.timestamp;
-        //a.basicArenas[_basicArenaId].open = true; // open the areana
-
-        //change the logic for Hill Arena
-
-        s.players[arena.hostId].status = 0; // set the host to idle
         return (_winner, _loser);
     }
 
@@ -301,7 +300,7 @@ library StorageLib {
         a.hillArenas[_hillArenaId].open = true; //reopen the arena
         s.players[_playerId].status = 0; //set satus og host back to idle
         c.goldBalance[msg.sender] += a.basicArenas[_hillArenaId].cost; //increase gold
-
+        a.hillArenaScores[_playerId] += (block.timestamp - a.hillArenaTime[_hillArenaId][_playerId]);
     }
 
 
@@ -366,6 +365,7 @@ contract ArenaFacet {
     event BasicArenaWin(uint256 indexed _playerId, uint256 indexed _basicArenaId);
     event BasicArenaLoss(uint256 indexed _playerId, uint256 indexed _basicArenaId);
     event EnterBasicArena(uint256 indexed _playerId, uint256 indexed _basicArenaId);
+    event EnterHillArena(uint256 indexed _playerId, uint256 indexed _hillArenaId, uint256 indexed _timestamp);
     event LeaveBasicArena(uint256 indexed _playerId, uint256 indexed _basicArenaId);
 
     function creatBasicArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
@@ -388,6 +388,10 @@ contract ArenaFacet {
         StorageLib._enterBasicArena(_playerId, _basicArenaId);
         emit EnterBasicArena(_playerId, _basicArenaId);
     }
+    function enterHillArena(uint256 _playerId, uint256 _hillArenaId) public {
+        StorageLib._enterHillArena(_playerId, _hillArenaId);
+        emit EnterHillArena(_playerId, _hillArenaId, block.timestamp);
+    }
 
     function fightBaiscArena(uint256 _playerId, uint256 _basicArenaId) public {
         uint256 _winner;
@@ -396,9 +400,20 @@ contract ArenaFacet {
         emit BasicArenaWin(_winner, _basicArenaId);
         emit BasicArenaLoss(_loser, _basicArenaId);
     }
+    function fightHillArena(uint256 _playerId, uint256 _hillArenaId) public {
+        uint256 _winner;
+        uint256 _loser;
+        (_winner, _loser) = StorageLib._fightHillArena(_playerId, _hillArenaId);
+        emit BasicArenaWin(_winner, _hillArenaId);
+        emit BasicArenaLoss(_loser, _hillArenaId);
+    }
 
     function leaveBasicArena(uint256 _playerId, uint256 _basicArenaId) public {
         StorageLib._leaveBasicArena(_playerId, _basicArenaId);
+        emit LeaveBasicArena(_playerId, _basicArenaId);
+    }
+    function leaveHillArena(uint256 _playerId, uint256 _basicArenaId) public {
+        StorageLib._leaveHillArena(_playerId, _basicArenaId);
         emit LeaveBasicArena(_playerId, _basicArenaId);
     }
 
