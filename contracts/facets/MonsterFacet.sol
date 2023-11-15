@@ -138,6 +138,7 @@ library StorageMonsterLib {
     }
 
     struct CoinStorage {
+        uint256 goldCount;
         mapping(address => uint256) goldBalance;
         mapping(address => uint256) gemBalance;
         mapping(address => uint256) totemBalance;

@@ -8,7 +8,8 @@ struct TreasureSchema {
     string uri;
 }
 
-struct TreasureSwap {
+struct TreasureSwapSchema {
+    uint256 treasureSwapId;
     uint256 basicTreasureOneId;
     uint256 basicTreasureTwoId;
     uint256 quantity;
@@ -25,7 +26,7 @@ library TreasureStorageLib {
         mapping(uint256 => TreasureSchema) treasureSchema;
         mapping(uint256 => mapping(uint256 => uint256)) treasures;
         mapping(string => TreasureSchema) nameToTreasureSchema;
-        mapping(uint256 => TreasureSwap) treasureSwaps;
+        mapping(uint256 => TreasureSwapSchema) treasureSwaps;
     }
 
     function diamondStorageTreasure() internal pure returns (TreasureStorage storage ds) {
@@ -47,6 +48,17 @@ library TreasureStorageLib {
         );
         tr.nameToTreasureSchema[_name] = TreasureSchema(
             tr.treasureScehmaCount, _rank, _name, _uri
+        );
+    }
+
+    function _createTreasureSwap (uint256 _basicTreasureOneId, uint256 _basicTreasureTwoId, uint256 _quantity) internal {
+        TreasureStorage storage tr = diamondStorageTreasure();
+        tr.treasureScehmaSwapCount++; //increment basicTreasureSwapCount
+        tr.treasureSwaps[tr.treasureScehmaSwapCount] = TreasureSwapSchema(
+            tr.treasureScehmaCount,
+            _basicTreasureOneId,
+            _basicTreasureTwoId,
+            _quantity
         );
     }
 

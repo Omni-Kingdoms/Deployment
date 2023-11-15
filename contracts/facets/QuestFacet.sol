@@ -38,12 +38,13 @@ struct Equipment {
 // }
 
 struct GoldQuestSchema {
-    uint256 GoldQuestSchema;
+    uint256 GoldQuestSchemaId;
     uint256 reward;
     uint256 level;
     uint256 damage;
-    uint256 cooldown;
+    uint256 time;
 }
+
 
 
 
@@ -68,8 +69,9 @@ library StorageLib {
     }
 
     struct QuestStorage {
-        uint256 questCounter;
-        mapping(uint256 => mapping(uint256 => uint256)) goldQuestCooldowns;
+        uint256 goldQuestCounter;
+        mapping(uint256 => mapping(uint256 => uint256)) goldQuestStart;
+        mapping(uint256 => GoldQuestSchema) goldQuests;
         mapping(uint256 => uint256) goldQuest;
         mapping(uint256 => uint256) gemQuest;
         mapping(uint256 => uint256) totemQuest;
@@ -122,10 +124,34 @@ library StorageLib {
     }
 
 
-    function createGoldQuest(uint256 reward, uint256 level, uint256 damage, uint256 cooldown) internal {
+    function _createGoldQuest(uint256 _reward, uint256 _level, uint256 _damage, uint256 _time) internal {
         QuestStorage storage q = diamondStorageQuest();
-
+        q.goldQuestCounter++; //increment for new quest
+        q.goldQuests[q.goldQuestCounter] = GoldQuestSchema(
+            q.goldQuestCounter,
+            _reward,
+            _level,
+            _damage,
+            _time
+        );
     }
+
+    function _startGoldQuest(uint256 _playerId, uint256 _goldQuestSchemaId) internal {
+        QuestStorage storage q = diamondStorageQuest();
+        PlayerStorage storage s = diamondStoragePlayer();
+        CoinStorage storage c = diamondStorageCoin();
+        require(s.players[_playerId].status == 0); //make sure player is idle
+        require(s.owners[_playerId] == msg.sender); //ownerOf
+        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+        require(c.goldBalance[feeRecipient] >= 10000); //make sure there is gold that can be quested
+        require(s.players[_playerId].currentHealth > q.goldQuests[_goldQuestSchemaId].damage, "not enough hp"); //hp check// add require for health check
+        q.goldQuestStart[_goldQuestSchemaId][_playerId] = block.timestamp; //set timer for quest
+        s.players[_playerId].status = 2;//change status
+    }
+
+
+
+
 
     function _startQuestGold(uint256 _tokenId) internal {
         PlayerStorage storage s = diamondStoragePlayer();

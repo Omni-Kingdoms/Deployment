@@ -209,7 +209,7 @@ library StorageLib {
         return (_winner, _loser);
     }
 
-    function _fightHillArena(uint256 _playerId, uint256 _hillArenaId) internal returns (uint256, uint256) {
+    function _fightHillArena(uint256 _playerId, uint256 _hillArenaId) internal returns (uint256, uint256, uint256) {
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
         ArenaStorage storage a = diamondStorageArena();
@@ -243,7 +243,7 @@ library StorageLib {
         }
         a.hillArenaCooldowns[_hillArenaId][_playerId] = block.timestamp;
         a.hillArenaCooldowns[_hillArenaId][arena.hostId] = block.timestamp;
-        return (_winner, _loser);
+        return (_winner, _loser, a.hillArenaTime[_hillArenaId][_winner]);
     }
 
     function _simulateBasicFight(uint256 _hostId, uint256 _challengerId) internal returns(uint256) { //helper function
@@ -336,15 +336,27 @@ library StorageLib {
         ArenaStorage storage a = diamondStorageArena();
         return a.basicArenas[_basicArenaId];
     }
+    function _getHillArena(uint256 _hillArenaId) internal view returns (HillArena memory) {
+        ArenaStorage storage a = diamondStorageArena();
+        return a.hillArenas[_hillArenaId];
+    }
 
     function _getBasicArenaCount() internal view returns (uint256) {
         ArenaStorage storage a = diamondStorageArena();
         return a.basicArenaCounter;
     }
+    function _getHillArenaCount() internal view returns (uint256) {
+        ArenaStorage storage a = diamondStorageArena();
+        return a.hillArenaCounter;
+    }
 
     function _getBasicArenaCooldown(uint256 _playerId, uint256 _basicArenaId) internal view returns (uint256){
         ArenaStorage storage a = diamondStorageArena();
         return a.basicArenaCooldowns[_basicArenaId][_playerId];
+    }
+    function _getHillArenaCooldown(uint256 _playerId, uint256 _hillArenaId) internal view returns (uint256){
+        ArenaStorage storage a = diamondStorageArena();
+        return a.hillArenaCooldowns[_hillArenaId][_playerId];
     }
 
     function _getGoldBalance(address _address) internal view returns (uint256) {
@@ -403,7 +415,8 @@ contract ArenaFacet {
     function fightHillArena(uint256 _playerId, uint256 _hillArenaId) public {
         uint256 _winner;
         uint256 _loser;
-        (_winner, _loser) = StorageLib._fightHillArena(_playerId, _hillArenaId);
+        uint256 _winnerTime;
+        (_winner, _loser, _winnerTime) = StorageLib._fightHillArena(_playerId, _hillArenaId);
         emit BasicArenaWin(_winner, _hillArenaId);
         emit BasicArenaLoss(_loser, _hillArenaId);
     }
@@ -421,6 +434,10 @@ contract ArenaFacet {
         return StorageLib._getBasicArena(_basicArenaId);
     }
 
+    function getHillArena(uint256 _basicArenaId) public view returns (HillArena memory) {
+        return StorageLib._getHillArena(_basicArenaId);
+    }
+
     function getTotalWins(uint256 _playerId) public view returns (uint256) {
         return StorageLib._getTotalWins(_playerId);
     }
@@ -432,9 +449,15 @@ contract ArenaFacet {
     function getBasicArenaCount() public view returns(uint256) {
         return StorageLib._getBasicArenaCount();
     }
+    function getHillArenaCount() public view returns(uint256) {
+        return StorageLib._getHillArenaCount();
+    }
 
     function getBasicArenaCooldowns(uint256 _playerId, uint256 _basicArenaId) public view returns (uint256) {
         return StorageLib._getBasicArenaCooldown(_playerId, _basicArenaId);
+    }
+    function getHillArenaCooldowns(uint256 _playerId, uint256 _hillArenaId) public view returns (uint256) {
+        return StorageLib._getHillArenaCooldown(_playerId, _hillArenaId);
     }
 
     function getGoldBalance(address _address) public view returns (uint256) {
