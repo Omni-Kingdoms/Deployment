@@ -380,7 +380,7 @@ contract ArenaFacet {
     event EnterHillArena(uint256 indexed _playerId, uint256 indexed _hillArenaId, uint256 indexed _timestamp);
     event LeaveBasicArena(uint256 indexed _playerId, uint256 indexed _basicArenaId);
 
-    function creatBasicArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
+    function createBasicArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
         address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
         require(msg.sender == createAccount);
         StorageLib._createBasicArena(_cost, _cooldown, _name, _uri);
@@ -388,12 +388,12 @@ contract ArenaFacet {
         emit CreateBasicArena(id, getBasicArena(id));
     }
 
-    function creatHillArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
+    function createHillArena(uint256 _cost, uint256 _cooldown, string memory _name, string memory _uri) public {
         address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
         require(msg.sender == createAccount);
-        StorageLib._createBasicArena(_cost, _cooldown, _name, _uri);
-        uint256 id = StorageLib._getBasicArenaCount();
-        emit CreateBasicArena(id, getBasicArena(id));
+        StorageLib._createHillArena(_cost, _cooldown, _name, _uri);
+        uint256 id = StorageLib._getHillArenaCount();
+        emit CreateHillArena(id, getHillArena(id));
     }
 
     function enterBasicArena(uint256 _playerId, uint256 _basicArenaId) public {
@@ -434,8 +434,8 @@ contract ArenaFacet {
         return StorageLib._getBasicArena(_basicArenaId);
     }
 
-    function getHillArena(uint256 _basicArenaId) public view returns (HillArena memory) {
-        return StorageLib._getHillArena(_basicArenaId);
+    function getHillArena(uint256 _hillArenaId) public view returns (HillArena memory) {
+        return StorageLib._getHillArena(_hillArenaId);
     }
 
     function getTotalWins(uint256 _playerId) public view returns (uint256) {
