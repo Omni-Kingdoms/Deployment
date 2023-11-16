@@ -116,13 +116,11 @@ If you need help or would like to discuss diamonds then send me a message [on tw
 
 ## Author
 
-This example implementation was written by Nick Mudge.
+This example implementation was written by Taproot.
 
 Contact:
 
-- https://twitter.com/mudgen
-- nick@perfectabstractions.com
-- https://github.com/mudgen
+- Telegram: @Corsola26
 
 ## License
 
