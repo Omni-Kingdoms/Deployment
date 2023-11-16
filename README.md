@@ -11,7 +11,7 @@ This is a reference implementation for [EIP-2535 Diamonds](https://github.com/et
 
 1. Clone this repo:
 ```console
-git clone git@github.com:mudgen/diamond-1-hardhat.git
+git clone https://github.com/Omni-Kingdoms/Deployment.git
 ```
 
 2. Install NPM packages:
