@@ -127,7 +127,14 @@ module.exports = {
     scroll: {
       gasLimit: 400000000,
       gasPrice: 400000000,
-      url: "https://rpc.scroll.io ",
+      url: "https://rpc.scroll.io",
+      accounts: [keys],
+    },
+    base_test: {
+      gas: 2100000,
+      gasPrice: 8000000000,
+      gasLimit: 50000000000000,  
+      url: "https://goerli.base.org",
       accounts: [keys],
     },
     taiko_testnet: {    
