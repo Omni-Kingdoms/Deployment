@@ -3055,11 +3055,6 @@
               "type": "uint256"
             },
             {
-              "internalType": "uint256",
-              "name": "wins",
-              "type": "uint256"
-            },
-            {
               "internalType": "bool",
               "name": "open",
               "type": "bool"
@@ -3434,11 +3429,6 @@
             {
               "internalType": "uint256",
               "name": "hostId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "wins",
               "type": "uint256"
             },
             {

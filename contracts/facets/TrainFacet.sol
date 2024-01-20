@@ -127,6 +127,12 @@ library StorageLib {
         TrainStorage storage t = diamondStorageTrain();
         return t.basicMana[_playerId];
     }
+
+    function _adminMaxHealth(uint256 _playerId, uint256 _newHealth) internal {
+        PlayerStorage storage s = diamondStoragePlayer();
+        s.players[_playerId].health = _newHealth; //resetMaxHealth
+        s.players[_playerId].currentHealth = _newHealth; //reset currentHealth to full
+    }
 }
 
 contract TrainFacet {
@@ -162,6 +168,14 @@ contract TrainFacet {
     function getManaStart(uint256 _playerId) external view returns (uint256) {
         return StorageLib._getManaStart(_playerId);
     }
+
+    ///////////////////////// admin //////////////////////
+
+    // function _adminMaxHealth(uint256 _playerId, uint256 _newHealth) internal {
+    //     PlayerStorage storage s = diamondStoragePlayer();
+    //     s.players[_playerId].health = _newHealth; //resetMaxHealth
+    //     s.players[_playerId].currentHealth = _newHealth; //reset currentHealth to full
+    // }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}
 }

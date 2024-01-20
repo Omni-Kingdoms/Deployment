@@ -20,7 +20,6 @@ struct HillArena {
     uint256 cost;
     uint256 cooldown;
     uint256 hostId;
-    uint256 wins;
     bool open;
     address payable hostAddress;
     string name;
@@ -119,7 +118,6 @@ library StorageLib {
             _cost,
             _cooldown,
             0, //hostId starts at zero to show that there is no player
-            0,
             true, //arena is open (nobody is currently here)
             payable(msg.sender),
             _name,
@@ -233,6 +231,8 @@ library StorageLib {
             a.hillArenaTime[_hillArenaId][_playerId] = block.timestamp; //set the curernt time as the start point
             a.hillArenaScores[arena.hostId] += (block.timestamp - a.hillArenaTime[_hillArenaId][arena.hostId]); //give host their points
             s.players[arena.hostId].status = 0; // set the host to idle
+            a.hillArenas[_hillArenaId].hostId = _playerId;
+            a.hillArenas[_hillArenaId].hostAddress = payable(msg.sender);
         } else { //means the host won
             _winner = arena.hostId;
             _loser = _playerId;
@@ -241,8 +241,8 @@ library StorageLib {
             c.goldBalance[arena.hostAddress] += arena.cost*2; //increase gold of the host
             c.goldBalance[msg.sender] -= arena.cost; //decrease gold
         }
-        a.hillArenaCooldowns[_hillArenaId][_playerId] = block.timestamp;
-        a.hillArenaCooldowns[_hillArenaId][arena.hostId] = block.timestamp;
+        a.hillArenaCooldowns[_hillArenaId][_playerId] = block.timestamp; //reset cooldown for challenger
+        a.hillArenaCooldowns[_hillArenaId][arena.hostId] = block.timestamp; //reset cooldown for host
         return (_winner, _loser, a.hillArenaTime[_hillArenaId][_winner]);
     }
 
@@ -312,7 +312,7 @@ library StorageLib {
     }
 
     function _basicRandom(uint256 _nonce, uint256 _value) internal view  returns (uint256) {
-        uint256 random = (_random(_nonce, _value) % 9) + 100;
+        uint256 random = (_random(_nonce, _value) % 99) + 100;
         return ((_value * random) / 100);
     }
 
@@ -362,6 +362,11 @@ library StorageLib {
     function _getGoldBalance(address _address) internal view returns (uint256) {
         CoinStorage storage c = diamondStorageCoin();
         return c.goldBalance[_address];
+    }
+
+    function _getHillArenaScore(uint256 _playerId) internal view returns(uint256) {
+        ArenaStorage storage a = diamondStorageArena();
+        return a.hillArenaScores[_playerId];
     }
 
     function _mintGold() internal {
@@ -425,6 +430,7 @@ contract ArenaFacet {
         StorageLib._leaveBasicArena(_playerId, _basicArenaId);
         emit LeaveBasicArena(_playerId, _basicArenaId);
     }
+    
     function leaveHillArena(uint256 _playerId, uint256 _basicArenaId) public {
         StorageLib._leaveHillArena(_playerId, _basicArenaId);
         emit LeaveBasicArena(_playerId, _basicArenaId);
@@ -458,6 +464,10 @@ contract ArenaFacet {
     }
     function getHillArenaCooldowns(uint256 _playerId, uint256 _hillArenaId) public view returns (uint256) {
         return StorageLib._getHillArenaCooldown(_playerId, _hillArenaId);
+    }
+
+    function getHillArenaScore(uint256 _playerId) internal view returns(uint256) {
+        return StorageLib._getHillArenaScore(_playerId);
     }
 
     function getGoldBalance(address _address) public view returns (uint256) {
