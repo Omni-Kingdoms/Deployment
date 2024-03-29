@@ -238,7 +238,7 @@ library StorageLib {
             _loser = _playerId;
             a.totalArenaWins[arena.hostId]++; //add total wins
             a.totalArenaLosses[_playerId]++; //add total losses
-            c.goldBalance[arena.hostAddress] += arena.cost*2; //increase gold of the host
+            c.goldBalance[arena.hostAddress] += arena.cost; //increase gold of the host
             c.goldBalance[msg.sender] -= arena.cost; //decrease gold
         }
         a.hillArenaCooldowns[_hillArenaId][_playerId] = block.timestamp; //reset cooldown for challenger
@@ -299,7 +299,7 @@ library StorageLib {
         a.hillArenas[_hillArenaId].hostId = 0; //reset the id of arena
         a.hillArenas[_hillArenaId].open = true; //reopen the arena
         s.players[_playerId].status = 0; //set satus og host back to idle
-        c.goldBalance[msg.sender] += a.basicArenas[_hillArenaId].cost; //increase gold
+        c.goldBalance[msg.sender] += a.hillArenas[_hillArenaId].cost; //increase gold
         a.hillArenaScores[_playerId] += (block.timestamp - a.hillArenaTime[_hillArenaId][_playerId]);
     }
 

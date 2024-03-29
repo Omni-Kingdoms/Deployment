@@ -123,7 +123,6 @@ library StorageLib {
         }
     }
 
-
     function _createGoldQuest(uint256 _reward, uint256 _level, uint256 _damage, uint256 _time) internal {
         QuestStorage storage q = diamondStorageQuest();
         q.goldQuestCounter++; //increment for new quest
@@ -136,7 +135,7 @@ library StorageLib {
         );
     }
 
-    function _startGoldQuest(uint256 _playerId, uint256 _goldQuestSchemaId) internal {
+    function _startQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) internal {
         QuestStorage storage q = diamondStorageQuest();
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
@@ -150,20 +149,17 @@ library StorageLib {
     }
 
 
-
-
-
-    function _startQuestGold(uint256 _tokenId) internal {
-        PlayerStorage storage s = diamondStoragePlayer();
-        QuestStorage storage q = diamondStorageQuest();
-        CoinStorage storage c = diamondStorageCoin();
-        require(s.players[_tokenId].status == 0); //make sure player is idle
-        require(s.owners[_tokenId] == msg.sender); //ownerOf
-        require(c.goldCount <= 10000000); // less than one 10M
-        c.goldCount++;
-        s.players[_tokenId].status = 2; //set quest status
-        q.goldQuest[_tokenId] = block.timestamp; //set start time
-    }
+    // function _startQuestGold(uint256 _tokenId) internal {
+    //     PlayerStorage storage s = diamondStoragePlayer();
+    //     QuestStorage storage q = diamondStorageQuest();
+    //     CoinStorage storage c = diamondStorageCoin();
+    //     require(s.players[_tokenId].status == 0); //make sure player is idle
+    //     require(s.owners[_tokenId] == msg.sender); //ownerOf
+    //     require(c.goldCount <= 10000000); // less than one 10M
+    //     c.goldCount++;
+    //     s.players[_tokenId].status = 2; //set quest status
+    //     q.goldQuest[_tokenId] = block.timestamp; //set start time
+    // }
 
     function _endQuestGold(uint256 _playerId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
@@ -245,9 +241,9 @@ contract QuestFacet {
     event BeginQuesting(address indexed _playerAddress, uint256 _id);
     event EndQuesting(address indexed _playerAddress, uint256 _id);
 
-    function startQuestGold(uint256 _tokenId) external {
-        StorageLib._startQuestGold(_tokenId);
-        emit BeginQuesting(msg.sender, _tokenId);
+    function startQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) external {
+        StorageLib._startQuestGold(_playerId, _goldQuestSchemaId);
+        emit BeginQuestingGold(msg.sender, _playerId, _goldQuestSchemaId);
     }
 
     function endQuestGold(uint256 _tokenId) external {

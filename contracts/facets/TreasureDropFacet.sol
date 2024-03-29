@@ -194,6 +194,7 @@ library StorageLib {
 contract TreasureDropFacet {
 
     event ClaimTreasure(uint256 indexed _playerId, uint256 indexed _treasureDropId);
+    event CreateTreasureDrop(string _name);
 
     function createTreasureDrop(bytes32 _merkleRoot, string memory _name) external {
         StorageLib._createTreasureDrop(_merkleRoot, _name);
