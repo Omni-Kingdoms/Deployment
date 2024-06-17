@@ -72,6 +72,7 @@ library StorageLib {
         uint256 goldQuestCounter;
         mapping(uint256 => mapping(uint256 => uint256)) goldQuestStart;
         mapping(uint256 => GoldQuestSchema) goldQuests;
+        mapping(uint256 => uint256) currentQuest;
         mapping(uint256 => uint256) goldQuest;
         mapping(uint256 => uint256) gemQuest;
         mapping(uint256 => uint256) totemQuest;
@@ -140,12 +141,14 @@ library StorageLib {
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
         require(s.players[_playerId].status == 0); //make sure player is idle
-        require(s.owners[_playerId] == msg.sender); //ownerOf
+        require(s.owners[_playerId] == msg.sender); //ownerOf player
         address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         require(c.goldBalance[feeRecipient] >= 10000); //make sure there is gold that can be quested
         require(s.players[_playerId].currentHealth > q.goldQuests[_goldQuestSchemaId].damage, "not enough hp"); //hp check// add require for health check
+        require(s.players[_playerId].level >= q.goldQuests[_goldQuestSchemaId].level, "not high enough level"); //hp check// add require for health check
         q.goldQuestStart[_goldQuestSchemaId][_playerId] = block.timestamp; //set timer for quest
         s.players[_playerId].status = 2;//change status
+        q.currentQuest[_playerId] = _goldQuestSchemaId;
     }
 
 
@@ -161,18 +164,20 @@ library StorageLib {
     //     q.goldQuest[_tokenId] = block.timestamp; //set start time
     // }
 
-    function _endQuestGold(uint256 _playerId) internal {
+    function _endQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) internal {
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
         QuestStorage storage q = diamondStorageQuest();
         require(s.owners[_playerId] == msg.sender, "you are not the owner"); //onlyOwner
         require(s.players[_playerId].status == 2, "Dog, you are not gold questing"); //currently gold questing
+        require(q.currentQuest[_playerId] == _goldQuestSchemaId, "This is not the right quest"); //currently gold questing
         uint256 timer;
-        s.players[_playerId].agility >= 600 ? timer = 600 : timer = 610 - s.players[_playerId].agility;
+        s.players[_playerId].agility >= q.goldQuests[_goldQuestSchemaId].time ? timer = q.goldQuests[_goldQuestSchemaId].time : timer = q.goldQuests[_goldQuestSchemaId].time + 10 - s.players[_playerId].agility;
         require(block.timestamp >= q.goldQuest[_playerId] + timer, "it's too early to pull out");
         s.players[_playerId].status = 0; //set back to idle
-        delete q.goldQuest[_playerId]; //remove the start time
-        c.goldBalance[msg.sender] += 10; //mint 10 gold
+        q.currentQuest[_playerId] = 0;
+        delete q.goldQuest[_playerId]; //remove the start time (need to test this, why not just set to 0)
+        c.goldBalance[msg.sender] += q.goldQuests[_goldQuestSchemaId].reward; //mint reward
     }
 
     function _startQuestGem(uint256 _playerId) internal {
@@ -235,15 +240,22 @@ library StorageLib {
         CoinStorage storage c = diamondStorageCoin();
         c.goldBalance[msg.sender] += 100;
     }
+
+    function __feeMintTest(uint256 _amount) internal {
+        CoinStorage storage c = diamondStorageCoin();
+        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+        c.goldBalance[feeRecipient] += _amount;
+    }
 }
 
 contract QuestFacet {
     event BeginQuesting(address indexed _playerAddress, uint256 _id);
     event EndQuesting(address indexed _playerAddress, uint256 _id);
+    event BeginGoldQuest(address indexed _playerAddress, uint256 indexed _playerId, uint256 indexed _goldQuestScheme);
 
     function startQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) external {
         StorageLib._startQuestGold(_playerId, _goldQuestSchemaId);
-        emit BeginQuestingGold(msg.sender, _playerId, _goldQuestSchemaId);
+        emit BeginGoldQuest(msg.sender, _playerId, _goldQuestSchemaId);
     }
 
     function endQuestGold(uint256 _tokenId) external {
@@ -284,6 +296,10 @@ contract QuestFacet {
 
     function getGold() public {
         StorageLib.getGold();
+    }
+
+    function feeMintTest(uint256 _amount) public {
+        StorageLib._feeMintTest(_amount);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}

@@ -7279,7 +7279,12 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_tokenId",
+          "name": "_playerId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_goldQuestSchemaId",
           "type": "uint256"
         }
       ],
@@ -7815,6 +7820,19 @@
         }
       ],
       "name": "ClaimTreasure",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        }
+      ],
+      "name": "CreateTreasureDrop",
       "type": "event"
     },
     {
