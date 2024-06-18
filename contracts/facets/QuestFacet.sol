@@ -241,7 +241,7 @@ library StorageLib {
         c.goldBalance[msg.sender] += 100;
     }
 
-    function __feeMintTest(uint256 _amount) internal {
+    function _feeMintTest(uint256 _amount) internal {
         CoinStorage storage c = diamondStorageCoin();
         address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         c.goldBalance[feeRecipient] += _amount;
@@ -258,9 +258,9 @@ contract QuestFacet {
         emit BeginGoldQuest(msg.sender, _playerId, _goldQuestSchemaId);
     }
 
-    function endQuestGold(uint256 _tokenId) external {
-        StorageLib._endQuestGold(_tokenId);
-        emit EndQuesting(msg.sender, _tokenId);
+    function endQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) external {
+        StorageLib._endQuestGold(_playerId, _goldQuestSchemaId);
+        //emit EndQuesting(msg.sender, _tokenId);
     }
 
     function getGoldBalance(address _address) public view returns (uint256) {
