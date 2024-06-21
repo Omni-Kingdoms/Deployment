@@ -40,6 +40,7 @@ struct Equipment {
 struct GoldQuestSchema {
     uint256 GoldQuestSchemaId;
     uint256 reward;
+    uint256 maxReward;
     uint256 level;
     uint256 damage;
     uint256 time;
@@ -124,12 +125,13 @@ library StorageLib {
         }
     }
 
-    function _createGoldQuest(uint256 _reward, uint256 _level, uint256 _damage, uint256 _time) internal {
+    function _createGoldQuest(uint256 _reward, uint256 _maxReward, uint256 _level, uint256 _damage, uint256 _time) internal {
         QuestStorage storage q = diamondStorageQuest();
         q.goldQuestCounter++; //increment for new quest
         q.goldQuests[q.goldQuestCounter] = GoldQuestSchema(
             q.goldQuestCounter,
             _reward,
+            _maxReward,
             _level,
             _damage,
             _time
@@ -140,6 +142,7 @@ library StorageLib {
         QuestStorage storage q = diamondStorageQuest();
         PlayerStorage storage s = diamondStoragePlayer();
         CoinStorage storage c = diamondStorageCoin();
+        require(q.goldQuests[_goldQuestSchemaId].maxReward != 0);
         require(s.players[_playerId].status == 0); //make sure player is idle
         require(s.owners[_playerId] == msg.sender); //ownerOf player
         address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
@@ -180,6 +183,7 @@ library StorageLib {
         c.goldBalance[msg.sender] += q.goldQuests[_goldQuestSchemaId].reward; //mint reward
         address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         c.goldBalance[feeRecipient] -= q.goldQuests[_goldQuestSchemaId].reward;
+        q.goldQuests[_goldQuestSchemaId].maxReward -= q.goldQuests[_goldQuestSchemaId].reward;
     }
 
     function _startQuestGem(uint256 _playerId) internal {
@@ -210,6 +214,17 @@ library StorageLib {
         delete q.gemQuest[_playerId]; //remove the start time
         c.gemBalance[msg.sender]++; //mint one gem
         q.cooldowns[_playerId] = block.timestamp; //set the cooldown to the current time
+    }
+
+    function _getGoldQuestCount() internal view returns (uint256) {
+        QuestStorage storage q = diamondStorageQuest();
+        return q.goldQuestCounter;
+    }
+
+    function _getGoldQuest(uint256 _goldQuestId) internal view returns (GoldQuestSchema memory) {
+        QuestStorage storage q = diamondStorageQuest();
+        return q.goldQuests[_goldQuestId];
+
     }
 
     function _getGoldBalance(address _address) internal view returns (uint256) {
@@ -252,8 +267,18 @@ library StorageLib {
 
 contract QuestFacet {
     event BeginQuesting(address indexed _playerAddress, uint256 _id);
-    event EndQuesting(address indexed _playerAddress, uint256 _id);
+    event CreateGoldQuest(uint256 _goldQuestId, GoldQuestSchema _goldQuest);
     event BeginGoldQuest(address indexed _playerAddress, uint256 indexed _playerId, uint256 indexed _goldQuestScheme);
+    event EndGoldQuest(address indexed _playerAddress, uint256 indexed _playerId, uint256 indexed _goldQuestScheme);
+
+    function createQuestGold(uint256 _reward, uint256 _maxReward, uint256 _level, uint256 _damage, uint256 _time) external {
+        address createAccount = payable(0x434d36F32AbeD3F7937fE0be88dc1B0eB9381244);
+        require(msg.sender == createAccount);
+        StorageLib._createGoldQuest(_reward, _maxReward, _level, _damage, _time);
+        uint256 id = StorageLib._getGoldQuestCount();
+        emit CreateGoldQuest(id, getGoldQuest(id));
+
+    }
 
     function startQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) external {
         StorageLib._startQuestGold(_playerId, _goldQuestSchemaId);
@@ -262,7 +287,7 @@ contract QuestFacet {
 
     function endQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) external {
         StorageLib._endQuestGold(_playerId, _goldQuestSchemaId);
-        //emit EndQuesting(msg.sender, _tokenId);
+        emit EndGoldQuest(msg.sender, _playerId, _goldQuestSchemaId);
     }
 
     function getGoldBalance(address _address) public view returns (uint256) {
@@ -276,9 +301,16 @@ contract QuestFacet {
 
     function endQuestGem(uint256 _tokenId) external {
         StorageLib._endQuestGem(_tokenId);
-        emit EndQuesting(msg.sender, _tokenId);
+        // emit EndQuesting(msg.sender, _tokenId);
     }
 
+    function getGoldQuestCount() public view returns (uint256){
+        return StorageLib._getGoldQuestCount();
+    }
+
+    function getGoldQuest(uint256 _goldQuestId) public view returns (GoldQuestSchema memory) {
+        return StorageLib._getGoldQuest(_goldQuestId);
+    }
 
     function getGemBalance(address _address) public view returns (uint256) {
         return StorageLib._getGemBalance(_address);

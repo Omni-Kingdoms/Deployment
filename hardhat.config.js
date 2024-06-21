@@ -114,7 +114,7 @@ module.exports = {
       accounts: [keys],
     },
     scroll_sepolia: {
-      url: "https://sepolia-rpc.scroll.io",
+      url: "https://scroll-sepolia.drpc.org",
       accounts: [keys],
     },
 
