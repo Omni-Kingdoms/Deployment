@@ -176,7 +176,7 @@ library StorageLib {
         require(q.currentQuest[_playerId] == _goldQuestSchemaId, "This is not the right quest"); //currently gold questing
         uint256 timer;
         s.players[_playerId].agility >= q.goldQuests[_goldQuestSchemaId].time ? timer = q.goldQuests[_goldQuestSchemaId].time : timer = q.goldQuests[_goldQuestSchemaId].time + 10 - s.players[_playerId].agility;
-        require(block.timestamp >= q.goldQuest[_playerId] + timer, "it's too early to pull out");
+        require(block.timestamp >= q.goldQuestStart[_goldQuestSchemaId][_playerId] + timer, "it's too early to pull out");
         s.players[_playerId].status = 0; //set back to idle
         uint256 damage;  
         s.players[_playerId].defense >= q.goldQuests[_goldQuestSchemaId].damage ? damage = 1 : damage = q.goldQuests[_goldQuestSchemaId].damage - s.players[_playerId].defense;
@@ -240,9 +240,9 @@ library StorageLib {
         return c.gemBalance[_address];
     }
 
-    function _getGoldStart(uint256 _playerId) internal view returns (uint256) {
+    function _getGoldStart(uint256 _goldQuestId, uint256 _playerId) internal view returns (uint256) {
         QuestStorage storage q = diamondStorageQuest();
-        return q.goldQuest[_playerId];
+       return q.goldQuestStart[_goldQuestId][_playerId];
     }
 
     function _getGemStart(uint256 _playerId) internal view returns (uint256) {
@@ -319,8 +319,8 @@ contract QuestFacet {
         return StorageLib._getGemBalance(_address);
     }
 
-    function getGoldStart(uint256 _playerId) external view returns (uint256) {
-        return StorageLib._getGoldStart(_playerId);
+    function getGoldStart(uint256 _goldQuestId, uint256 _playerId) external view returns (uint256) {
+        return StorageLib._getGoldStart(_goldQuestId, _playerId);
     }
 
     function getGemStart(uint256 _playerId) external view returns (uint256) {
