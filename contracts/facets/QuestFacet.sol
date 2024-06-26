@@ -178,6 +178,9 @@ library StorageLib {
         s.players[_playerId].agility >= q.goldQuests[_goldQuestSchemaId].time ? timer = q.goldQuests[_goldQuestSchemaId].time : timer = q.goldQuests[_goldQuestSchemaId].time + 10 - s.players[_playerId].agility;
         require(block.timestamp >= q.goldQuest[_playerId] + timer, "it's too early to pull out");
         s.players[_playerId].status = 0; //set back to idle
+        uint256 damage;  
+        s.players[_playerId].defense >= q.goldQuests[_goldQuestSchemaId].damage ? damage = 1 : damage = q.goldQuests[_goldQuestSchemaId].damage - s.players[_playerId].defense;
+        s.players[_playerId].currentHealth -= damage;
         q.currentQuest[_playerId] = 0;
         delete q.goldQuest[_playerId]; //remove the start time (need to test this, why not just set to 0)
         c.goldBalance[msg.sender] += q.goldQuests[_goldQuestSchemaId].reward; //mint reward

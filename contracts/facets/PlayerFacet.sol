@@ -78,7 +78,7 @@ library PlayerStorageLib {
     /// @notice Mints a new player
     /// @param _name The name of the player
     /// @param _isMale The gender of the player
-    function _mint(string memory _name, bool _isMale, uint256 _class) internal {
+    function _mint(string memory _name, bool _isMale, uint256 _class, address _to) internal {
         PlayerStorage storage s = diamondStorage();
         require(s.playerCount <= 8000);
         require(!s.usedNames[_name], "name is taken");
@@ -171,9 +171,9 @@ library PlayerStorageLib {
         }
         s.slots[s.playerCount] = PlayerSlotLib.Slot(0, 0, 0, 0, 0, 0, 0);
         s.usedNames[_name] = true;
-        s.owners[s.playerCount] = msg.sender;
-        s.addressToPlayers[msg.sender].push(s.playerCount);
-        s.balances[msg.sender]++;
+        s.owners[s.playerCount] = _to;
+        s.addressToPlayers[_to].push(s.playerCount);
+        s.balances[_to]++;
     }
 
     function _playerCount() internal view returns (uint256) {
@@ -291,19 +291,19 @@ contract PlayerFacet is ERC721FacetInternal {
     /// @dev Calls the _mint function from the PlayerStorageLib
     /// @param _name The name of the player
     /// @param _isMale The gender of the player
-    function mint(string memory _name, bool _isMale, uint256 _class) external payable {
+    function mint(string memory _name, bool _isMale, uint256 _class, address _to) external payable {
         uint256 cost = 16000000000000000;
         require(msg.value >= cost);
         address payable feeAccount = payable(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
         //feeAccount.call{value: cost};
         (bool sent, bytes memory data) = feeAccount.call{value: msg.value}("");
         require(sent, "Failed to send Ether");
-        PlayerStorageLib._mint(_name, _isMale, _class);
+        PlayerStorageLib._mint(_name, _isMale, _class, _to);
         uint256 count = playerCount();
-        emit Mint(count, msg.sender, _name, _class);
+        emit Mint(count, _to, _name, _class);
 
         //TODO - somehow
-        _safeMint(msg.sender, count);
+        _safeMint(_to, count);
     }
 
     /// @notice Changes the name of a player
