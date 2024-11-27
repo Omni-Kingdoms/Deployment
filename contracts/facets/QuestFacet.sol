@@ -256,16 +256,16 @@ library StorageLib {
     }
 
 
-    function getGold() internal {
-        CoinStorage storage c = diamondStorageCoin();
-        c.goldBalance[msg.sender] += 100;
-    }
+    // function getGold() internal {
+    //     CoinStorage storage c = diamondStorageCoin();
+    //     c.goldBalance[msg.sender] += 100;
+    // }
 
-    function _feeMintTest(uint256 _amount) internal {
-        CoinStorage storage c = diamondStorageCoin();
-        address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
-        c.goldBalance[feeRecipient] += _amount;
-    }
+    // function _feeMintTest(uint256 _amount) internal {
+    //     CoinStorage storage c = diamondStorageCoin();
+    //     address feeRecipient = address(0x08d8E680A2d295Af8CbCD8B8e07f900275bc6B8D);
+    //     c.goldBalance[feeRecipient] += _amount;
+    // }
 }
 
 contract QuestFacet {
@@ -291,10 +291,6 @@ contract QuestFacet {
     function endQuestGold(uint256 _playerId, uint256 _goldQuestSchemaId) external {
         StorageLib._endQuestGold(_playerId, _goldQuestSchemaId);
         emit EndGoldQuest(msg.sender, _playerId, _goldQuestSchemaId);
-    }
-
-    function getGoldBalance(address _address) public view returns (uint256) {
-        return StorageLib._getGoldBalance(_address);
     }
 
     function startQuestGem(uint256 _tokenId) external {
@@ -329,14 +325,6 @@ contract QuestFacet {
 
     function getCooldown(uint256 _playerId) external view returns (uint256) {
         return StorageLib._getCooldown(_playerId);
-    }
-
-    function getGold() public {
-        StorageLib.getGold();
-    }
-
-    function feeMintTest(uint256 _amount) public {
-        StorageLib._feeMintTest(_amount);
     }
 
     //function supportsInterface(bytes4 _interfaceID) external view returns (bool) {}

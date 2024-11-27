@@ -1,5 +1,6 @@
 const { ethers } = require("ethers");
 const dotenv = require("dotenv");
+const { sepolia } = require("@hyperlane-xyz/sdk/dist/consts/chainMetadata");
 dotenv.config();
 
 /* global ethers task */
@@ -192,8 +193,12 @@ module.exports = {
       url: "https://arbitrum-goerli.blockpi.network/v1/rpc/public",
       accounts: [keys],
     },
-    fuji: {
-      url: "https://rpc.ankr.com/avalanche_fuji",
+    bera: {
+      url: "https://bartio.rpc.b-harvest.io",
+      accounts: [keys],
+    },
+    sepolia: {
+      url: "https://eth-sepolia.public.blastapi.io",
       accounts: [keys],
     },
     opbnbtest: {
